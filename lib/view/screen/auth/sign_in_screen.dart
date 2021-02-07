@@ -6,6 +6,7 @@ import 'package:sangkuy/config/database_config.dart';
 import 'package:sangkuy/helper/table_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/auth/login_model.dart';
+import 'package:sangkuy/model/auth/otp_model.dart';
 import 'package:sangkuy/model/config_model.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
@@ -22,110 +23,116 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool otpVal=false,isLoading=false,isError=false;
-  ConfigModel configModel;
   var nohpController = TextEditingController();
   final FocusNode nohpFocus = FocusNode();
   DatabaseConfig _db = DatabaseConfig();
+  ConfigModel configModel;
   Future loadConfig()async{
-    // var res = await BaseProvider().getProvider("auth/config", configModelFromJson);
-    // if(res==Constant().errSocket||res==Constant().errTimeout){
-    //   isLoading=false;isError=true;
-    //   setState(() {});
-    // }
-    // else{
-    //   if(res is ConfigModel){
-    //     ConfigModel result=res;
-    //     if(result.status=='success'){
-    //       configModel = ConfigModel.fromJson(result.toJson());
-    //       isLoading=false;isError=false;
-    //       print(result.result.type);
-    //       setState(() {});
-    //     }
-    //     else{
-    //       isLoading=false;isError=true;
-    //       setState(() {});
-    //     }
-    //   }
-    // }
+    var res = await BaseProvider().getProvider("auth/config", configModelFromJson);
+    if(res==Constant().errSocket||res==Constant().errTimeout){
+      isLoading=false;isError=true;
+      setState(() {});
+    }
+    else{
+      if(res is ConfigModel){
+        ConfigModel result=res;
+        if(result.status=='success'){
+          configModel = ConfigModel.fromJson(result.toJson());
+          isLoading=false;isError=false;
+          print(result.result.type);
+          setState(() {});
+        }
+        else{
+          isLoading=false;isError=true;
+          setState(() {});
+        }
+      }
+    }
   }
-  
+  Future sendOtp()async{
+    if(nohpController.text==''){
+      WidgetHelper().notifBar(context,"failed","masukan no handphone anda");
+      Future.delayed(Duration(seconds: 2));
+      nohpFocus.requestFocus();
+    }
+    else{
+      WidgetHelper().loadingDialog(context);
+      final data={
+        "nomor":nohpController.text,
+        "type":otpVal?"whatsapp":"sms",
+      };
+      var res = await BaseProvider().postProvider("auth/otp", data);
+      Navigator.pop(context);
+      if(res==Constant().errSocket||res==Constant().errTimeout){
+        WidgetHelper().notifBar(context,"failed","Terjadi kesalahan koneksi");
+      }
+      else{
+        if(res is General){
+          General result=res;
+          WidgetHelper().notifBar(context,"failed",result.msg);
+        }
+        else{
+          var result = OtpModel.fromJson(res);
+          if(result.status=='success'){
+            WidgetHelper().myPush(context, SecureCodeScreen(
+              callback:(context,isTrue)async{
+                login();
+              },
+              code:result.result.otpAnying,
+              param: 'otp',
+              desc: otpVal?'WhatsApp':'SMS',
+              data: data,
+
+            ));
+          }
+          else{
+            WidgetHelper().notifBar(context,"failed",result.msg);
+          }
+        }
+      }
+    }
+
+  }
   Future login()async{
-    // if(nohpController.text==''){
-    //   WidgetHelper().notifBar(context,"failed","masukan no handphone anda");
-    //   Future.delayed(Duration(seconds: 2));
-    //   nohpFocus.requestFocus();
-    // }
-    // else{
-    //   WidgetHelper().loadingDialog(context);
-    //   final data={
-    //     "uid":"",
-    //     "pass":"",
-    //     "type":"otp",
-    //     "nohp":nohpController.text
-    //   };
-    //   var res = await BaseProvider().postProvider("auth", data);
-    //   Navigator.pop(context);
-    //   if(res==Constant().errSocket||res==Constant().errTimeout){
-    //     WidgetHelper().notifBar(context,"failed","Terjadi kesalahan koneksi");
-    //   }
-    //   else{
-    //     if(res is General){
-    //       General result=res;
-    //       WidgetHelper().notifBar(context,"failed",result.msg);
-    //     }
-    //     else{
-    //       var result = LoginModel.fromJson(res);
-    //       if(result.status=='success'){
-    //         // WidgetHelper().notifBar(context,"success",result.msg);
-    //         WidgetHelper().myPush(context, SecureCodeScreen(
-    //           callback:(context,isTrue)async{
-    //             final data={
-    //               "id_user": "${result.result.id.toString()}",
-    //               "token": "${result.result.token.toString()}",
-    //               "full_name": "${result.result.fullName.toString()}",
-    //               "mobile_no": "${result.result.mobileNo.toString()}",
-    //               "membership": "${result.result.membership.toString()}",
-    //               "referral_code": "${result.result.referralCode.toString()}",
-    //               "device_id": "${result.result.deviceId.toString()}",
-    //               "status": "${result.result.status.toString()}",
-    //               "picture": "${result.result.picture.toString()}",
-    //               "is_login":"1",
-    //               "onboarding":"1",
-    //               "exit_app":"0",
-    //             };
-    //             await _db.insert(UserTable.TABLE_NAME, data);
-    //             // final getUser = await UserHelper().getDataUser("full_name");
-    //             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-    //           },
-    //           code:result.result.otp,
-    //           param: 'otp',
-    //           desc: otpVal?'WhatsApp':'SMS',
-    //           data: {
-    //             "nomor":"${result.result.mobileNo}",
-    //             "type":"${otpVal?'whatsapp':'sms'}",
-    //             "nama":"${result.result.fullName}"
-    //           },
-    //         ));
-    //       }
-    //       else{
-    //         WidgetHelper().notifBar(context,"failed",result.msg);
-    //       }
-    //     }
-    //   }
-    // }
-    WidgetHelper().myPush(context, SecureCodeScreen(
-      callback:(context,isTrue){
+    WidgetHelper().loadingDialog(context);
+    final dataLogin={
+      "uid":"",
+      "type":"otp",
+      "nohp":nohpController.text,
+      "pass":"",
+    };
+    var baseAuth = await BaseProvider().postProvider("auth", dataLogin);
+    if(baseAuth==Constant().errSocket||baseAuth==Constant().errTimeout){
+      Navigator.pop(context);
+      WidgetHelper().notifBar(context,"failed","Terjadi kesalahan koneksi");
+    }
+    else{
+      if(baseAuth is General){
+        General response = baseAuth;
+        Navigator.pop(context);
+        WidgetHelper().notifBar(context,"failed",response.msg);
+      }
+      else{
+        var loginModel = LoginModel.fromJson(baseAuth);
+        final dataUserToLocal={
+          "id_user": "${loginModel.result.id.toString()}",
+          "token": "${loginModel.result.token.toString()}",
+          "full_name": "${loginModel.result.fullName.toString()}",
+          "mobile_no": "${loginModel.result.mobileNo.toString()}",
+          "membership": "${loginModel.result.membership.toString()}",
+          "referral_code": "${loginModel.result.referralCode.toString()}",
+          "device_id": "${loginModel.result.deviceId.toString()}",
+          "status": "${loginModel.result.status.toString()}",
+          "picture": "${loginModel.result.picture.toString()}",
+          "is_login":"1",
+          "onboarding":"1",
+          "exit_app":"0",
+        };
+        await _db.insert(UserTable.TABLE_NAME, dataUserToLocal);
+        Navigator.pop(context);
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-      },
-      code:'1234',
-      param: 'otp',
-      desc: otpVal?'WhatsApp':'SMS',
-      data: {
-        "nomor":"009823",
-        "type":"${otpVal?'WhatsApp':'SMS'}",
-        "nama":"acuy"
-      },
-    ));
+      }
+    }
   }
 
   @override
@@ -233,8 +240,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     padding: EdgeInsets.only(top: 20,bottom: 10),
                     child: MaterialButton(
                       onPressed: (){
-                        WidgetHelper().loadingDialog(context);
-                        login();
+                        // WidgetHelper().loadingDialog(context);
+                        sendOtp();
                       },
                       child: WidgetHelper().textQ("MASUK",14,Colors.grey[200],FontWeight.bold),
                       color: Colors.black38,

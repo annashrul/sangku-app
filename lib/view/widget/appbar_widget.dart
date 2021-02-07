@@ -17,13 +17,16 @@ class AppBarNoButton extends StatefulWidget implements PreferredSizeWidget {
 
 class _AppBarNoButtonState extends State<AppBarNoButton>{
   String name='';
+  // ignore: non_constant_identifier_names
+  String referral_code='';
   String img='';
   Future loadData()async{
     var nm = await UserHelper().getDataUser("full_name");
+    var ref = await UserHelper().getDataUser("referral_code");
     var im = await UserHelper().getDataUser("picture");
-    print(im);
     setState(() {
       name=nm;
+      referral_code=ref;
       img=im;
     });
   }
@@ -46,14 +49,14 @@ class _AppBarNoButtonState extends State<AppBarNoButton>{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ("Hai, SangQu",16,Colors.black,FontWeight.bold,letterSpacing: 3.0),
-          WidgetHelper().textQ("MB5711868825",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
+          WidgetHelper().textQ("$name",14,Colors.black,FontWeight.bold,letterSpacing: 3.0),
+          WidgetHelper().textQ("$referral_code",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
         ],
       ),
       leading:Padding(
         padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
         child:  WidgetHelper().myPress((){},CircleAvatar(
-          backgroundImage:NetworkImage('https://img.pngio.com/avatar-icon-png-105-images-in-collection-page-3-avatarpng-512_512.png',scale: 1.0),
+          backgroundImage:NetworkImage(img,scale: 1.0),
           child: Align(
             alignment: Alignment.bottomRight,
             child: Icon(AntDesign.cloudupload,size: 15,color: Colors.grey),
@@ -93,12 +96,10 @@ class _AppBarNoButtonState extends State<AppBarNoButton>{
   }
 }
 
-
 class ModalQr extends StatefulWidget {
   @override
   _ModalQrState createState() => _ModalQrState();
 }
-
 class _ModalQrState extends State<ModalQr> {
   @override
   Widget build(BuildContext context) {
@@ -137,3 +138,5 @@ class _ModalQrState extends State<ModalQr> {
 
   }
 }
+
+

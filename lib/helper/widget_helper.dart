@@ -58,13 +58,35 @@ class WidgetHelper{
       ),
     );
   }
+  noDataWidget(BuildContext context){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          textQ("Data Tidak Tersedia",12,Constant().darkMode,FontWeight.bold),
+        ],
+      ),
+    );
+  }
   textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=1.0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
     return RichText(
         textAlign: textAlign,
         maxLines: maxLines,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
-
+        text: TextSpan(
+          text:txt,
+          style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:Constant().fontStyle,fontWeight:fontWeight,),
+        )
+    );
+  }
+  myText(String txt,double size,{Color color,FontWeight fontWeight,double letterSpacing=1.0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
+    return RichText(
+        textAlign: textAlign,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        softWrap: true,
         text: TextSpan(
           text:txt,
           style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:Constant().fontStyle,fontWeight:fontWeight,),

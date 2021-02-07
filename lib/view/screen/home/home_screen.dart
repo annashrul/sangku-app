@@ -1,4 +1,4 @@
-part of 'pages.dart';
+part of '../pages.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 clipper: ArcClipper(),
                                 child: Container(
                                   height:50.0,
-                                  color:Constant().mainColor,
+                                  color:Colors.grey[200],
                                 )
                             )
                           ],

@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 class Constant{
-  final String baseUrl        = 'http://192.168.100.10:3010/';
+  // final String baseUrl        = 'http://192.168.100.10:3010/';
+  final String baseUrl        = 'http://ptnetindo.com:6694/';
   final bool showCode         = true;
   final String versionCode    = '0.0.1';
   final String username       = 'netindo';
@@ -11,6 +12,8 @@ class Constant{
   final String errTimeout     = 'TimeoutException';
   final String errSocket      = 'SocketException';
   final String errExpToken    = 'TokenExpiredError';
+  final String msgConnection    = 'Terjadi Kesalahan Jaringan';
+
   final String localAssets    = 'assets/img/';
   final String localIcon    = 'assets/icon/';
   final String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";
@@ -22,6 +25,7 @@ class Constant{
   final Color secondColor     = Color(0xFF04526B);
   final Color secondDarkColor = Color(0xFFE7F6F8);
   final Color darkMode = Color(0xFF2C2C2C);
+  final Color moneyColor = Color(0xFFFA591D);
 
 
 
