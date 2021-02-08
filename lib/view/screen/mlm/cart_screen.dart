@@ -21,7 +21,7 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   CartModel cartModel;
-  bool isLoading=false,isError=false;
+  bool isLoading=false,isError=false,isErrToken=false;
   String tipe='';
   int total=0;
   Future loadPackageType()async{
@@ -41,6 +41,12 @@ class _CartScreenState extends State<CartScreen> {
     else if(res=='failed'){
       isLoading=false;
       isError=true;
+      setState(() {});
+    }
+    else if(res==Constant().errExpToken){
+      isLoading=false;
+      isError=false;
+      isErrToken=true;
       setState(() {});
     }
     else{

@@ -99,8 +99,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   section2("Keamanan",(){},iconData: AntDesign.lock),
                   section2("FAQ",(){},iconData: AntDesign.questioncircleo),
                   section2("Kebijakan & Keamanan",(){},iconData: AntDesign.infocirlceo),
-                  section2("Alamat",(){},iconData: Entypo.location),
-                  section2("Keluar",(){},iconData: AntDesign.logout),
+                  section2("Alamat",(){
+                    WidgetHelper().myPush(context,AddressScreen());
+                  },iconData: Entypo.location),
+                  section2("Keluar",()async{
+                    await FunctionHelper().logout(context);
+                  },iconData: AntDesign.logout),
 
                 ],
               ),

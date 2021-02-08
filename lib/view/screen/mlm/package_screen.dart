@@ -10,7 +10,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   TabController _tabController;
-  bool isLoading=false,isError=false;
+  bool isLoading=false,isError=false,isErrToken;
   int total=0;
   Future loadCart()async{
     var res=await CartProvider().getCart();
@@ -22,6 +22,15 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     else if(res=='failed'){
       isLoading=false;
       isError=true;
+      setState(() {});
+    }
+    else if(res==Constant().errExpToken){
+      isLoading=false;
+      isError=false;
+      isErrToken=true;
+      WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
+        await FunctionHelper().logout(context);
+      },titleBtn1: "Login");
       setState(() {});
     }
     else{

@@ -26,7 +26,7 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
   int total=0;
   ScrollController controller;
   bool isLoadmore=false;
-  bool isLoading=false,isError=false;
+  bool isLoading=false,isError=false,isErrToken=false;
   PackageModel packageModel;
   Future loadData()async{
     var res = await BaseProvider().getProvider("package?page=1&tipe=${widget.tipe}&perpage=$perpage", packageModelFromJson);
@@ -35,6 +35,15 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
       isError=true;
       isLoadmore=false;
       setState(() {});
+    }
+    else if(res==Constant().errExpToken){
+      isLoading=false;
+      isError=false;
+      isErrToken=true;
+      setState(() {});
+      WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
+        await FunctionHelper().logout(context);
+      },titleBtn1: "Login");
     }
     else{
       if(res is PackageModel){
@@ -70,9 +79,6 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
       }
     }
   }
-
-
-
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
@@ -93,7 +99,7 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return isLoading?PackageLoading():isError?ErrWidget(callback:(){}):packageModel.result.data.length>0?RefreshWidget(
+    return isLoading?PackageLoading():isError?ErrWidget(callback:(){}):isErrToken?Text(''):packageModel.result.data.length>0?RefreshWidget(
       widget: Column(
         children: [
           Expanded(

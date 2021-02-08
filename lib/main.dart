@@ -69,7 +69,6 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final users = await _db.readData(UserTable.SELECT);
     if(users.length==0){
-      // WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
       WidgetHelper().myPushRemove(context, OnboardingScreen());
     }
     else{

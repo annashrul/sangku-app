@@ -42,6 +42,9 @@ class CartProvider{
     if(res==Constant().errSocket||res==Constant().errTimeout){
       return 'error';
     }
+    else if(res==Constant().errExpToken){
+      return Constant().errExpToken;
+    }
     else{
       if(res is CartModel){
         CartModel result=res;

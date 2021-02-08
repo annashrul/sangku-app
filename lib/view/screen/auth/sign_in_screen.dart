@@ -128,7 +128,13 @@ class _SignInScreenState extends State<SignInScreen> {
           "onboarding":"1",
           "exit_app":"0",
         };
-        await _db.insert(UserTable.TABLE_NAME, dataUserToLocal);
+        final users = await _db.readData(UserTable.SELECT);
+        if(users.length>1){
+          await _db.deleteAll(UserTable.TABLE_NAME);
+          await _db.insert(UserTable.TABLE_NAME, dataUserToLocal);
+        }else{
+          await _db.insert(UserTable.TABLE_NAME, dataUserToLocal);
+        }
         Navigator.pop(context);
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
       }

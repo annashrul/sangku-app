@@ -1,3 +1,5 @@
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +7,28 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/user_helper.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 
 class WidgetHelper{
-
+  animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
+    return ShakeAnimatedWidget(
+        enabled: enable,
+        duration: Duration(milliseconds: 1500),
+        shakeAngle: Rotation.deg(z: 10),
+        curve: Curves.linear,
+        child:child
+    );
+  }
+  animScaleWidget(BuildContext context,Widget child,{bool enable=true}){
+    return ScaleAnimatedWidget.tween(
+      enabled: true,
+      duration: Duration(milliseconds: 600),
+      scaleDisabled: 0.5,
+      scaleEnabled: 1,
+      //your widget
+      child: child,
+    );
+  }
   fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
@@ -170,7 +191,7 @@ class WidgetHelper{
         )
     );
   }
-  myPress(Function callback,Widget child,{Color color=Colors.black38}){
+  myPress(Function callback,Widget child,{Color color=Colors.black12}){
     return InkWell(
       highlightColor:color,
       splashColor:color,

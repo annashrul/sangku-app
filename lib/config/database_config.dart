@@ -48,8 +48,8 @@ class DatabaseConfig {
     return result.toList();
   }
 
-
   Future<bool> update(String table, Map<String, Object> data) async {
+    print("DATA $data");
     try{
       final db = await openDB();
       String id = data['id'];
@@ -70,6 +70,13 @@ class DatabaseConfig {
     catch(_){
       return false;
     }
+  }
+  deleteAll(table) async{
+    openDB().then((db) {
+      db.execute("DELETE FROM $table");
+    }).catchError((err) {
+      print("error $err");
+    });
   }
 
 

@@ -25,9 +25,7 @@ class BaseProvider{
         return param(response.body);
       }
       else if(response.statusCode == 400){
-        if(res['name'] == 'TokenExpiredError'){
-          return Constant().errExpToken;
-        }
+        return Constant().errExpToken;
       }
       // else if(res.)
     }on TimeoutException catch (_) {
