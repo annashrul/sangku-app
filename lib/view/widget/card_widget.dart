@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sangkuy/helper/widget_helper.dart';
 
 class CardWidget extends StatelessWidget {
   final Color prefixBadge;
@@ -32,13 +33,14 @@ class CardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.transparent,
       child: InkWell(
+
         onTap: this.onTap,
         child: Card(
-          color: (this.backgroundColor != null)
-              ? this.backgroundColor
-              : Colors.white,
-          margin: const EdgeInsets.all(10.0),
+          elevation: 0.0,
+          color: (this.backgroundColor != null) ? this.backgroundColor : Colors.transparent,
+          margin: const EdgeInsets.all(0.0),
           child: Row(
             children: <Widget>[
               (this.prefixBadge != null)
@@ -69,30 +71,11 @@ class CardWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      (this.title != null)
-                          ? Container(
-                        child: Text(
-                          this.title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0,
-                              color: (this.titleColor != null)
-                                  ? this.titleColor
-                                  : Colors.black),
-                        ),
-                      )
-                          : Container(),
-                      (this.description != null)
-                          ? Container(
-                        child: Text(
-                          this.description,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w100,
-                              fontSize: 10.0,
-                              color: (this.descriptionColor != null)
-                                  ? this.descriptionColor
-                                  : Colors.grey),
-                        ),
+                      (this.title != null) ? Container(
+                        child:WidgetHelper().textQ(title, 12, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)
+                      ): Container(),
+                      (this.description != null)? Container(
+                        child:WidgetHelper().textQ(description, 12, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)
                       )
                           : Container(),
                     ],

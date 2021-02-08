@@ -166,7 +166,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Expanded(
-                flex: 5,
+                flex: 6,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -193,7 +193,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                 ),
               ),
               Expanded(
-                flex: 5,
+                flex: 4,
                 child: FlatButton(
                   onPressed: (){
                     validate();
@@ -208,7 +208,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                       children: [
                         Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
                         SizedBox(width:10.0),
-                        WidgetHelper().textQ("Keranjang", 14, Constant().secondDarkColor, FontWeight.normal),
+                        WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
                       ],
                     ),
                   ),

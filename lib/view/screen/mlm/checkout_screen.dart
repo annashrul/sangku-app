@@ -5,16 +5,21 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
-import 'package:sangkuy/model/member/address/address_model.dart';
+import 'package:sangkuy/model/member/address/address_model.dart' as Prefix1;
+import 'package:sangkuy/model/member/address/address_model.dart' as Prefix2;
+import 'package:sangkuy/model/mlm/bank_model.dart';
 import 'package:sangkuy/model/mlm/cart_model.dart';
 import 'package:sangkuy/model/mlm/kurir_model.dart';
 import 'package:sangkuy/model/mlm/ongkir_model.dart';
 import 'package:sangkuy/provider/address_provider.dart';
+import 'package:sangkuy/provider/bank_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
+import 'package:sangkuy/view/widget/card_widget.dart';
 
 class ChaeckoutScreen extends StatefulWidget {
   @override
@@ -23,7 +28,7 @@ class ChaeckoutScreen extends StatefulWidget {
 
 class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  bool  isLoadingCart=false,isLoadingKurir=false,isLoadingAddress=false,isError=true,isSelectedKurir=false,isPostLoading=false;
+  bool  isLoadingBank=false,isLoadingCart=false,isLoadingKurir=false,isLoadingAddress=false,isError=true,isSelectedKurir=false,isPostLoading=false;
   int idxKurir=0,idxLayanan=0;
   String kurirTitle='';
   String kurirDeskripsi='',service='';
@@ -31,11 +36,45 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   int idxAddress=0;
   int isMainAddress=0;
   String title='',penerima='',noHp='',mainAddress='';
+  String idBank='';
   KurirModel kurirModel;
   CartModel cartModel;
   OngkirModel ongkirModel;
-  AddressModel addressModel;
-
+  Prefix1.AddressModel addressModel;
+  BankModel bankModel;
+  List bank=[];
+  Future loadBank()async{
+    var res=await BankProvider().getBank("page=1");
+    if(res=='error'){
+      isLoadingBank=false;
+      isError=true;
+      setState(() {});
+    }
+    else if(res=='failed'){
+      isLoadingBank=false;
+      isError=true;
+      setState(() {});
+    }
+    else{
+      isLoadingBank=false;
+      isError=false;
+      bank.add({
+        "totalrecords": "2",
+        "id": "",
+        "bank_name": "SALDO UTAMA",
+        "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
+        "acc_name": "100000",
+        "acc_no": "",
+        "tf_code": 0,
+        "created_at": "2020-12-22T03:50:55.000Z",
+        "updated_at": "2020-12-22T03:50:55.000Z"
+      });
+      res['result']['data'].forEach((element) {
+        bank.add(element);
+      });
+      setState(() {});
+    }
+  }
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -105,7 +144,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       setState(() {});
     }
   }
-
   Future getOngkir(kurir)async{
     var res = await BaseProvider().postProvider(
         'transaction/kurir/cek/ongkir',{
@@ -181,9 +219,11 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    isLoadingBank=true;
     isLoadingAddress=true;
     isLoadingCart=true;
     isLoadingKurir=true;
+    loadBank();
     loadKurir();
     loadCart();
     loadAddress();
@@ -193,12 +233,22 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar:WidgetHelper().appBarWithButton(context,"Checkout",(){Navigator.pop(context);},<Widget>[]),
-      body:  isLoadingKurir||isLoadingCart||isLoadingAddress?WidgetHelper().loadingWidget(context):ListView(
-        children: [
-          address(),
-          expedisi(),
-          produk(),
-        ],
+      body:  isLoadingBank||isLoadingKurir||isLoadingCart||isLoadingAddress?WidgetHelper().loadingWidget(context):RefreshWidget(
+        widget: ListView(
+          padding: EdgeInsets.only(bottom: 10.0),
+          children: [
+            address(),
+            expedisi(),
+            produk(),
+            metode(context),
+          ],
+        ),
+        callback: (){
+          setState(() {
+            isLoadingCart=true;
+          });
+          loadCart();
+        },
       ),
       bottomNavigationBar:Container(
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -231,7 +281,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
             // child:Text("abus")
           ),
         )
-
     );
   }
 
@@ -256,16 +305,26 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Entypo.location,size: 20,color:Constant().mainColor),
+
+                      Icon(AntDesign.home,size: 30,color:Constant().mainColor),
                       SizedBox(width:5.0),
-                      WidgetHelper().textQ("Alamat Pengiriman",12,Constant().mainColor, FontWeight.bold),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          WidgetHelper().textQ("Alamat Pengiriman",12,Constant().mainColor, FontWeight.bold),
+                          WidgetHelper().textQ("$title",12,Constant().darkMode, FontWeight.bold),
+                        ],
+                      )
+
+
                     ],
                   ),
                   WidgetHelper().myPress((){
                     WidgetHelper().myModal(context, Container(
                       height: MediaQuery.of(context).size.height/1.2,
                       child: AddressScreen(idx: idxAddress,callback: (val,idx){
-                        Datum datum;
+                        Prefix2.Datum datum;
                         datum = val;
                         title = datum.title;
                         penerima = datum.penerima;
@@ -280,8 +339,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                   }, Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Constant().mainColor,
-                        // border: Border.all(color: Constant().secondColor),
+                        color: Constant().secondColor,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: WidgetHelper().textQ("Pilih alamat lain",10,Constant().secondDarkColor, FontWeight.bold)
@@ -294,19 +352,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color:Colors.grey[200]),
-                        alignment: AlignmentDirectional.topEnd,
-                        child: WidgetHelper().textQ("$title",12, Theme.of(context).hintColor, FontWeight.bold),
-                      )
-                    ],
-                  ),
-                  SizedBox(height:10.0),
                   WidgetHelper().textQ("$penerima ( $noHp )",10,Colors.black87, FontWeight.normal),
                   SizedBox(height:5.0),
                   WidgetHelper().textQ("$mainAddress",10,Colors.black87, FontWeight.normal),
@@ -323,120 +368,63 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       padding: EdgeInsets.only(left:10.0,right:10.0,top:0.0,bottom: 10.0),
       child:Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                border: Border.all(color: Colors.grey[200])
-            ),
-            child: InkWell(
-              onTap: (){
-                WidgetHelper().myModal(context, ModalKurir(
-                    kurirModel: kurirModel,
-                    callback: (idx){
-                      setState(() {
-                        idxKurir = idx;
-                      });
-                      selectedKurir(idx,'');
-                    },
-                    index: idxKurir
-                ));
-                // modalKurir(context);
-              },
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              child: Container(
-                padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        WidgetHelper().textQ("Pilih Kurir",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height: 5.0),
-                        WidgetHelper().textQ('$kurirTitle',10,Constant().darkMode, FontWeight.normal)
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                  ],
-                ),
-              ),
-            ),
+          Row(
+            children: [
+              Icon(AntDesign.car,size: 30,color:Constant().mainColor),
+              SizedBox(width:5.0),
+              WidgetHelper().textQ("Jasa Pengiriman",12,Constant().mainColor, FontWeight.bold),
+            ],
+          ),
+          Divider(),
+          CardWidget(
+            onTap:(){
+              WidgetHelper().myModal(context, ModalKurir(
+                  kurirModel: kurirModel,
+                  callback: (idx){
+                    setState(() {
+                      idxKurir = idx;
+                    });
+                    selectedKurir(idx,'');
+                  },
+                  index: idxKurir
+              ));
+            } ,
+            prefixBadge: Constant().secondColor,
+            title: 'Pilih Kurir',
+            description: '$kurirTitle',
+            descriptionColor: Constant().darkMode,
+            suffixIcon: Icons.arrow_right,
+            backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
+
           ),
           SizedBox(height: 5.0),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                border: Border.all(color: Colors.grey[200])
-            ),
-            child: InkWell(
-              onTap: (){
-                if(kurirTitle!=''){
-                  WidgetHelper().myModal(
-                      context,
-                      ModalLayanan(
-                        ongkirModel: ongkirModel,
-                        callback: (idx){
-                          setState(() {
-                            idxLayanan = idx;
-                          });
-                          selectedLayanan(idx);
-                        },
-                        index: idxLayanan,
-                      )
-                  );
-                }
+          CardWidget(
+            onTap:(){
+              if(kurirTitle!=''){
+                WidgetHelper().myModal(
+                    context,
+                    ModalLayanan(
+                      ongkirModel: ongkirModel,
+                      callback: (idx){
+                        setState(() {
+                          idxLayanan = idx;
+                        });
+                        selectedLayanan(idx);
+                      },
+                      index: idxLayanan,
+                    )
+                );
+              }
+            } ,
+            prefixBadge: Constant().secondColor,
+            title: 'Pilih Layanan',
+            description: '$kurirDeskripsi',
+            descriptionColor: Constant().darkMode,
+            suffixIcon: Icons.arrow_right,
+            backgroundColor: Colors.transparent,
 
-              },
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              child: Container(
-                padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        WidgetHelper().textQ("Pilih Layanan",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height: 5.0),
-                        WidgetHelper().textQ("$kurirDeskripsi",10,Constant().darkMode, FontWeight.normal)
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                  ],
-                ),
-              ),
-            ),
           ),
-          SizedBox(height: 5.0),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                border: Border.all(color: Colors.grey[200])
-            ),
-            child: InkWell(
-              onTap: (){
 
-              },
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              child: Container(
-                padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        WidgetHelper().textQ("Metode Pembayaran",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height: 5.0),
-                        WidgetHelper().textQ("Sentuh dan masukan kode voucher yang kamu punya",10,Constant().darkMode, FontWeight.normal)
-                      ],
-                    ),
-                    Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -445,7 +433,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     return ClipPath(
       clipper: WaveClipperOne(flip: true),
       child: Container(
-        padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0,right:15.0),
+        padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0,right:15.0),
         width: double.infinity,
         color: Theme.of(context).focusColor,
         child:Column(
@@ -459,7 +447,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Entypo.list,size: 30,color:Constant().mainColor),
+                      Icon(AntDesign.shoppingcart,size: 30,color:Constant().mainColor),
                       SizedBox(width:5.0),
                       WidgetHelper().textQ("Ringkasan Belanja",12,Constant().mainColor, FontWeight.bold),
                     ],
@@ -556,6 +544,51 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+  Widget metode(BuildContext context){
+    return Container(
+      padding: EdgeInsets.only(left:15.0,right:15.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(AntDesign.wallet,size: 30,color:Constant().mainColor),
+              SizedBox(width:5.0),
+              WidgetHelper().textQ("Metode Pembayaran",12,Constant().mainColor, FontWeight.bold),
+            ],
+          ),
+          Divider(),
+          Container(
+            child: new ListView.separated(
+              addRepaintBoundaries: true,
+              primary: false,
+              shrinkWrap: true,
+              itemCount: bank.length,
+              itemBuilder: (context,index){
+                var val=bank[index];
+                return CardWidget(
+                  onTap:(){
+                    setState(() {
+                      idBank=val['id'];
+                    });
+                  },
+                  prefixBadge: Constant().secondColor,
+                  title: '${val['bank_name']} ${val['id']==''?'':'( ${val['acc_no']} )'}',
+                  description: '${val['id']==''?'Rp '+FunctionHelper().formatter.format(int.parse(val['acc_name']))+' .-':val['acc_name']}',
+                  descriptionColor: val['id']==''?Constant().moneyColor:Constant().darkMode,
+                  suffixIcon:AntDesign.checkcircleo,
+                  suffixIconColor: idBank==val['id']?Colors.black:Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                );
+              },
+              separatorBuilder: (_,i){return(Divider());},
+            ),
+          ),
+        ],
       ),
     );
   }

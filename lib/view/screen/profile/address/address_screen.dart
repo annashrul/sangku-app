@@ -335,8 +335,7 @@ class _ModalFormState extends State<ModalForm> {
       return true;
     }
   }
-
-  Future insertAddress()async{
+  Future storeAddress()async{
     var valid = await validate();
     if(valid==true){
       WidgetHelper().loadingDialog(context);
@@ -350,9 +349,13 @@ class _ModalFormState extends State<ModalForm> {
         "no_hp":"${telpController.text}",
         "ismain":widget.total>0?'0':'1'
       };
-      print(data);
-      var res = await BaseProvider().postProvider("alamat",data);
-      print(res);
+      var res;
+      if(widget.id!=''){
+        res = await BaseProvider().putProvider("alamat/${widget.id}", data);
+      }
+      else{
+        res = await BaseProvider().postProvider("alamat",data);
+      }
       if(res==Constant().errTimeout||res==Constant().errSocket){
         Navigator.pop(context);
         Navigator.pop(context);
@@ -368,32 +371,6 @@ class _ModalFormState extends State<ModalForm> {
           Navigator.pop(context);
           widget.callback('berhasil');
         }
-      }
-    }
-  }
-  Future updateAddress()async{
-    var valid = await validate();
-    if(valid==true){
-      WidgetHelper().loadingDialog(context);
-      final data={
-        "title":"${titleController.text}",
-        "penerima":"${receiverController.text}",
-        "main_address":"$namaJalan,$rt,$rw,$keluarahan,$districtName,$cityName,$provName,$kodePos".toUpperCase(),
-        "kd_prov":"$prov",
-        "kd_kota":"$city",
-        "kd_kec":"$district",
-        "no_hp":"${telpController.text}"
-      };
-      var res = await BaseProvider().putProvider("alamat/${widget.id}", data);
-      if(res==Constant().errTimeout||res==Constant().errSocket){
-        Navigator.pop(context);
-        Navigator.pop(context);
-        widget.callback('gagal');
-      }
-      else{
-        Navigator.pop(context);
-        Navigator.pop(context);
-        widget.callback('berhasil');
       }
     }
   }
@@ -460,7 +437,7 @@ class _ModalFormState extends State<ModalForm> {
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
       // color: Colors.white,
-      child: Column(
+      child: isLoading?WidgetHelper().loadingWidget(context):Column(
         children: [
           Center(
             child: Container(
@@ -486,13 +463,7 @@ class _ModalFormState extends State<ModalForm> {
             title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",12, Theme.of(context).hintColor, FontWeight.bold),
             trailing: InkWell(
                 onTap: ()async{
-
-                  if(widget.id==''){
-                    insertAddress();
-                  }
-                  else{
-                    updateAddress();
-                  }
+                  storeAddress();
                 },
                 child: Container(
                   padding: EdgeInsets.all(7.0),
@@ -507,7 +478,7 @@ class _ModalFormState extends State<ModalForm> {
           ),
           Divider(),
           SizedBox(height:10.0),
-          isLoading?WidgetHelper().loadingWidget(context):Expanded(
+          Expanded(
             child: ListView(
               children: [
                 Container(
