@@ -1,6 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -24,7 +25,6 @@ class WidgetHelper{
   }
   loadingDialog(BuildContext context,{title='SangQu'}){
     return showDialog(
-
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
@@ -47,13 +47,14 @@ class WidgetHelper{
     );
   }
 
-  loadingWidget(BuildContext context,{Color color=Colors.black, String title='Loading ...'}){
+  loadingWidget(BuildContext context,{Color color=Colors.black, String title='SangQu'}){
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SpinKitCubeGrid(size: 51.0, color: Constant().mainColor),
+          SpinKitCubeGrid(size: 85.0, color: Constant().mainColor),
+          textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
         ],
       ),
     );
@@ -64,7 +65,7 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          textQ("Data Tidak Tersedia",12,Constant().darkMode,FontWeight.bold),
+          Image.asset('${Constant().localAssets}no_data.png')
         ],
       ),
     );
@@ -129,11 +130,11 @@ class WidgetHelper{
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{Brightness brightness=Brightness.light}){
     return  AppBar(
       elevation: 1.0,
-      backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
+      backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,16,Colors.black,FontWeight.bold),
+      title:textQ(title,16,Constant().darkMode,FontWeight.bold),
       leading: IconButton(
-        icon: new Icon(Icons.arrow_back_ios),
+        icon: new Icon(AntDesign.back,color: Constant().darkMode),
         onPressed: (){
           callback();
         },

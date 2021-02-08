@@ -10,13 +10,50 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   TabController _tabController;
-
+  bool isLoading=false,isError=false;
+  int total=0;
+  Future loadCart()async{
+    var res=await CartProvider().getCart();
+    if(res=='error'){
+      isLoading=false;
+      isError=true;
+      setState(() {});
+    }
+    else if(res=='failed'){
+      isLoading=false;
+      isError=true;
+      setState(() {});
+    }
+    else{
+      CartModel cartModel=res;
+      setState(() {
+        isLoading=false;
+        isError=false;
+        total = cartModel.result.length;
+      });
+    }
+  }
+  Future postCart(id,qty,tipe)async{
+    WidgetHelper().loadingDialog(context);
+    var res = await CartProvider().postCart(id,qty.toString(),tipe);
+    Navigator.pop(context);
+    if(res=='error'){
+      WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
+    }
+    else if(res=='success'){
+      WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
+      await loadCart();
+    }
+    else{
+      WidgetHelper().notifBar(context,"failed",res);
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
+    loadCart();
   }
 
   @override
@@ -79,6 +116,9 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                   highlightColor:Colors.black38,
                   splashColor:Colors.black38,
                   onPressed: (){
+                    if(total>0){
+                      WidgetHelper().myPushAndLoad(context,CartScreen(),()=>loadCart());
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.only(right: 0.0,top:0),
@@ -94,7 +134,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                           ),
                         ),
                         Container(
-                          decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                          decoration: BoxDecoration(color: total>0?Colors.redAccent:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
                           constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
                         ),
 
@@ -112,10 +152,14 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   Scrollbar(
-                    child: PackageWidget(tipe:'1'),
+                    child: PackageWidget(tipe:'1',callback: (id,qty,tipe){
+                      postCart(id, qty,tipe);
+                    }),
                   ),
                   Scrollbar(
-                    child: PackageWidget(tipe:'ro'),
+                    child: PackageWidget(tipe:'ro',callback: (id,qty,tipe){
+                      postCart(id, qty,tipe);
+                    },),
                   ),
                 ]
             ),

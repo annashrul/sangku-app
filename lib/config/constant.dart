@@ -2,6 +2,7 @@ import 'dart:ui';
 
 class Constant{
   // final String baseUrl        = 'http://192.168.100.10:3010/';
+  final String siteName        = 'SangQu';
   final String baseUrl        = 'http://ptnetindo.com:6694/';
   final bool showCode         = true;
   final String versionCode    = '0.0.1';
@@ -13,7 +14,6 @@ class Constant{
   final String errSocket      = 'SocketException';
   final String errExpToken    = 'TokenExpiredError';
   final String msgConnection    = 'Terjadi Kesalahan Jaringan';
-
   final String localAssets    = 'assets/img/';
   final String localIcon    = 'assets/icon/';
   final String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";

@@ -6,7 +6,8 @@ import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/mlm/package_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
-import 'package:sangkuy/view/screen/package/detail_package_screen.dart';
+import 'package:sangkuy/provider/cart_provider.dart';
+import 'package:sangkuy/view/screen/mlm/detail_package_screen.dart';
 import 'package:sangkuy/view/widget/loading/package_loading.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -14,7 +15,8 @@ import 'error_widget.dart';
 
 class PackageWidget extends StatefulWidget {
   final String tipe;
-  PackageWidget({this.tipe});
+  final Function(String id,int qty,String tipe) callback;
+  PackageWidget({this.tipe,this.callback});
   @override
   _PackageWidgetState createState() => _PackageWidgetState();
 }
@@ -69,6 +71,8 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
     }
   }
 
+
+
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
@@ -103,7 +107,7 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
               itemBuilder: (context,index){
                 var val = packageModel.result.data[index];
                 return WidgetHelper().myPress((){
-                  WidgetHelper().myPush(context,DetailPackageScreen(id:val.id));
+                  WidgetHelper().myPush(context,DetailPackageScreen(id:val.id,tipe: widget.tipe));
                 },Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,9 +143,8 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
                       WidgetHelper().textQ(val.deskripsi,12,Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
                       SizedBox(height:10),
                       MaterialButton(
-                        onPressed: (){
-                          WidgetHelper().loadingDialog(context);
-                          // login();
+                        onPressed:(){
+                          widget.callback(val.id,1,widget.tipe);
                         },
                         child: WidgetHelper().textQ("Keranjang",14,Colors.grey[200],FontWeight.bold),
                         color: Constant().secondColor,

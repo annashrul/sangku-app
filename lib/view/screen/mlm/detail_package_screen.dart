@@ -7,14 +7,19 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/model/mlm/cart_model.dart';
 import 'package:sangkuy/model/mlm/detail_package_model.dart';
-import 'package:sangkuy/model/mlm/package_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/provider/cart_provider.dart';
+import 'package:sangkuy/view/screen/mlm/cart_screen.dart';
+import 'package:sangkuy/view/widget/card_widget.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPackageScreen extends StatefulWidget {
   final String id;
-  DetailPackageScreen({this.id});
+  final String tipe;
+  DetailPackageScreen({this.id,this.tipe});
   @override
   _DetailPackageScreenState createState() => _DetailPackageScreenState();
 }
@@ -22,10 +27,35 @@ class DetailPackageScreen extends StatefulWidget {
 class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TabController _tabController;
-  int _tabIndex = 0;
+  int _tabIndex = 0,qty=1,stock=0,total=0;
   bool isLoading=false,isError=false;
   DetailPackageModel detailPackageModel;
   Future loadData()async{
+    await loadDetail();
+    await loadCart();
+  }
+  Future loadCart()async{
+    var res=await CartProvider().getCart();
+    if(res=='error'){
+      isLoading=false;
+      isError=true;
+      setState(() {});
+    }
+    else if(res=='failed'){
+      isLoading=false;
+      isError=true;
+      setState(() {});
+    }
+    else{
+      CartModel cartModel = res;
+      setState(() {
+        isLoading=false;
+        isError=false;
+        total = cartModel.result.length;
+      });
+    }
+  }
+  Future loadDetail()async{
     var res = await BaseProvider().getProvider("package/${widget.id}", detailPackageModelFromJson);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       isLoading=false;
@@ -35,8 +65,10 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     else{
       if(res is DetailPackageModel){
         DetailPackageModel result=res;
+        print(result.toJson());
         if(result.status=='success'){
           detailPackageModel = DetailPackageModel.fromJson(result.toJson());
+          stock=int.parse(detailPackageModel.result.stock);
           isLoading=false;
           isError=false;
           setState(() {});
@@ -47,6 +79,57 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
           setState(() {});
         }
       }
+    }
+  }
+  Future postCart()async{
+    WidgetHelper().loadingDialog(context);
+    var res = await CartProvider().postCart(widget.id,qty.toString(),widget.tipe);
+    Navigator.pop(context);
+    if(res=='error'){
+      WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
+    }
+    else if(res=='success'){
+      await loadCart();
+      WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
+    }
+    else{
+      WidgetHelper().notifBar(context,"failed",res);
+    }
+  }
+  Future validate()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final packageType=prefs.getString("packageType");
+    if(qty<1){
+      WidgetHelper().notifBar(context,"failed","qty tidak boleh kurang dari 1");
+    }
+    else{
+      if(packageType!=widget.tipe&&packageType!=null){
+        WidgetHelper().notifDialog(context,"Informasi !","ada paket ${widget.tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
+          Navigator.pop(context);
+        }, ()async{
+          Navigator.pop(context);
+          postCart();
+        });
+      }else{
+        postCart();
+      }
+    }
+  }
+  void addQty(){
+    if(qty<stock){
+      setState(() {
+        qty+=1;
+      });
+    }else{
+      WidgetHelper().notifBar(context,"failed","stock hanya tersedia $stock lagi");
+    }
+
+  }
+  void minQty(){
+    if(qty>1){
+      setState(() {
+        qty-=1;
+      });
     }
   }
   _handleTabSelection() {
@@ -65,6 +148,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("TOTAL CART $total");
     _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
     isLoading=true;
@@ -75,6 +159,65 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     return Scaffold(
       key: _scaffoldKey,
       body: isLoading?WidgetHelper().loadingWidget(context):buildContent(context),
+        bottomNavigationBar: isLoading?Text(''):Container(
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          color: Constant().moneyColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FlatButton(
+                        onPressed: () {
+                          minQty();
+                        },
+                        padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                        color: Constant().moneyColor,
+                        child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
+                      // child:Text("abus")
+                    ),
+                    WidgetHelper().textQ("${qty}", 14, Constant().secondDarkColor, FontWeight.bold),
+                    FlatButton(
+                        onPressed: () {
+                          addQty();
+                        },
+                        padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                        color: Constant().moneyColor,
+                        child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
+                      // child:Text("abus")
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 5,
+                child: FlatButton(
+                  onPressed: (){
+                    validate();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                    decoration: BoxDecoration(
+                        color: Constant().secondColor
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
+                        SizedBox(width:10.0),
+                        WidgetHelper().textQ("Keranjang", 14, Constant().secondDarkColor, FontWeight.normal),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+
     );
   }
   Widget buildContent(BuildContext context){
@@ -101,6 +244,9 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                     highlightColor:Colors.black38,
                     splashColor:Colors.black38,
                     onPressed: (){
+                      if(total>0){
+                        WidgetHelper().myPushAndLoad(context, CartScreen(), ()=>loadCart());
+                      }
                     },
                     child: Container(
                       padding: EdgeInsets.only(right: 0.0,top:0),
@@ -116,7 +262,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                             ),
                           ),
                           Container(
-                            decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                            decoration: BoxDecoration(color: total>0?Colors.redAccent:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
                             constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
                           ),
                         ],
@@ -190,22 +336,6 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                             ],
                           ),
                         ),
-                        // ListTile(
-                        //   title: WidgetHelper().textQ("${detailPackageModel.result.title}",14,Constant().darkMode,FontWeight.bold),
-                        //   subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailPackageModel.result.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
-                        //   trailing: Column(
-                        //     children: [
-                        //       CachedNetworkImage(
-                        //         height: 40,
-                        //         imageUrl:detailPackageModel.result.badge,
-                        //         fit:BoxFit.contain,
-                        //         placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                        //         errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                        //       ),
-                        //       WidgetHelper().textQ("${detailPackageModel.result.kategori}",10,Constant().darkMode,FontWeight.normal),
-                        //     ],
-                        //   ),
-                        // ),
                         ClipPath(
                           clipper: WaveClipperOne(flip: true),
                           child: Container(
@@ -268,27 +398,10 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                               var val=detailPackageModel.result.detail[index];
                               return Container(
                                 padding: EdgeInsets.all(15.0),
-                                // color: Theme.of(context).focusColor.withOpacity(0.1),
-                                // child: ListTile(
-                                //
-                                //   onTap: (){},
-                                //   title: WidgetHelper().textQ(val.barang,12,Constant().darkMode,FontWeight.bold),
-                                //   subtitle: WidgetHelper().textQ("Satuan : ${val.satuan}",10,Constant().darkMode,FontWeight.bold),
-                                // ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(color:Colors.black,width: 2.0,height:10.0),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        WidgetHelper().textQ(val.barang,12,Constant().darkMode,FontWeight.bold),
-                                        WidgetHelper().textQ("Satuan : ${val.satuan}",10,Constant().darkMode,FontWeight.bold),
-                                      ],
-                                    )
-                                  ],
+                                child: CardWidget(
+                                  prefixBadge: Constant().secondColor,
+                                  title: val.barang,
+                                  description: 'satuan : ${val.satuan}, Qty : ${val.qty}, Berat : ${val.berat}',
                                 ),
                               );
                             },
@@ -320,7 +433,6 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
         StretchMode.blurBackground,
         StretchMode.fadeTitle
       ],
-
       collapseMode: CollapseMode.parallax,
       background: Builder(
         builder: (BuildContext context) {
@@ -333,8 +445,6 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
               placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
               errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
             ),
-            // height: 100,
-
           );
         },
       ),

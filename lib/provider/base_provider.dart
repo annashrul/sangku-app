@@ -56,7 +56,6 @@ class BaseProvider{
         return jsonDecode(request.body);
       }
       else if(request.statusCode==400){
-
         return General.fromJson(jsonDecode(request.body));
       }
     } on TimeoutException catch (_) {
@@ -102,7 +101,7 @@ class BaseProvider{
         'username': Constant().username,
         'password': Constant().password,
         'myconnection':Constant().connection,
-        "HttpHeaders.contentTypeHeader": "application/json"
+        // "HttpHeaders.contentTypeHeader": "application/json"
       };
       String baseUrl = "${Constant().baseUrl}$url";
       final request = await client.delete(
