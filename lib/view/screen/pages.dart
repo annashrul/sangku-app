@@ -17,8 +17,11 @@ import 'package:sangkuy/model/mlm/detail_package_model.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/auth/sign_in_screen.dart';
 import 'package:sangkuy/view/screen/mlm/cart_screen.dart';
+import 'package:sangkuy/view/screen/mlm/history/history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/widget/appbar_widget.dart';
+import 'package:sangkuy/view/widget/detail_scaffold.dart';
+import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:sangkuy/view/widget/package_widget.dart';
 
 part 'profile/profile_screen.dart';

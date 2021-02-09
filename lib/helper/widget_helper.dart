@@ -10,6 +10,36 @@ import 'package:sangkuy/helper/user_helper.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 
 class WidgetHelper{
+  myStatus(BuildContext context, int param){
+    Color color;
+    String txt="";
+    if(param==0){
+      color = Colors.red;
+      txt = "Belum dibayar";
+    }
+    if(param==1){
+      color = Color(0xFFF7AD17);
+      txt = "Menunggu konfirmasi";
+    }
+    if(param==2){
+      color = Color(0xFF1cbac8);
+      txt = "Barang sedang dikemas";
+    }
+    if(param==3){
+      color = Colors.greenAccent;
+      txt = "Dikirim";
+    }
+    if(param==4){
+      color = Colors.green;
+      txt = "Selesai";
+    }
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:color),
+      child: WidgetHelper().textQ(txt, 10,Colors.white,FontWeight.bold),
+    );
+  }
+
   animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
     return ShakeAnimatedWidget(
         enabled: enable,
@@ -153,9 +183,9 @@ class WidgetHelper{
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,16,Constant().darkMode,FontWeight.bold),
+      title:textQ(title,16,Colors.grey,FontWeight.bold),
       leading: IconButton(
-        icon: new Icon(AntDesign.back,color: Constant().darkMode),
+        icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){
           callback();
         },
@@ -163,12 +193,11 @@ class WidgetHelper{
       actions:widget,// status bar brightness
     );
   }
-  appBarNoButton(BuildContext context,String title,List<Widget> widget,{Brightness brightness=Brightness.light}){
+  appBarNoButton(BuildContext context,String title,List<Widget> widget){
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white, // status bar color
-      brightness: brightness,
-      title:textQ(title,16,Colors.black,FontWeight.bold),
+      title:textQ(title,16,Colors.grey,FontWeight.bold),
       elevation: 0,
       leading:Padding(
         padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
@@ -179,6 +208,56 @@ class WidgetHelper{
       actions:widget,
     );
   }
+  appBarWithTab(BuildContext context,TabController tabController, title,Map<String,dynamic> lbl,String label,Function(String lbl) callback,{Widget leading,String description='', List<Widget> widget, ImageProvider<dynamic> imageProvider}){
+    List<Tab> tab = new List();
+    lbl.forEach((key, value) {
+      tab.add(Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(0), color:label==key?Constant().mainColor:Constant().secondColor),
+            child: Align(
+              alignment: Alignment.center,
+              child: WidgetHelper().myText(value,12,color:Colors.white,fontWeight: FontWeight.bold),
+            ),
+          ),
+        ));
+    });
+
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: Colors.white, // status bar color
+      brightness: Brightness.light,
+      title:Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          WidgetHelper().textQ("$title",16,Colors.black,FontWeight.bold,letterSpacing: 3.0),
+          if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
+
+          // WidgetHelper().textQ("MB5711868825",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
+        ],
+      ),
+      // title:textQ(title,18,Colors.black,FontWeight.bold),
+      leading: leading,
+      bottom: TabBar(
+          onTap:callback(label),
+          controller: tabController,
+          indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:Colors.transparent),
+          indicatorColor: Colors.green,
+          indicatorSize: TabBarIndicatorSize.label,
+          labelColor: Colors.green,
+          unselectedLabelColor: Colors.grey[400],
+          indicatorWeight: 2,
+          labelPadding: EdgeInsets.symmetric(horizontal: 0),
+          labelStyle: TextStyle(fontWeight:FontWeight.bold,color: Colors.white, fontFamily:Constant().fontStyle,fontSize:14),
+          tabs: tab
+      ),
+      actions:widget,// status bar brightness
+    );
+
+
+  }
+
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
@@ -279,5 +358,30 @@ class WidgetHelper{
       dismissDirection: FlushbarDismissDirection.HORIZONTAL,
       messageText: textQ(desc,12,Constant().secondDarkColor, FontWeight.bold),
     )..show(context);
+  }
+
+  myCart(BuildContext context,Function callback,Color color){
+    return FlatButton(
+        padding: EdgeInsets.all(0.0),
+        highlightColor:Colors.black38,
+        splashColor:Colors.black38,
+        onPressed:callback,
+        child: Container(
+          padding: EdgeInsets.only(right: 0.0,top:0),
+          child: Stack(
+            alignment: AlignmentDirectional.topEnd,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: Icon(AntDesign.shoppingcart, color:Constant().mainColor, size: 28,),
+              ),
+              Container(
+                decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
+                constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+              ),
+            ],
+          ),
+        )
+    );
   }
 }

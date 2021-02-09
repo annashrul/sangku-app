@@ -23,6 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return RefreshWidget(
+      widget: buildContent(context),
+      callback: (){},
+    );
+  }
+  Widget buildItems(BuildContext context) {
+    return RefreshWidget(
       widget: CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
@@ -45,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Offstage(
                   offstage: false,
                   child: Container(
-
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -189,4 +194,229 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
+  Widget buildContent(BuildContext context){
+    return SafeArea(
+      child: Container(
+        child: DetailScaffold(
+            hasPinnedAppBar: true,
+            expandedHeight:90,
+            slivers: <Widget>[
+              SliverAppBar(
+                floating: false,
+                pinned: true,
+                expandedHeight: 90.0,
+                flexibleSpace: HeaderWidget(),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  switch (index) {
+                    case 0:
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: <Widget>[
+                            CircleImage(
+                              key: Key("profile"),
+                              image: Constant().localAssets+"bg_auth.png",
+                              size: 50.0,
+                              padding: 0.0,
+                            ),
+                            SizedBox(
+                              width: 16,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                WidgetHelper().textQ("Annashrul Yusuf",10,Constant().darkMode,FontWeight.bold),
+                                const SizedBox(
+                                  height: 2,
+                                ),
+                                WidgetHelper().textQ("Rp 1,000,000 .-",14,Constant().moneyColor,FontWeight.bold),
+
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                WidgetHelper().textQ("MB5711868825",10,Constant().darkMode,FontWeight.bold),
+
+                              ],
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Container(),
+                            ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                color: Colors.black12,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.description,
+                                        size: 16,
+                                        color: Colors.black54,
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text(
+                                        "Silver",
+                                        style: TextStyle(color: Colors.black87, fontSize: 10),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    case 1:
+                      return Divider(thickness: 10.0,);
+                    case 2:
+                      return  Container(
+                        padding: EdgeInsets.only(top:10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              child: StaggeredGridView.countBuilder(
+                                shrinkWrap: true,
+                                primary: false,
+                                crossAxisCount: 5,
+                                itemCount:  data.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return WidgetHelper().myPress((){},
+                                      Container(
+                                        padding: EdgeInsets.only(left:10.0,right:10.0,bottom: 10.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 0),
+                                                child:CachedNetworkImage(
+                                                  imageUrl:data[index],
+                                                  width: double.infinity ,
+                                                  fit:BoxFit.scaleDown,
+                                                  placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
+                                                  errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
+                                                )
+                                            ),
+                                            SizedBox(height:5.0),
+                                            WidgetHelper().textQ("Pulsa",10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
+                                          ],
+                                        ),
+                                      ),
+                                      color: Colors.black38
+                                  );
+                                },
+                                staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+                                mainAxisSpacing: 20.0,
+                                crossAxisSpacing: 20.0,
+                              ),
+                            ),
+                            WidgetHelper().myPress((){},ListTile(
+                              contentPadding: EdgeInsets.only(left:10.0,right:10.0),
+                              leading: Icon(AntDesign.profile,size: 40.0,color:Constant().mainColor),
+                              title: WidgetHelper().textQ("Berita Terbaru",12,Colors.black,FontWeight.bold),
+                              subtitle:WidgetHelper().textQ("kumpulan berita terbaru seputar SanQu",10,Colors.grey[400],FontWeight.normal),
+                              trailing: Icon(AntDesign.doubleright,size:15.0),
+                            ))
+
+                          ],
+                        ),
+                      );
+                    case 3:
+                      int maxList = 5;
+                      return Container(
+                        height: 200,
+                        child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                            itemCount: 10 > maxList ? (maxList + 1) : 10,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                borderRadius: BorderRadius.circular(4.0),
+                                onTap: () {
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black12,
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  width: getWidth(context) * 0.78,
+                                  height: getWidth(context) * 0.6,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+                                        child: Image.network(
+                                          'https://allrelease.id/wp-content/uploads/2020/03/Telkomsel-Tanggap-Covid-19.jpg',
+                                          fit: BoxFit.cover,
+                                          width: getWidth(context) * 0.78,
+                                          height: getWidth(context) * 0.28,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 4),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(10),
+                                          child: Container(
+                                            color: Constant().moneyColor,
+                                            padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
+                                            child:WidgetHelper().textQ("Pengumuman",10,Constant().secondDarkColor,FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
+                                          child:WidgetHelper().textQ("MerdekaPilih hadiah undian yang Anda inginkan",12,Constant().darkMode,FontWeight.normal,maxLines: 2),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },separatorBuilder: (context,index){return SizedBox(width: 10);},
+                            ),
+                      );
+                    case 4:
+                      return Container();
+                    case 5:
+                      return Container();
+                    case 6:
+                      return Container();
+                    case 7:
+                      return Container();
+                    case 8:
+                      return Container();
+                    case 9:
+                      return Container();
+                    default:
+                      return Container();
+                  }
+
+                }, childCount: 10),
+              ),
+            ]
+        ),
+      ),
+    );
+  }
+}
+
+double getWidth(BuildContext context){
+  return MediaQuery.of(context).size.width;
+}
+
+double getHeight(BuildContext context){
+  return MediaQuery.of(context).size.height;
 }

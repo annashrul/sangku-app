@@ -40,9 +40,9 @@ class _IndexScreenState extends State<IndexScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
         child: Scaffold(
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           key: scaffoldKey,
-          appBar:widget.currentTab == 1?null:AppBarNoButton(),
+          // appBar:widget.currentTab == 1?null:AppBarNoButton(),
           body: PageStorage(
             child: currentScreen,
             bucket: bucket,
@@ -50,12 +50,6 @@ class _IndexScreenState extends State<IndexScreen> {
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
-            // child: SvgPicture.asset(
-            //   Constant().localIcon+"Icon_Utama_Home_Warna.svg",
-            //   height: 30,
-            //   width: 30,
-            //   color: widget.currentTab == 2 ? Colors.white : Constant().mainColor,
-            // ),
             child:widget.currentTab == 2 ? SvgPicture.asset(
               Constant().localIcon+"Icon_Utama_Home_Warna.svg",
               height: 30,
@@ -205,7 +199,7 @@ class _IndexScreenState extends State<IndexScreen> {
   }
   Future<bool> _onWillPop() async {
     return (
-      WidgetHelper().notifDialog(context,"Informasi","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.of(context).pop(false);},(){SystemNavigator.pop();})
+      WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.of(context).pop(false);},(){SystemNavigator.pop();})
     ) ?? false;
   }
 

@@ -104,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Daftar Belanjaan", (){
+      appBar: WidgetHelper().appBarWithButton(context,"Ringkasan Belanja", (){
         Navigator.pop(context);
       }, <Widget>[]),
       body: isLoading?WidgetHelper().loadingWidget(context):isError?ErrWidget(callback: (){
@@ -113,12 +113,14 @@ class _CartScreenState extends State<CartScreen> {
         });
         loadCart();
       }):cartModel.result.length>0?RefreshWidget(
-        widget: ListView.builder(
+        widget: ListView.separated(
+            padding: EdgeInsets.all(0.0),
             itemCount: cartModel.result.length,
             itemBuilder: (context,index){
               var val=cartModel.result[index];
               return buildContent(context, index,val.id,val.idPaket,val.foto,val.title,val.harga,val.berat,val.qty);
-            }
+            },
+            separatorBuilder: (context,index){return Divider();},
         ),
         callback: (){
           setState(() {
@@ -167,7 +169,7 @@ class _CartScreenState extends State<CartScreen> {
       },
       Container(
           color: Theme.of(context).focusColor.withOpacity(0.1),
-          padding: EdgeInsets.all(10.0),
+          padding: EdgeInsets.only(top:10.0,bottom: 10.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -181,7 +183,7 @@ class _CartScreenState extends State<CartScreen> {
                   });
                 },
                 iconSize: 20,
-                padding: EdgeInsets.symmetric(horizontal: 5),
+                padding: EdgeInsets.symmetric(horizontal: 0),
                 icon: Icon(AntDesign.delete),
                 color:Constant().mainColor,
               ),
@@ -190,8 +192,9 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     CachedNetworkImage(
                       height: 50,
+                      width: 50,
                       imageUrl: image,
-                      fit:BoxFit.fill,
+                      fit:BoxFit.contain,
                       placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
                       errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
                     ),

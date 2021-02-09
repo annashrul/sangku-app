@@ -305,7 +305,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       Icon(AntDesign.home,size: 30,color:Constant().mainColor),
                       SizedBox(width:5.0),
                       Column(
@@ -316,8 +315,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                           WidgetHelper().textQ("$title",12,Constant().darkMode, FontWeight.bold),
                         ],
                       )
-
-
                     ],
                   ),
                   WidgetHelper().myPress((){

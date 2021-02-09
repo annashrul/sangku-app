@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -119,22 +120,17 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Visibility(
-                        child: Container(
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(0.0),
-                            title: WidgetHelper().textQ(val.title,12,Constant().darkMode,FontWeight.bold),
-                            subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
-                            trailing: widget.tipe=='1'?CachedNetworkImage(
-                              imageUrl:val.badge,
-                              fit:BoxFit.contain,
-                              placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-
-                              errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                            ):Text(''),
-                          ),
-                        ),
-                        visible: false,
+                      ListTile(
+                        contentPadding: EdgeInsets.all(0.0),
+                        title: WidgetHelper().textQ(val.title,12,Constant().darkMode,FontWeight.bold),
+                        subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
+                        trailing: widget.tipe=='1'?CachedNetworkImage(
+                          width: 40,
+                          imageUrl:val.badge,
+                          fit:BoxFit.contain,
+                          placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width:20,),
+                          errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width:20,),
+                        ):Text(''),
                       ),
                       CachedNetworkImage(
                         imageUrl:val.foto,
@@ -148,20 +144,36 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
 
                       WidgetHelper().textQ(val.deskripsi,12,Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
                       SizedBox(height:10),
-                      MaterialButton(
-                        onPressed:(){
+                      FlatButton(
+                        padding: EdgeInsets.all(10.0),
+                        color: Constant().moneyColor,
+                        onPressed: (){
                           widget.callback(val.id,1,widget.tipe);
                         },
-                        child: WidgetHelper().textQ("Keranjang",14,Colors.grey[200],FontWeight.bold),
-                        color: Constant().secondColor,
-                        elevation: 0,
-                        minWidth: 400,
-                        height: 50,
-                        textColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
+                            SizedBox(width:10.0),
+                            WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
+                          ],
                         ),
-                      ),
+                      )
+                      // MaterialButton(
+                      //   onPressed:(){
+                      //     widget.callback(val.id,1,widget.tipe);
+                      //   },
+                      //   child: WidgetHelper().textQ("Keranjang",14,Colors.grey[200],FontWeight.bold),
+                      //   color: Constant().secondColor,
+                      //   elevation: 0,
+                      //   minWidth: 400,
+                      //   height: 50,
+                      //   textColor: Colors.white,
+                      //   shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(10)
+                      //   ),
+                      // ),
                     ],
                   ),
                 ));

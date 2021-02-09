@@ -159,64 +159,58 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     return Scaffold(
       key: _scaffoldKey,
       body: isLoading?WidgetHelper().loadingWidget(context):buildContent(context),
-        bottomNavigationBar: isLoading?Text(''):Container(
-          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          color: Constant().moneyColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Expanded(
-                flex: 6,
+      bottomNavigationBar: isLoading?Text(''):Container(
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        color: Constant().moneyColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                FlatButton(
+                    onPressed: () {
+                      minQty();
+                    },
+                    padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                    color: Constant().moneyColor,
+                    child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
+                  // child:Text("abus")
+                ),
+                WidgetHelper().textQ("${qty}", 12, Constant().secondDarkColor, FontWeight.bold),
+                FlatButton(
+                    onPressed: () {
+                      addQty();
+                    },
+                    padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+                    color: Constant().moneyColor,
+                    child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
+                  // child:Text("abus")
+                ),
+              ],
+            ),
+            FlatButton(
+              onPressed: (){
+                validate();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                decoration: BoxDecoration(
+                    color: Constant().secondColor
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FlatButton(
-                        onPressed: () {
-                          minQty();
-                        },
-                        padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-                        color: Constant().moneyColor,
-                        child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
-                      // child:Text("abus")
-                    ),
-                    WidgetHelper().textQ("${qty}", 14, Constant().secondDarkColor, FontWeight.bold),
-                    FlatButton(
-                        onPressed: () {
-                          addQty();
-                        },
-                        padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-                        color: Constant().moneyColor,
-                        child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
-                      // child:Text("abus")
-                    ),
+                    Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
+                    SizedBox(width:10.0),
+                    WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
                   ],
                 ),
               ),
-              Expanded(
-                flex: 4,
-                child: FlatButton(
-                  onPressed: (){
-                    validate();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Constant().secondColor
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
+            ),
+          ],
+        ),
+      )
 
     );
   }
@@ -239,36 +233,11 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                 onPressed: () => Navigator.pop(context,false),
               ),
               actions: <Widget>[
-                FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: (){
-                      if(total>0){
-                        WidgetHelper().myPushAndLoad(context, CartScreen(), ()=>loadCart());
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(right: 0.0,top:0),
-                      child: Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 0),
-                            child: Icon(
-                              AntDesign.shoppingcart,
-                              color:Constant().mainColor,
-                              size: 28,
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(color: total>0?Colors.redAccent:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
-                            constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
-                          ),
-                        ],
-                      ),
-                    )
-                )
+                WidgetHelper().myCart(context, (){
+                  if(total>0){
+                    WidgetHelper().myPushAndLoad(context,CartScreen(),()=>loadCart());
+                  }
+                }, total>0?Colors.redAccent:Colors.transparent)
               ],
               // backgroundColor: Theme.of(context).primaryColor,
               expandedHeight: 300,
@@ -277,7 +246,6 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
               bottom: TabBar(
                   controller: _tabController,
                   indicatorSize: TabBarIndicatorSize.label,
-
                   labelPadding: EdgeInsets.symmetric(horizontal: 0),
                   labelColor: Colors.black,
                   indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:Colors.transparent),
@@ -341,7 +309,6 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                           child: Container(
                             padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0),
                             width: double.infinity,
-                            // color: Theme.of(context).focusColor.withOpacity(0.1),
                             color: Constant().secondColor,
                             child:WidgetHelper().textQ("${detailPackageModel.result.deskripsi}",12,Constant().secondDarkColor,FontWeight.normal,maxLines: 100),
                           ),

@@ -114,6 +114,7 @@ class _AddressScreenState extends State<AddressScreen> {
     isLoading=true;
     controller = new ScrollController()..addListener(_scrollListener);
     loadData();
+    print(widget.idx);
 
   }
 
@@ -173,11 +174,14 @@ class _AddressScreenState extends State<AddressScreen> {
         itemBuilder: (context,index){
           final val=listAddressModel.result.data[index];
           return WidgetHelper().myPress((){
-            setState(() {
-              widget.idx=index;
-            });
-            print(widget.idx);
-            widget.callback(val,index);
+            if(widget.idx!=null){
+              setState(() {
+                widget.idx=index;
+              });
+              print(widget.idx);
+              widget.callback(val,index);
+            }
+
           }, ClipPath(
             clipper: WaveClipperOne(flip: true),
             child: Container(

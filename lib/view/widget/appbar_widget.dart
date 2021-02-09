@@ -6,7 +6,9 @@ import 'package:sangkuy/helper/widget_helper.dart';
 
 
 class AppBarNoButton extends StatefulWidget implements PreferredSizeWidget {
-  AppBarNoButton({Key key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
+  final PreferredSizeWidget bottom;
+  final List<Widget> widget;
+  AppBarNoButton({Key key,this.bottom,this.widget}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
 
   @override
   final Size preferredSize; // default is 56.0
@@ -17,7 +19,6 @@ class AppBarNoButton extends StatefulWidget implements PreferredSizeWidget {
 
 class _AppBarNoButtonState extends State<AppBarNoButton>{
   String name='';
-  // ignore: non_constant_identifier_names
   String referral_code='';
   String img='';
   Future loadData()async{
@@ -40,10 +41,32 @@ class _AppBarNoButtonState extends State<AppBarNoButton>{
 
   @override
   Widget build(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      bottom: widget.bottom,
+      title:Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          WidgetHelper().textQ("Hai, SangQu",16,Colors.black,FontWeight.bold,letterSpacing: 3.0),
+          WidgetHelper().textQ("MB5711868825",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
+        ],
+      ),
+      leading:Padding(
+        padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
+        child:  WidgetHelper().myPress((){},CircleAvatar(
+          backgroundImage:NetworkImage('https://img.pngio.com/avatar-icon-png-105-images-in-collection-page-3-avatarpng-512_512.png',scale: 1.0),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: Icon(AntDesign.cloudupload,size: 15,color: Colors.grey),
+          ),
+        )),
+      ),
+      actions:widget.widget,
+    );
     return  AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white, // status bar color
-
       elevation: 0,
       title:Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -63,35 +86,9 @@ class _AppBarNoButtonState extends State<AppBarNoButton>{
           ),
         )),
       ),
-      actions: <Widget>[
-        FlatButton(
-          padding: EdgeInsets.all(0.0),
-          highlightColor:Colors.black38,
-          splashColor:Colors.black38,
-          onPressed: (){
-            WidgetHelper().myModal(context,ModalQr());
+      bottom: widget.bottom,
+      actions: widget.widget,
 
-          },
-            child: Container(
-              color: Colors.transparent,
-              padding: EdgeInsets.only(right: 0.0,top:0),
-              child: Stack(
-                alignment: AlignmentDirectional.topEnd,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Icon(
-                      AntDesign.qrcode,
-                      color:Constant().mainColor,
-                      size: 28,
-                    ),
-                  ),
-
-                ],
-              ),
-            )
-        )
-      ],
     );
   }
 }
