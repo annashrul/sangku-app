@@ -5,7 +5,7 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:sangkuy/model/mlm/package_model.dart';
+import 'file:///E:/NETINDO/mobile/sangkuy/lib/model/mlm/package/package_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/mlm/detail_package_screen.dart';

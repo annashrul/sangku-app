@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/secure_code_helper.dart';
+import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/auth/otp_model.dart';
 import 'package:sangkuy/model/general_model.dart';
@@ -72,7 +73,6 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
           },
           child: WidgetHelper().textQ("$timeCounter detik", 12,Colors.white,FontWeight.bold)
       ):FlatButton(
-
           color: Constant().mainColor,
           onPressed: ()async{
             print(widget.data);
@@ -123,7 +123,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
           },
           child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}", 12,Colors.white,FontWeight.bold)
       ),
-      body: widget.param=='otp'?SecureCodeHelper(
+      body: SecureCodeHelper(
           showFingerPass: false,
           forgotPin: 'Lupa OTP ? Klik Disini',
           title: "Keamanan",
@@ -149,34 +149,68 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
           onSuccess: () async{
             widget.callback(context,true);
           }
-      ):SecureCodeHelper(
-          showFingerPass: true,
-          forgotPin: 'Lupa PIN ? Klik Disini',
-          title: "Keamanan",
-          passLength: 4,
-          bgImage: "assets/images/bg.jpg",
-          borderColor: Colors.black,
-          showWrongPassDialog: true,
-          wrongPassContent: "Pin Tidak Sesuai",
-          wrongPassTitle: "Opps!",
-          wrongPassCancelButtonText: "Batal",
-          deskripsi: 'Masukan PIN Anda Untuk Melanjutkan Ke Halaman Berikutnya',
-          passCodeVerify: (passcode) async {
-            print(passcode);
-            print(widget.code.split(''));
-            var code = widget.code.split('');
-            for (int i = 0; i < code.length; i++) {
-              if (passcode[i] != int.parse(code[i])) {
-                return false;
-              }
-            }
-            return true;
-          },
-          onSuccess: () async{
-            widget.callback(context,true);
-          }
-      ),
+      )
 
     );
   }
+}
+
+
+class PinScreen extends StatefulWidget {
+  Function(BuildContext context, bool isTrue,String pin) callback;
+  PinScreen({this.callback});
+  @override
+  _PinScreenState createState() => _PinScreenState();
+}
+
+class _PinScreenState extends State<PinScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  
+  String pin='';
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.white,
+        key: _scaffoldKey,
+        bottomNavigationBar:FlatButton(
+            color: Constant().mainColor,
+            onPressed: ()async{
+              
+            },
+            child: WidgetHelper().textQ("LUPA PIN", 12,Colors.white,FontWeight.bold)
+        ),
+        body: SecureCodeHelper(
+            showFingerPass: false,
+            title: "Keamanan",
+            passLength: 6,
+            bgImage: "assets/images/bg.jpg",
+            borderColor:  Constant().mainColor,
+            showWrongPassDialog: true,
+            wrongPassContent: "PIN Tidak Sesuai",
+            wrongPassTitle: "Opps!",
+            wrongPassCancelButtonText: "Batal",
+            deskripsi: 'Masukan PIN Anda demi keamanan bertransaksi',
+            passCodeVerify: (passcode) async {
+              print(passcode);
+
+              // print(widget.code.split(''));
+              // var code = widget.code.split('');
+              String code='';
+              for (int i = 0; i < 6; i++) {
+                code+= passcode[i].toString();
+              }
+              setState(() {
+                pin=code;
+              });
+              return true;
+            },
+            onSuccess: () async{
+              widget.callback(context,true,pin);
+            }
+        )
+
+    );
+  }
+
 }

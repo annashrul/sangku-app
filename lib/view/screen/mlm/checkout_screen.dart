@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -18,6 +20,9 @@ import 'package:sangkuy/provider/address_provider.dart';
 import 'package:sangkuy/provider/bank_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
+import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
+import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
@@ -31,12 +36,12 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   bool  isLoadingBank=false,isLoadingCart=false,isLoadingKurir=false,isLoadingAddress=false,isError=true,isSelectedKurir=false,isPostLoading=false;
   int idxKurir=0,idxLayanan=0;
   String kurirTitle='';
-  String kurirDeskripsi='',service='';
+  String kurirDeskripsi='',service='',kdKec='';
   int grandTotal=0,subTotal=0,cost=0;
   int idxAddress=0;
   int isMainAddress=0;
-  String title='',penerima='',noHp='',mainAddress='';
-  String idBank='';
+  String title='',penerima='',noHp='',mainAddress='',idAddress='';
+  String idBank='-';
   KurirModel kurirModel;
   CartModel cartModel;
   OngkirModel ongkirModel;
@@ -60,7 +65,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       isError=false;
       bank.add({
         "totalrecords": "2",
-        "id": "",
+        "id": "-",
         "bank_name": "SALDO UTAMA",
         "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
         "acc_name": "100000",
@@ -136,23 +141,24 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       addressModel = res;
       isError=false;
       isLoadingAddress=false;
+      idAddress = addressModel.result.data[0].id;
       title = addressModel.result.data[0].title;
       penerima = addressModel.result.data[0].penerima;
       noHp = addressModel.result.data[0].noHp;
       mainAddress = addressModel.result.data[0].mainAddress;
       isMainAddress = addressModel.result.data[0].ismain;
+      kdKec = addressModel.result.data[0].kdKec;
       setState(() {});
     }
   }
   Future getOngkir(kurir)async{
     var res = await BaseProvider().postProvider(
-        'transaction/kurir/cek/ongkir',{
-      "ke":"1470",
+      'transaction/kurir/cek/ongkir',{
+      "ke":kdKec,
       "berat":"100",
       "kurir":"$kurir"
     }
     );
-    print(res);
     if(res == 'TimeoutException'|| res=='SocketException'){
       WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
     }
@@ -206,13 +212,42 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   }
   void getSubtotal(){
     int st = 0;
-    int hrg = 0;
     for(var i=0;i<cartModel.result.length;i++){
-      // hrg = hrg+
       st = st+int.parse(cartModel.result[i].harga)*cartModel.result[i].qty;
     }
-
     subTotal = st;
+  }
+  Future postCheckout(pin)async{
+    final data={
+      "ongkir":cost.toString(),
+      "layanan_pengiriman":kurirTitle.toString(),
+      "alamat":idAddress.toString(),
+      "metode_pembayaran":idBank=='-'?'saldo':'transfer',
+      "id_bank_destination":idBank.toString(),
+      "pin_member":pin.toString()
+    };
+    WidgetHelper().loadingDialog(context);
+    var res = await BaseProvider().postProvider("transaction/checkout", data);
+    Navigator.pop(context);
+    if(res==Constant().errSocket||res==Constant().errTimeout){
+      WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
+    }
+    else if(res==Constant().errExpToken){
+      WidgetHelper().showFloatingFlushbar(context,"failed","token kadaluarsa");
+    }
+    else if(res is General){
+      General result=res;
+      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    }else{
+      print('success $res');
+      // WidgetHelper().showFloatingFlushbar(context,"success","berhasil, anda akan dialihkan ke halaman ");
+
+      WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx: base64.encode(utf8.encode(res['result']['kd_trx']))));
+      // WidgetHelper().notifOneBtnDialog(context,"Berhasil !!!", "terimakasih telah bertransaksi disini",(){
+      //   WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      // });
+    }
+    // print(data);
   }
 
   @override
@@ -255,7 +290,10 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           color: Constant().moneyColor,
           child: FlatButton(
               onPressed: () {
+                WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,pin){
 
+                  postCheckout(pin);
+                }));
               },
               padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
               color: Constant().moneyColor,
@@ -283,7 +321,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
         )
     );
   }
-
 
   Widget address(){
     return ClipPath(
@@ -323,12 +360,16 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                       child: AddressScreen(idx: idxAddress,callback: (val,idx){
                         Prefix2.Datum datum;
                         datum = val;
+                        idAddress=datum.id;
+                        kdKec=datum.kdKec;
                         title = datum.title;
                         penerima = datum.penerima;
                         noHp = datum.noHp;
                         mainAddress = datum.mainAddress;
                         isMainAddress = datum.ismain;
                         idxAddress=idx;
+                        idxKurir=0;
+                        loadKurir();
                         Navigator.of(context).pop();
                         setState(() {});
                       },),
@@ -569,14 +610,13 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 var val=bank[index];
                 return CardWidget(
                   onTap:(){
-                    setState(() {
-                      idBank=val['id'];
-                    });
+                    idBank=val['id'];
+                    setState(() {});
                   },
                   prefixBadge: Constant().secondColor,
-                  title: '${val['bank_name']} ${val['id']==''?'':'( ${val['acc_no']} )'}',
-                  description: '${val['id']==''?'Rp '+FunctionHelper().formatter.format(int.parse(val['acc_name']))+' .-':val['acc_name']}',
-                  descriptionColor: val['id']==''?Constant().moneyColor:Constant().darkMode,
+                  title: '${val['bank_name']} ${val['id']=='-'?'':'( ${val['acc_no']} )'}',
+                  description: '${val['id']=='-'?'Rp '+FunctionHelper().formatter.format(int.parse(val['acc_name']))+' .-':val['acc_name']}',
+                  descriptionColor: val['id']=='-'?Constant().moneyColor:Constant().darkMode,
                   suffixIcon:AntDesign.checkcircleo,
                   suffixIconColor: idBank==val['id']?Colors.black:Colors.transparent,
                   backgroundColor: Colors.transparent,

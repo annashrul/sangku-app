@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -5,8 +7,9 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:sangkuy/model/mlm/history_pembelian_model.dart';
+import 'file:///E:/NETINDO/mobile/sangkuy/lib/model/mlm/history/history_pembelian_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/view/screen/mlm/history/detail_history_pembelian_screen.dart';
 import 'package:sangkuy/view/widget/appbar_widget.dart';
 import 'package:sangkuy/view/widget/loading/history_pembelian_loading.dart';
 
@@ -19,11 +22,14 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   HistoryPemberlianModel historyPemberlianModel;
   ScrollController controller;
-  bool isLoading=false,isError=false,isErrToken;
+  int perpage=10;
+  int total=0;
+  bool isLoading=false,isLoadmore=false,isError=false,isErrToken;
   String lbl='';
   int filterStatus=5;
+
   Future loadData()async{
-    var res = await BaseProvider().getProvider('transaction/penjualan/report?page=1',historyPemberlianModelFromJson);
+    var res = await BaseProvider().getProvider('transaction/penjualan/report?page=1&perpage=$perpage&status=$filterStatus',historyPemberlianModelFromJson);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       setState(() {
         isLoading=false;
@@ -43,7 +49,9 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
         if(result.status=='success'){
           historyPemberlianModel = HistoryPemberlianModel.fromJson(result.toJson());
           setState(() {
+            total = historyPemberlianModel.result.total;
             isLoading=false;
+            isLoadmore=false;
             isError=false;
             isErrToken=false;
           });
@@ -58,16 +66,32 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
       }
     }
   }
+  void _scrollListener() {
+    if (!isLoading) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(perpage<total){
+          setState((){
+            perpage = perpage+perpage;
+            isLoadmore=true;
+          });
+          loadData();
+        }
+      }
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     isLoading=true;
     loadData();
+    controller = new ScrollController()..addListener(_scrollListener);
+
   }
   @override
   void dispose() {
     super.dispose();
+    controller.removeListener(_scrollListener);
   }
   @override
   Widget build(BuildContext context) {
@@ -87,7 +111,9 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                       return  WidgetHelper().myPress((){
                         setState(() {
                           filterStatus = index;
+                          isLoading=true;
                         });
+                        loadData();
                       },
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
@@ -113,24 +139,21 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
               ),
               Expanded(
                 flex: 19,
-                child: isLoading?HistoryPembelianLoading(tot: 10):Column(
+                child: isLoading?HistoryPembelianLoading(tot: 10):Scrollbar(child: Column(
                   children: [
                     Expanded(
                         flex:16,
                         child: ListView.separated(
-                          key: PageStorageKey<String>('HistoryPembelianScreen'),
-                          primary: false,
-                          physics: ScrollPhysics(),
-                          // physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
                           controller: controller,
                           itemCount: historyPemberlianModel.result.data.length,
                           itemBuilder: (context,index){
-                            // print(historyPemberlianModel.result.data[index]);
                             final val=historyPemberlianModel.result.data[index];
                             final valDet = historyPemberlianModel.result.data[index].detail;
                             return WidgetHelper().myPress(
                                     (){
-                                  // WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
+                                  WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:base64.encode(utf8.encode(val.kdTrx))));
                                 },
                                 Container(
                                   decoration: BoxDecoration(
@@ -189,31 +212,37 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                           return Padding(
                                             padding: EdgeInsets.only(left:10,right:10,top:0),
                                             child: Container(
+                                              padding: EdgeInsets.only(right:10.0),
                                               color: key%2==0?Color(0xFFEEEEEE):Colors.white70,
                                               child: Row(
-                                                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain,),
-                                                  SizedBox(width: 10.0),
-                                                  Column(
+                                                  Row(
                                                     children: [
-                                                      Container(
-                                                        width: MediaQuery.of(context).size.width/2,
-                                                        child: WidgetHelper().textQ(valDet[key].paket,12,Colors.black87,FontWeight.normal),
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain,),
+                                                      SizedBox(width: 10.0),
+                                                      Column(
                                                         children: [
-                                                          WidgetHelper().textQ("${valDet[key].qty} ITEM",10,Colors.grey,FontWeight.normal),
-                                                          SizedBox(width: 20.0),
-                                                          WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",10,Constant().moneyColor,FontWeight.normal),
+                                                          Container(
+                                                            width: MediaQuery.of(context).size.width/2,
+                                                            child: WidgetHelper().textQ(valDet[key].paket,12,Colors.black87,FontWeight.normal),
+                                                          ),
+                                                          Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              WidgetHelper().textQ("${valDet[key].qty} ITEM ",10,Colors.grey,FontWeight.normal),
+                                                              SizedBox(width: 20.0),
+                                                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",10,Constant().moneyColor,FontWeight.normal),
+                                                            ],
+                                                          )
                                                         ],
-                                                      )
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                      ),
                                                     ],
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.start,
                                                   ),
+                                                  WidgetHelper().textQ(val.metodePembayaran,10,Colors.grey,FontWeight.normal)
                                                 ],
                                               ),
                                             ),
@@ -235,7 +264,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       WidgetHelper().textQ("Total Belanja",10,Colors.black87,FontWeight.normal),
-                                                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${val.grandTotal}'))}",10,Constant().moneyColor,FontWeight.normal),
+                                                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse('${val.grandTotal}'))} .-",10,Constant().moneyColor,FontWeight.bold),
                                                     ],
                                                   )
                                                 ],
@@ -249,8 +278,8 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                 child: Container(
                                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                                     decoration: BoxDecoration(
-                                                        color: Constant().mainColor,
-                                                        borderRadius: BorderRadius.circular(10.0),
+                                                      color: Constant().mainColor,
+                                                      borderRadius: BorderRadius.circular(10.0),
 
                                                     ),
                                                     child: Center(
@@ -273,14 +302,20 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                           },
                         )
                     ),
-                    // isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
+                    SizedBox(height: isLoadmore?10.0:0.0),
+                    isLoadmore?Expanded(flex:4,child: HistoryPembelianLoading(tot: 1)):Container()
                   ],
-                ),
+                )),
               )
             ],
           ),
         ),
-        callback: (){},
+        callback: (){
+          setState(() {
+            isLoading=true;
+          });
+          loadData();
+        },
       ),
     );
   }

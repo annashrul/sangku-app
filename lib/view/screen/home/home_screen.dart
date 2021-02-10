@@ -1,5 +1,6 @@
 part of '../pages.dart';
 
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -19,188 +20,53 @@ class _HomeScreenState extends State<HomeScreen> {
     'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_0653d8df-0bb4-4714-9267-b987298c0420.png'
   ];
 
+  bool isLoading=false,isError=false,isTokenExp=false;
+  ContentModel contentModel;
+  Future loadNews()async{
+    var res = await ContentProvider().loadData("page=1");
+    if(res=='error' || res=='failed'){
+      setState(() {
+        isLoading=false;
+        isError=true;
+      });
+    }
+    else if(res==Constant().errExpToken){
+      setState(() {
+        isLoading=false;
+        isError=false;
+        isTokenExp=true;
+      });
+    }
+    else{
+      setState(() {
+        contentModel = res;
+        isLoading=false;
+        isError=false;
+        isTokenExp=false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isLoading=true;
+    loadNews();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return RefreshWidget(
-      widget: buildContent(context),
-      callback: (){},
-    );
+    return buildContent(context);
   }
-  Widget buildItems(BuildContext context) {
-    return RefreshWidget(
-      widget: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              stretch: true,
-              onStretchTrigger: (){
-                return;
-              },
-              brightness:Brightness.dark,
-              backgroundColor:Colors.white,
-              snap: true,
-              floating: true,
-              pinned: true,
-              automaticallyImplyLeading: false,
-              expandedHeight: 150,
-              elevation: 0,
-              flexibleSpace: sliderQ(context),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Offstage(
-                  offstage: false,
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Stack(
-                          children: [
-                            Container(
-                              child: StaggeredGridView.countBuilder(
-                                shrinkWrap: true,
-                                primary: false,
-                                crossAxisCount: 5,
-                                itemCount:  data.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return WidgetHelper().myPress(
-                                          (){},
-                                      Container(
-                                        padding: EdgeInsets.all(10.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 0),
-                                                child:CachedNetworkImage(
-                                                  imageUrl:data[index],
-                                                  width: double.infinity ,
-                                                  fit:BoxFit.scaleDown,
-                                                  placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                                                  errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                                                )
-                                            ),
-                                            SizedBox(height:5.0),
-                                            WidgetHelper().textQ("Pulsa",10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
-                                          ],
-                                        ),
-                                      ),
-                                      color: Colors.black38
-                                  );
-                                },
-                                staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-                                mainAxisSpacing: 0.0,
-                                crossAxisSpacing: 20.0,
-                              ),
-                            ),
-                            ClipPath(
-                                clipper: ArcClipper(),
-                                child: Container(
-                                  height:50.0,
-                                  color:Colors.grey[200],
-                                )
-                            )
-                          ],
-                          alignment: Alignment.topCenter,
-                        ),
-                        WidgetHelper().myPress((){},ListTile(
-                          contentPadding: EdgeInsets.only(left:10.0,right:10.0),
-                          leading: Icon(AntDesign.profile,size: 40.0,color:Constant().mainColor),
-                          title: WidgetHelper().textQ("Berita Terbaru",12,Colors.black,FontWeight.bold),
-                          subtitle:WidgetHelper().textQ("kumpulan berita terbaru seputar SanQu",10,Colors.grey[400],FontWeight.normal),
-                          trailing: Icon(AntDesign.doubleright,size:15.0),
-                        ))
-
-                      ],
-                    ),
-                  ),
-                ),
-
-              ]),
-            )
-          ]
-      ),
-      callback: (){},
-    );
-  }
-  Widget sliderQ(BuildContext context){
-    return FlexibleSpaceBar(
-      stretchModes: [
-        StretchMode.zoomBackground,
-        StretchMode.blurBackground,
-        StretchMode.fadeTitle
-      ],
-
-      collapseMode: CollapseMode.parallax,
-      background:  Stack(
-        alignment: AlignmentDirectional.center,
-        children: <Widget>[
-          CarouselSlider(
-              options: CarouselOptions(
-                viewportFraction: 1.0,
-                height: 150,
-                onPageChanged: (index,reason) {
-                  print(index);
-                  setState(() {
-                    // _current=index;
-                  });
-                },
-              ),
-              items:<Widget>[
-                Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                      child:Image.network(
-                        'https://ecs7.tokopedia.net/img/banner/2021/2/1/34631992/34631992_3b1c99e8-70b9-43e1-b225-4deeb3e37556.jpg',
-                        fit: BoxFit.fill,
-                        width:
-                        MediaQuery.of(context).size.width,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-
-                      ),
-                    );
-                  },
-                )
-              ]
-          ),
-          Positioned(
-            top: 130,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:[
-                  Container(
-                    width: 20.0,
-                    height: 3.0,
-                    margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                        color:Theme.of(context).hintColor
-                      ),
-                  )
-                ]
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-
   Widget buildContent(BuildContext context){
     return SafeArea(
-      child: Container(
-        child: DetailScaffold(
+      child: RefreshWidget(
+        widget: DetailScaffold(
             hasPinnedAppBar: true,
             expandedHeight:90,
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: <Widget>[
               SliverAppBar(
                 floating: false,
@@ -321,72 +187,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisSpacing: 20.0,
                               ),
                             ),
-                            WidgetHelper().myPress((){},ListTile(
+                            WidgetHelper().myPress((){
+                              WidgetHelper().myPush(context,NewsScreen());
+                            },ListTile(
                               contentPadding: EdgeInsets.only(left:10.0,right:10.0),
                               leading: Icon(AntDesign.profile,size: 40.0,color:Constant().mainColor),
                               title: WidgetHelper().textQ("Berita Terbaru",12,Colors.black,FontWeight.bold),
                               subtitle:WidgetHelper().textQ("kumpulan berita terbaru seputar SanQu",10,Colors.grey[400],FontWeight.normal),
                               trailing: Icon(AntDesign.doubleright,size:15.0),
                             ))
-
                           ],
                         ),
                       );
                     case 3:
-                      int maxList = 5;
                       return Container(
                         height: 200,
-                        child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                            itemCount: 10 > maxList ? (maxList + 1) : 10,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                borderRadius: BorderRadius.circular(4.0),
-                                onTap: () {
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black12,
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  width: getWidth(context) * 0.78,
-                                  height: getWidth(context) * 0.6,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-                                        child: Image.network(
-                                          'https://allrelease.id/wp-content/uploads/2020/03/Telkomsel-Tanggap-Covid-19.jpg',
-                                          fit: BoxFit.cover,
-                                          width: getWidth(context) * 0.78,
-                                          height: getWidth(context) * 0.28,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 4),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(10),
-                                          child: Container(
-                                            color: Constant().moneyColor,
-                                            padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
-                                            child:WidgetHelper().textQ("Pengumuman",10,Constant().secondDarkColor,FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-                                          child:WidgetHelper().textQ("MerdekaPilih hadiah undian yang Anda inginkan",12,Constant().darkMode,FontWeight.normal,maxLines: 2),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },separatorBuilder: (context,index){return SizedBox(width: 10);},
-                            ),
+                        child: isLoading?AddressLoading(tot: 3):ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          primary: true,
+                          // reverse:true ,
+                          padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                          itemCount: contentModel.result.data.length,
+                          itemBuilder: (context, index) {
+                            return NewsWidget(contentModel: contentModel,idx: index);
+                          },separatorBuilder: (context,index){return SizedBox(width: 10);},
+                        ),
                       );
                     case 4:
                       return Container();
@@ -403,11 +229,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     default:
                       return Container();
                   }
-
                 }, childCount: 10),
               ),
             ]
         ),
+        callback: (){
+          setState(() {
+            isLoading=true;
+          });
+          loadNews();
+        },
       ),
     );
   }

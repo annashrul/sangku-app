@@ -8,7 +8,6 @@ class CartProvider{
   Future postCart(id,qty,tipe)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("packageType", tipe);
-    print("PACKAGE TYPE ${prefs.getString("packageType")}");
     final data={
       "id_paket":id,
       "qty":qty
@@ -25,6 +24,7 @@ class CartProvider{
         return 'success';
       }
     }
+
   }
   Future deleteCart(id)async{
     final data={};

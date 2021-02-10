@@ -8,7 +8,7 @@ import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/mlm/cart_model.dart';
-import 'package:sangkuy/model/mlm/detail_package_model.dart';
+import 'file:///E:/NETINDO/mobile/sangkuy/lib/model/mlm/package/detail_package_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/mlm/cart_screen.dart';
@@ -97,13 +97,12 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     }
   }
   Future validate()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final packageType=prefs.getString("packageType");
+    final package=await FunctionHelper().isPackage();
     if(qty<1){
       WidgetHelper().notifBar(context,"failed","qty tidak boleh kurang dari 1");
     }
     else{
-      if(packageType!=widget.tipe&&packageType!=null){
+      if(package!=widget.tipe&&package!=null){
         WidgetHelper().notifDialog(context,"Informasi !","ada paket ${widget.tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
           Navigator.pop(context);
         }, ()async{

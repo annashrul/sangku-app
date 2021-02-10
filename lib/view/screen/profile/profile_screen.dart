@@ -111,9 +111,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},0,iconData: AntDesign.shoppingcart),
                             section2("Transaksi",(){},1,iconData: AntDesign.wallet),
-                            section2("Transfer",(){},0,iconData: AntDesign.swap),
-                            section2("Deposit",(){},1,iconData: AntDesign.swapleft),
-                            section2("Penarikan",(){},0,iconData: AntDesign.swapright),
+                            section2("Deposit",(){},0,iconData: AntDesign.swapleft),
+                            section2("Penarikan",(){},1,iconData: AntDesign.swapright),
 
 
                           ],
@@ -141,13 +140,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             section2("Data Diri",(){},0,iconData: AntDesign.user),
                             section2("Keamanan",(){},1,iconData: AntDesign.lock),
                             section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},0,iconData: Entypo.location),
-                            section2("FAQ",(){},1,iconData: AntDesign.questioncircleo),
-                            section2("Kebijakan & Keamanan",(){},0,iconData: AntDesign.infocirlceo),
+                            section2("Kebijakan & Keamanan",(){},1,iconData: AntDesign.infocirlceo),
                             section2("Keluar",()async{
                               WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.pop(context);}, ()async{
                                 await FunctionHelper().logout(context);
                               });
-                            },1,iconData: AntDesign.logout),
+                            },0,iconData: AntDesign.logout),
                           ],
                         ),
                       );

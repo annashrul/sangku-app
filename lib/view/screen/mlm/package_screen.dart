@@ -42,10 +42,12 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       });
     }
   }
-  Future postCart(id,qty,tipe)async{
+  Future handleSubmit(id,qty,tipe)async{
+    Navigator.pop(context);
     WidgetHelper().loadingDialog(context);
     var res = await CartProvider().postCart(id,qty.toString(),tipe);
     Navigator.pop(context);
+    print(res);
     if(res=='error'){
       WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
     }
@@ -56,6 +58,21 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     else{
       WidgetHelper().notifBar(context,"failed",res);
     }
+  }
+  Future postCart(id,qty,tipe)async{
+    final package=await FunctionHelper().isPackage();
+    print(package);
+    print(tipe);
+    if(package!=tipe&&package!=null){
+      WidgetHelper().notifDialog(context,"Informasi !","ada paket ${tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
+        Navigator.pop(context);
+      }, ()async{
+        handleSubmit(id,qty,tipe);
+      });
+    }else{
+      handleSubmit(id,qty,tipe);
+    }
+
   }
   @override
   void initState() {
@@ -124,70 +141,6 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         )
     );
   }
-   Widget app(BuildContext context){
-      return AppBarNoButton(
-        bottom: TabBar(
-          indicatorPadding: EdgeInsets.all(0.0),
-          controller: _tabController,
-          indicatorSize: TabBarIndicatorSize.label,
-          indicator: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color:Constant().mainColor,
-                width: 3.0,
-              ),
-            ),
-          ),
-          tabs: [
-
-            Tab(
-              child: Align(
-                alignment: Alignment.center,
-                child: WidgetHelper().textQ("Aktivasi",14,Constant().mainColor,FontWeight.bold),
-              ),
-            ),
-            Tab(
-              child: Align(
-                alignment: Alignment.center,
-                child: WidgetHelper().textQ("Repeat Order ",14,Constant().mainColor,FontWeight.bold),
-              ),
-            ),
-          ]
-      ),widget: [
-        FlatButton(
-            padding: EdgeInsets.all(0.0),
-            highlightColor:Colors.black38,
-            splashColor:Colors.black38,
-            onPressed: (){
-              if(total>0){
-                WidgetHelper().myPushAndLoad(context,CartScreen(),()=>loadCart());
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.only(right: 0.0,top:0),
-              child: Stack(
-                alignment: AlignmentDirectional.topEnd,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Icon(
-                      AntDesign.shoppingcart,
-                      color:Constant().mainColor,
-                      size: 28,
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(color: total>0?Colors.redAccent:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
-                    constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
-                  ),
-
-
-                ],
-              ),
-            )
-        )
-      ],);
-   }
 
   // ignore: non_constant_identifier_names
 

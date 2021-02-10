@@ -49,7 +49,6 @@ class BaseProvider{
           headers: head,
           body:data
       ).timeout(Duration(seconds: Constant().timeout));
-
       if(request.statusCode==200){
         return jsonDecode(request.body);
       }
