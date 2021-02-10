@@ -291,7 +291,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           child: FlatButton(
               onPressed: () {
                 WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,pin){
-
                   postCheckout(pin);
                 }));
               },

@@ -35,11 +35,13 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     }
     else{
       CartModel cartModel=res;
-      setState(() {
-        isLoading=false;
-        isError=false;
-        total = cartModel.result.length;
-      });
+      if(this.mounted){
+        setState(() {
+          isLoading=false;
+          isError=false;
+          total = cartModel.result.length;
+        });
+      }
     }
   }
   Future handleSubmit(id,qty,tipe)async{

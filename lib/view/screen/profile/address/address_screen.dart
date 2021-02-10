@@ -70,13 +70,14 @@ class _AddressScreenState extends State<AddressScreen> {
       },titleBtn1: "Login");
     }
     else{
-      setState(() {
-        listAddressModel = res;
-        isError=false;
-        isLoading=false;
-        total = listAddressModel.result.total;
-      });
-
+      if (this.mounted) {
+        setState(() {
+          listAddressModel = res;
+          isError = false;
+          isLoading = false;
+          total = listAddressModel.result.total;
+        });
+      }
     }
   }
   Future deleteAddress(id)async{
@@ -111,11 +112,21 @@ class _AddressScreenState extends State<AddressScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    isLoading=true;
-    controller = new ScrollController()..addListener(_scrollListener);
-    loadData();
-    print(widget.idx);
+    if (this.mounted) { // check whether the state object is in tree
+        isLoading=true;
+        controller = new ScrollController()..addListener(_scrollListener);
+        loadData();
+        print(widget.idx);
+    }
 
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_scrollListener);
+    isLoading=false;
+    isLoadmore=false;
+    super.dispose();
   }
 
   @override

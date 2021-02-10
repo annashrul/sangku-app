@@ -25,6 +25,7 @@ class HeaderWidget extends StatelessWidget {
               width: 16.0,
             ),
             CircleImage(
+              param:'assets',
               image: Constant().localAssets+"logo.png",
               size: 30.0,
               padding: 1.0,
@@ -82,12 +83,15 @@ class HeaderWidget extends StatelessWidget {
   }
 }
 
+
+
 class CircleImage extends StatelessWidget {
+  final String param;
   final String image;
   final double size;
   final double padding;
 
-  const CircleImage({Key key, this.image, this.size, this.padding})
+  const CircleImage({Key key,this.param, this.image, this.size, this.padding})
       : super(key: key);
 
   @override
@@ -98,7 +102,11 @@ class CircleImage extends StatelessWidget {
         color: Colors.white,
         child: Padding(
           padding: EdgeInsets.all(padding),
-          child: Image.asset(
+          child: param=='assets'?Image.asset(
+            image,
+            height: size,
+            width: size,
+          ):Image.network(
             image,
             height: size,
             width: size,

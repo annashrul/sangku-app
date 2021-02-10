@@ -50,12 +50,15 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
       if(res is PackageModel){
         PackageModel result=res;
         if(result.status=='success'){
-          packageModel = PackageModel.fromJson(result.toJson());
-          total=result.result.total;
-          isLoading=false;
-          isError=false;
-          isLoadmore=false;
-          setState(() {});
+          if(this.mounted){
+            setState(() {
+              packageModel = PackageModel.fromJson(result.toJson());
+              total=result.result.total;
+              isLoading=false;
+              isError=false;
+              isLoadmore=false;
+            });
+          }
         }
         else{
           isLoading=false;
@@ -92,9 +95,11 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller = new ScrollController()..addListener(_scrollListener);
-    isLoading=true;
-    loadData();
+    if(this.mounted){
+      controller = new ScrollController()..addListener(_scrollListener);
+      isLoading=true;
+      loadData();
+    }
   }
 
 

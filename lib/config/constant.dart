@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 class Constant{
-  final String baseUrl        = 'http://192.168.100.10:3010/';
+  // final String baseUrl        = 'http://192.168.100.10:3010/';
   // final String baseUrl        = 'http://ptnetindo.com:6694/';
-  // final String baseUrl        = 'http://api.sangqu.id/';
+  final String baseUrl        = 'http://api.sangqu.id/';
   final String token          = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZWEyNDQ0ZC0zZDZiLTQyNGItYTQ3YS00OTBiY2I3NTYwYjgiLCJpYXQiOjE1NzEwNDI0OTEsImV4cCI6MTU3MzYzNDQ5MX0.lvRR9rU3cdLbJ9Gi0Ryucwl_7IMK6NF7BTblIQUDA9Q";
   final String siteName       = 'SangQu';
   final bool showCode         = true;
@@ -15,7 +15,7 @@ class Constant{
   final String errTimeout     = 'TimeoutException';
   final String errSocket      = 'SocketException';
   final String errExpToken    = 'TokenExpiredError';
-  final String msgConnection    = 'Terjadi Kesalahan Jaringan';
+  final String msgConnection  = 'Terjadi Kesalahan Jaringan';
   final String localAssets    = 'assets/img/';
   final String localIcon    = 'assets/icon/';
   final String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";

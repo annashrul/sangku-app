@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WidgetHelper{
   myStatus(BuildContext context, int param){
@@ -382,6 +383,15 @@ class WidgetHelper{
             ],
           ),
         )
+    );
+  }
+
+  baseLoading(BuildContext context,Widget widget){
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300],
+      highlightColor: Colors.grey[100],
+      enabled: true,
+      child: widget,
     );
   }
 }
