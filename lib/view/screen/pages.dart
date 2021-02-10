@@ -33,6 +33,7 @@ import 'package:sangkuy/view/widget/appbar_widget.dart';
 import 'package:sangkuy/view/widget/detail_scaffold.dart';
 import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:sangkuy/view/widget/loading/history_pembelian_loading.dart';
+import 'package:sangkuy/view/widget/loading/member_loading.dart';
 import 'package:sangkuy/view/widget/loading/news_loading.dart';
 import 'package:sangkuy/view/widget/loading/package_loading.dart';
 import 'package:sangkuy/view/widget/package_widget.dart';

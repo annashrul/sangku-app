@@ -50,11 +50,16 @@ class _CartScreenState extends State<CartScreen> {
       setState(() {});
     }
     else{
+      if(this.mounted)
       setState(() {
         isLoading=false;
         isError=false;
         cartModel = res;
       });
+      if(cartModel.result.length<1){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.remove("packageType");
+      }
       getSubtotal();
     }
   }

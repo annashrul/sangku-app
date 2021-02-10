@@ -206,21 +206,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   
   Widget section1(BuildContext context){
-    return Padding(
+    return isLoadingMember?MemberLoading():Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: <Widget>[
-          isLoadingMember?WidgetHelper().baseLoading(context,ClipRRect(
-            borderRadius: BorderRadius.circular((50.0 + 0.0) / 2),
-            child: Container(
-              height: 50.0,
-              width: 50.0,
-              color: Colors.white,
-              child: Padding(
-                padding: EdgeInsets.all(0.0),
-              ),
-            ),
-          )):CircleImage(
+          CircleImage(
             param: 'network',
             key: Key("profile"),
             image: dataMemberModel.result.picture,
@@ -234,36 +224,15 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              isLoadingMember?WidgetHelper().baseLoading(context,Container(
-                height: 10.0,
-                width: 100.0,
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(0.0),
-                ),
-              )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
               const SizedBox(
                 height: 2,
               ),
-              isLoadingMember?WidgetHelper().baseLoading(context,Container(
-                height: 10.0,
-                width: 100.0,
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(0.0),
-                ),
-              )):WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
+              WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
               const SizedBox(
                 height: 4,
               ),
-              isLoadingMember?WidgetHelper().baseLoading(context,Container(
-                height: 10.0,
-                width: 100.0,
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(0.0),
-                ),
-              )):WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
 
             ],
           ),
@@ -271,17 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
             flex: 1,
             child: Container(),
           ),
-          isLoadingMember?WidgetHelper().baseLoading(context,Container(
-            height: 20.0,
-            width: 50.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(0.0),
-            ),
-          )):ClipRRect(
+          ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Container(
               color: Colors.black12,

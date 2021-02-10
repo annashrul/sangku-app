@@ -6,13 +6,32 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  DataMemberModel dataMemberModel;
+  bool isLoadingMember=false;
+  Future loadMember()async{
+    final member = await MemberProvider().getDataMember();
+    if(this.mounted)
+      setState(() {
+        dataMemberModel = member;
+        isLoadingMember=false;
+      });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isLoadingMember=true;
+    loadMember();
+  }
   @override
   Widget build(BuildContext context){
     return SafeArea(
-      child: Container(
-        child: DetailScaffold(
+      child: RefreshWidget(
+        widget: DetailScaffold(
             hasPinnedAppBar: true,
             expandedHeight:90,
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: <Widget>[
               SliverAppBar(
                 floating: false,
@@ -24,13 +43,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 delegate: SliverChildBuilderDelegate((context, index) {
                   switch (index) {
                     case 0:
-                      return Padding(
+                      return isLoadingMember?MemberLoading():Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
                           children: <Widget>[
                             CircleImage(
+                              param: 'network',
                               key: Key("profile"),
-                              image: Constant().localAssets+"bg_auth.png",
+                              image: dataMemberModel.result.picture,
                               size: 50.0,
                               padding: 0.0,
                             ),
@@ -41,16 +61,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                WidgetHelper().textQ("Annashrul Yusuf",10,Constant().darkMode,FontWeight.bold),
+                                WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
                                 const SizedBox(
                                   height: 2,
                                 ),
-                                WidgetHelper().textQ("Rp 1,000,000 .-",14,Constant().moneyColor,FontWeight.bold),
-
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
                                 const SizedBox(
                                   height: 4,
                                 ),
-                                WidgetHelper().textQ("MB5711868825",10,Constant().darkMode,FontWeight.bold),
+                                WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
 
                               ],
                             ),
@@ -66,18 +85,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(
-                                        Icons.description,
-                                        size: 16,
-                                        color: Colors.black54,
-                                      ),
+                                      Image.network(dataMemberModel.result.membershipBadge,width: 16,height: 16),
                                       const SizedBox(
                                         width: 4,
                                       ),
-                                      Text(
-                                        "Silver",
-                                        style: TextStyle(color: Colors.black87, fontSize: 10),
-                                      )
+                                      WidgetHelper().textQ("${dataMemberModel.result.membership}",10,Constant().darkMode,FontWeight.bold)
                                     ],
                                   ),
                                 ),
@@ -157,7 +169,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }, childCount: 4),
               ),
             ]
-        )
+        ),
+        callback: (){
+          setState(() {
+            isLoadingMember=true;
+          });
+          loadMember();
+        },
       )
     );
   }

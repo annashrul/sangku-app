@@ -12,6 +12,8 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   TabController _tabController;
   bool isLoading=false,isError=false,isErrToken;
   int total=0;
+  String img='',name='',referralCode='';
+  bool isLoadingMember=false;
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -45,8 +47,6 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     }
   }
   Future handleSubmit(id,qty,tipe)async{
-    Navigator.pop(context);
-    WidgetHelper().loadingDialog(context);
     var res = await CartProvider().postCart(id,qty.toString(),tipe);
     Navigator.pop(context);
     print(res);
@@ -63,23 +63,36 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   }
   Future postCart(id,qty,tipe)async{
     final package=await FunctionHelper().isPackage();
-    print(package);
-    print(tipe);
     if(package!=tipe&&package!=null){
       WidgetHelper().notifDialog(context,"Informasi !","ada paket ${tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
         Navigator.pop(context);
       }, ()async{
+        Navigator.pop(context);
+        WidgetHelper().loadingDialog(context);
         handleSubmit(id,qty,tipe);
       });
     }else{
+      WidgetHelper().loadingDialog(context);
       handleSubmit(id,qty,tipe);
     }
 
+  }
+  Future loadDataMember()async{
+    final picture = await UserHelper().getDataUser('picture');
+    final fullName = await UserHelper().getDataUser('full_name');
+    final referral = await UserHelper().getDataUser('referral_code');
+    setState(() {
+      img=picture;
+      name=fullName;
+      referralCode=referral;
+    });
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    isLoadingMember=true;
+    loadDataMember();
     loadCart();
     _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
@@ -110,13 +123,16 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         child: Scaffold(
           primary: true,
           key:_scaffoldKey,
-          appBar: WidgetHelper().appBarWithTab(context,_tabController, 'SangQu',row,_tabIndex==0?"Aktivasi":"Repeat Order",(idx){
+          appBar: WidgetHelper().appBarWithTab(context,_tabController, name,row,_tabIndex==0?"Aktivasi":"Repeat Order",(idx){
             setState(() {lbl = idx;});
           },leading:Padding(
             padding: EdgeInsets.all(8.0),
-            child:  CircleAvatar(
-              // radius:20.0,
-              backgroundImage:NetworkImage('https://img.pngio.com/avatar-icon-png-105-images-in-collection-page-3-avatarpng-512_512.png',scale: 1.0),
+            child:  CircleImage(
+              param: 'network',
+              key: Key("packageScreen"),
+              image: img,
+              size: 50.0,
+              padding: 0.0,
             ),
           ),description:'MB5711868825',widget: [
             WidgetHelper().myCart(context, (){if(total>0){WidgetHelper().myPushAndLoad(context,CartScreen(),()=>loadCart());}}, total>0?Colors.redAccent:Colors.transparent)

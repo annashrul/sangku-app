@@ -234,8 +234,6 @@ class WidgetHelper{
         children: [
           WidgetHelper().textQ("$title",16,Colors.black,FontWeight.bold,letterSpacing: 3.0),
           if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
-
-          // WidgetHelper().textQ("MB5711868825",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
         ],
       ),
       // title:textQ(title,18,Colors.black,FontWeight.bold),

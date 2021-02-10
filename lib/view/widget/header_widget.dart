@@ -10,13 +10,6 @@ class HeaderWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Constant().secondColor
-        // image: DecorationImage(
-        //     image: NetworkImage(
-        //       'https://images.template.net/wp-content/uploads/2015/08/Premium-Stone-Textured-Dark-Background.png',
-        //     ),
-        //     alignment: Alignment.topCenter,
-        //     fit: BoxFit.fitWidth
-        // ),
       ),
       child: Center(
         child: Row(
@@ -74,7 +67,29 @@ class HeaderWidget extends StatelessWidget {
               child: Container(),
               flex: 1,
             ),
-            WidgetHelper().myCart(context,(){},Colors.redAccent),
+            FlatButton(
+                padding: EdgeInsets.all(0.0),
+                highlightColor:Colors.black38,
+                splashColor:Colors.black38,
+                onPressed:(){},
+                child: Container(
+                  padding: EdgeInsets.only(right: 0.0,top:0),
+                  child: Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(color:Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                        constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+                      ),
+                    ],
+                  ),
+                )
+            )
+            // WidgetHelper().myCart(context,(){},Colors.redAccent),
 
           ],
         ),
