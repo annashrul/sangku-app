@@ -35,21 +35,23 @@ class CardWidget extends StatelessWidget {
     return Container(
       color: Colors.transparent,
       child: InkWell(
-
         onTap: this.onTap,
         child: Card(
+          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
           elevation: 0.0,
           color: (this.backgroundColor != null) ? this.backgroundColor : Colors.transparent,
           margin: const EdgeInsets.all(0.0),
           child: Row(
             children: <Widget>[
-              (this.prefixBadge != null)
-                  ? Container(
+              (this.prefixBadge != null) ? Container(
                 width: 10.0,
                 height: 60.0,
-                color: this.prefixBadge,
-              )
-                  : Container(),
+                decoration: BoxDecoration(
+                    color: this.prefixBadge,
+                    borderRadius: new BorderRadius.circular(10.0)
+                ),
+
+              ) : Container(),
               (this.icon != null)
                   ? Container(
                 margin: const EdgeInsets.all(5.0),

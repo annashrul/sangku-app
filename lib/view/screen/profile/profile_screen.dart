@@ -43,14 +43,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 delegate: SliverChildBuilderDelegate((context, index) {
                   switch (index) {
                     case 0:
-                      return isLoadingMember?MemberLoading():Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
+                      return Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: isLoadingMember?MemberLoading():Row(
                           children: <Widget>[
                             CircleImage(
                               param: 'network',
                               key: Key("profile"),
-                              image: dataMemberModel.result.picture,
+                              // image: dataMemberModel.result.picture,
+                              image: Constant().avatar,
                               size: 50.0,
                               padding: 0.0,
                             ),
@@ -102,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       return Divider(thickness: 10.0,);
                     case 2:
                       return  Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(6),
@@ -117,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           primary: false,
                           children: <Widget>[
                             ListTile(
-                              contentPadding: EdgeInsets.only(left:20,right:20),
+                              contentPadding: EdgeInsets.only(left:10,right:20),
                               leading: Icon(AntDesign.barschart,color:Constant().mainColor),
                               title: WidgetHelper().textQ("Laporan",12,Colors.black,FontWeight.bold),
                             ),
@@ -132,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     case 3:
                       return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(6),
@@ -145,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           primary: false,
                           children: <Widget>[
                             ListTile(
-                              contentPadding: EdgeInsets.only(left:20,right:20),
+                              contentPadding: EdgeInsets.only(left:10,right:20),
                               leading: Icon(AntDesign.setting,color:Constant().mainColor),
                               title: WidgetHelper().textQ("Pengaturan Umum",12,Colors.black,FontWeight.bold),
                             ),

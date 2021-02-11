@@ -38,14 +38,14 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.sangkuy"
+        applicationId "com.sangQu"
         minSdkVersion 16
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
-                onesignal_app_id: '6a4c55fd-d96d-427f-8634-d2c4b9d96d69',
+                onesignal_app_id: '2f7a9ad1-aec2-4abe-ab9b-2354c51580b2',
                 onesignal_google_project_number: 'REMOTE'
         ]
         multiDexEnabled true

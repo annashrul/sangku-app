@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/config/database_config.dart';
 import 'package:sangkuy/helper/table_helper.dart';
@@ -95,11 +96,15 @@ class _SignInScreenState extends State<SignInScreen> {
   }
   Future login()async{
     WidgetHelper().loadingDialog(context);
+    var status = await OneSignal.shared.getPermissionSubscriptionState();
+    String onesignalUserId = status.subscriptionStatus.userId;
+
     final dataLogin={
       "uid":"",
       "type":"otp",
       "nohp":nohpController.text,
       "pass":"",
+      "deviceid":onesignalUserId
     };
     var baseAuth = await BaseProvider().postProvider("auth", dataLogin);
     if(baseAuth==Constant().errSocket||baseAuth==Constant().errTimeout){

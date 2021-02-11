@@ -66,62 +66,69 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       key: _scaffoldKey,
-      bottomNavigationBar:!timeUpFlag?FlatButton(
-          color: Constant().mainDarkColor,
-          onPressed: ()async{
-            WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
-          },
-          child: WidgetHelper().textQ("$timeCounter detik", 12,Colors.white,FontWeight.bold)
-      ):FlatButton(
-          color: Constant().mainColor,
-          onPressed: ()async{
-            print(widget.data);
-            WidgetHelper().loadingDialog(context);
-            var res = await BaseProvider().postProvider("auth/otp", widget.data);
-            if(res==Constant().errSocket||res==Constant().errTimeout){
-              Navigator.pop(context);
-              setState(() {
-                timeUpFlag=true;
-              });
-              WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
-            }
-            else{
-              if(res is General){
+      bottomNavigationBar:!timeUpFlag?Container(
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        color: Constant().mainColor,
+        child: FlatButton(
+            padding: EdgeInsets.all(20.0),
+            onPressed: ()async{
+              WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
+            },
+            child: WidgetHelper().textQ("$timeCounter DETIK", 12,Colors.white,FontWeight.bold,letterSpacing: 3.0)
+        ),
+      ):Container(
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        color: Constant().mainColor,
+        child: FlatButton(
+            padding: EdgeInsets.all(20.0),
+            onPressed: ()async{
+              print(widget.data);
+              WidgetHelper().loadingDialog(context);
+              var res = await BaseProvider().postProvider("auth/otp", widget.data);
+              if(res==Constant().errSocket||res==Constant().errTimeout){
+                Navigator.pop(context);
                 setState(() {
                   timeUpFlag=true;
                 });
-                Navigator.pop(context);
-                General result=res;
-                WidgetHelper().notifBar(context,"failed",result.msg);
+                WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
               }
               else{
-                var result = OtpModel.fromJson(res);
-                if(result.status=='success'){
-                  Navigator.pop(context);
-                  if(timeUpFlag){
-                    setState(() {
-                      timeUpFlag=!timeUpFlag;
-                      timeCounter=10;
-                      widget.code = result.result.otpAnying;
-                    });
-                    _timerUpdate();
-                  }
-                  else{
-                    print('false');
-                  }
-                }
-                else{
+                if(res is General){
                   setState(() {
                     timeUpFlag=true;
                   });
                   Navigator.pop(context);
+                  General result=res;
                   WidgetHelper().notifBar(context,"failed",result.msg);
                 }
+                else{
+                  var result = OtpModel.fromJson(res);
+                  if(result.status=='success'){
+                    Navigator.pop(context);
+                    if(timeUpFlag){
+                      setState(() {
+                        timeUpFlag=!timeUpFlag;
+                        timeCounter=10;
+                        widget.code = result.result.otpAnying;
+                      });
+                      _timerUpdate();
+                    }
+                    else{
+                      print('false');
+                    }
+                  }
+                  else{
+                    setState(() {
+                      timeUpFlag=true;
+                    });
+                    Navigator.pop(context);
+                    WidgetHelper().notifBar(context,"failed",result.msg);
+                  }
+                }
               }
-            }
-
-          },
-          child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}", 12,Colors.white,FontWeight.bold)
+            },
+            child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter DETIK':'KIRIM ULANG OTP'}", 14,Colors.white,FontWeight.bold, letterSpacing: 3.0)
+        ),
       ),
       body: SecureCodeHelper(
           showFingerPass: false,
@@ -174,6 +181,7 @@ class _PinScreenState extends State<PinScreen> {
         backgroundColor: Colors.white,
         key: _scaffoldKey,
         bottomNavigationBar:FlatButton(
+            padding: EdgeInsets.all(20.0),
             color: Constant().mainColor,
             onPressed: ()async{
               

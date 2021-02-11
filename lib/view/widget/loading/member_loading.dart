@@ -5,7 +5,7 @@ class MemberLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(0.0),
       child: Row(
         children: <Widget>[
           WidgetHelper().baseLoading(context,ClipRRect(

@@ -392,4 +392,13 @@ class WidgetHelper{
       child: widget,
     );
   }
+  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white}){
+    return  Row(
+      children: [
+        Icon(icon,color:color),
+        SizedBox(width:5.0),
+        WidgetHelper().textQ(title,12,color, FontWeight.normal),
+      ],
+    );
+  }
 }

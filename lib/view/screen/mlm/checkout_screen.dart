@@ -24,6 +24,7 @@ import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
+import 'package:sangkuy/view/widget/bank_widget.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
 class ChaeckoutScreen extends StatefulWidget {
@@ -46,40 +47,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   CartModel cartModel;
   OngkirModel ongkirModel;
   Prefix1.AddressModel addressModel;
-  BankModel bankModel;
-  List bank=[];
-  Future loadBank()async{
-    var res=await BankProvider().getBank("page=1");
-    if(res=='error'){
-      isLoadingBank=false;
-      isError=true;
-      setState(() {});
-    }
-    else if(res=='failed'){
-      isLoadingBank=false;
-      isError=true;
-      setState(() {});
-    }
-    else{
-      isLoadingBank=false;
-      isError=false;
-      bank.add({
-        "totalrecords": "2",
-        "id": "-",
-        "bank_name": "SALDO UTAMA",
-        "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
-        "acc_name": "100000",
-        "acc_no": "",
-        "tf_code": 0,
-        "created_at": "2020-12-22T03:50:55.000Z",
-        "updated_at": "2020-12-22T03:50:55.000Z"
-      });
-      res['result']['data'].forEach((element) {
-        bank.add(element);
-      });
-      setState(() {});
-    }
-  }
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -172,7 +139,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       }
       else{
         var resLayanan = OngkirModel.fromJson(res);
-        print(resLayanan.toJson());
         setState(() {
           ongkirModel = OngkirModel.fromJson(resLayanan.toJson());
           kurirDeskripsi = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
@@ -226,6 +192,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       "id_bank_destination":idBank.toString(),
       "pin_member":pin.toString()
     };
+
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().postProvider("transaction/checkout", data);
     Navigator.pop(context);
@@ -239,26 +206,17 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       General result=res;
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }else{
-      print('success $res');
-      // WidgetHelper().showFloatingFlushbar(context,"success","berhasil, anda akan dialihkan ke halaman ");
-
       WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx: base64.encode(utf8.encode(res['result']['kd_trx']))));
-      // WidgetHelper().notifOneBtnDialog(context,"Berhasil !!!", "terimakasih telah bertransaksi disini",(){
-      //   WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-      // });
     }
-    // print(data);
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    isLoadingBank=true;
     isLoadingAddress=true;
     isLoadingCart=true;
     isLoadingKurir=true;
-    loadBank();
     loadKurir();
     loadCart();
     loadAddress();
@@ -509,7 +467,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 shrinkWrap: true,
                 itemCount: cartModel.result.length,
                 itemBuilder: (context,index){
-                  print(cartModel.result[index]);
                   return WidgetHelper().myPress((){
                     // WidgetHelper().myPushAndLoad(context,DetailPackageScreen(id: idPaket,tipe:tipe), ()=>loadCart());
                   },
@@ -600,29 +557,11 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           ),
           Divider(),
           Container(
-            child: new ListView.separated(
-              addRepaintBoundaries: true,
-              primary: false,
-              shrinkWrap: true,
-              itemCount: bank.length,
-              itemBuilder: (context,index){
-                var val=bank[index];
-                return CardWidget(
-                  onTap:(){
-                    idBank=val['id'];
-                    setState(() {});
-                  },
-                  prefixBadge: Constant().secondColor,
-                  title: '${val['bank_name']} ${val['id']=='-'?'':'( ${val['acc_no']} )'}',
-                  description: '${val['id']=='-'?'Rp '+FunctionHelper().formatter.format(int.parse(val['acc_name']))+' .-':val['acc_name']}',
-                  descriptionColor: val['id']=='-'?Constant().moneyColor:Constant().darkMode,
-                  suffixIcon:AntDesign.checkcircleo,
-                  suffixIconColor: idBank==val['id']?Colors.black:Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                );
-              },
-              separatorBuilder: (_,i){return(Divider());},
-            ),
+            child: BankWidget(callback: (val){
+              setState(() {
+                idBank=val['id'];
+              });
+            },id: idBank,isSaldo: true)
           ),
         ],
       ),

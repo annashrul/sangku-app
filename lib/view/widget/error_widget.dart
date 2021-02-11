@@ -15,7 +15,6 @@ class _ErrWidgetState extends State<ErrWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Constant().mainColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

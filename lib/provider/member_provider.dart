@@ -8,11 +8,14 @@ class MemberProvider{
   Future getDataMember()async{
     final idMember = await UserHelper().getDataUser("id_user");
     String url = 'member/get/$idMember';
+    print("URL $url");
     var res = await BaseProvider().getProvider(url,dataMemberModelFromJson);
     if(res==Constant().errSocket||res==Constant().errTimeout){
+      print("######################## error LOAD MEMBER #########################");
       return 'error';
     }
     else if(res==Constant().errExpToken){
+      print("######################## errExpToken LOAD MEMBER #########################");
       return Constant().errExpToken;
     }
     else{
@@ -22,6 +25,7 @@ class MemberProvider{
           return DataMemberModel.fromJson(result.toJson());
         }
         else{
+          print("######################## FAILED LOAD MEMBER #########################");
           return 'failed';
         }
       }

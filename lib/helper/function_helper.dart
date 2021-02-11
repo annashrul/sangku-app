@@ -13,6 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FunctionHelper{
   final formatter = new NumberFormat("#,###");
   DatabaseConfig db = DatabaseConfig();
+  static var dataNominal=["100000","200000","300000","400000","500000","1000000"];
+
   static var arrStatus=[
     "Belum dibayar",
     "Menunggu konfirmasi",
