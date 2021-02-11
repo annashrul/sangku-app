@@ -14,38 +14,67 @@ class _IndexScreenState extends State<IndexScreen> {
   Widget currentScreen;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final PageStorageBucket bucket = PageStorageBucket();
+  DataMemberModel dataMemberModel;
+  dynamic dataMember;
+  bool isLoadingMember=false;
+  Future rebuildData()async{
+    final member = await MemberProvider().getDataMember();
+    dataMemberModel=member;
+    return dataMemberModel.result.toJson();
+  }
+  Future loadMember()async{
+    final member = await MemberProvider().getDataMember();
+    if(this.mounted)
+      setState(() {
+        dataMemberModel = member;
+        isLoadingMember=false;
+      });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentScreen = HomeScreen();
+    currentScreen = WidgetHelper().loadingWidget(context);
+    WidgetsBinding.instance.addPostFrameCallback((_)async{
+      isLoadingMember=true;
+      await loadMember();
+      currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
+      print("BUILD BERES");
+    });
+
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-
   }
-  final List<Widget> screens = [
-    HomeScreen(),
-    ProductScreen(),
-    // ProdukMlmUI(),
-    // About(),
-    // TestimoniProduk(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
         child: Scaffold(
-          // backgroundColor: Colors.white,
           key: scaffoldKey,
-          // appBar:widget.currentTab == 1?null:AppBarNoButton(),
-          body: PageStorage(
-            child: currentScreen,
-            bucket: bucket,
+          body: RefreshWidget(
+            widget: PageStorage(
+              child: currentScreen,
+              bucket: bucket,
+            ),
+            callback: (){
+              loadMember();
+              WidgetsBinding.instance.addPostFrameCallback((_)async{
+                isLoadingMember=true;
+                await loadMember();
+                if(widget.currentTab==2){
+                  currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
+                }
+                if(widget.currentTab==4){
+                  currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson());
+                }
+                print("BUILD BERES");
+              });
+            },
           ),
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
@@ -63,7 +92,7 @@ class _IndexScreenState extends State<IndexScreen> {
             ),
             onPressed: () {
               setState(() {
-                currentScreen = HomeScreen();
+                currentScreen = HomeScreen(dataMember: dataMemberModel.result.toJson());
                 widget.currentTab = 2;
               });
             },
@@ -111,7 +140,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = ProductScreen(dataMember:dataMemberModel.result.toJson()); // if user taps on this dashboard tab will be active
                             widget.currentTab = 1;
                           });
                         },
@@ -167,7 +196,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson()); // if user taps on this dashboard tab will be active
                             widget.currentTab = 4;
                           });
                         },
@@ -195,12 +224,10 @@ class _IndexScreenState extends State<IndexScreen> {
         ),
         onWillPop: _onWillPop
     );
-
   }
   Future<bool> _onWillPop() async {
     return (
       WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.of(context).pop(false);},(){SystemNavigator.pop();})
     ) ?? false;
   }
-
 }

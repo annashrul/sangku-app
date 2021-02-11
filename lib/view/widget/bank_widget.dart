@@ -33,28 +33,30 @@ class _BankWidgetState extends State<BankWidget> {
       setState(() {});
     }
     else{
-      isLoadingBank=false;
-      isError=false;
-      if(widget.isSaldo){
-        bank.add({
-          "totalrecords": "2",
-          "id": "-",
-          "bank_name": "SALDO UTAMA",
-          "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
-          "acc_name": "100000",
-          "acc_no": "",
-          "tf_code": 0,
-          "created_at": "2020-12-22T03:50:55.000Z",
-          "updated_at": "2020-12-22T03:50:55.000Z"
+      if(this.mounted){
+        isLoadingBank=false;
+        isError=false;
+        if(widget.isSaldo){
+          bank.add({
+            "totalrecords": "2",
+            "id": "-",
+            "bank_name": "SALDO UTAMA",
+            "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
+            "acc_name": "100000",
+            "acc_no": "",
+            "tf_code": 0,
+            "created_at": "2020-12-22T03:50:55.000Z",
+            "updated_at": "2020-12-22T03:50:55.000Z"
+          });
+        }
+        res['result']['data'].forEach((element) {
+          bank.add(element);
+        });
+        setState(() {
+          widget.callback(bank[0]);
+          widget.id=bank[0]['id'];
         });
       }
-      res['result']['data'].forEach((element) {
-        bank.add(element);
-      });
-      setState(() {
-        widget.callback(bank[0]);
-        widget.id=bank[0]['id'];
-      });
     }
   }
   @override

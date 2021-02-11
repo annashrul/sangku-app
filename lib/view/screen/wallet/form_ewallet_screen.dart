@@ -2,36 +2,39 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/money_format_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
-import 'package:sangkuy/model/member/data_member_model.dart';
 import 'package:sangkuy/model/wallet/config_wallet_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
-import 'package:sangkuy/provider/member_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
-import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/bank_widget.dart';
 import 'package:sangkuy/view/widget/confirm_widget.dart';
 import 'package:sangkuy/view/widget/detail_scaffold.dart';
+import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/header_widget.dart';
-import 'package:sangkuy/view/widget/loading/member_loading.dart';
 import 'package:sangkuy/view/widget/nominal_widget.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
 
-class FormTopupScreen extends StatefulWidget {
+import '../pages.dart';
+
+class FormEwalletScreen extends StatefulWidget {
+  final dynamic dataMember;
+  final String title;
+  FormEwalletScreen({this.dataMember,this.title});
   @override
-  _FormTopupScreenState createState() => _FormTopupScreenState();
+  _FormEwalletScreenState createState() => _FormEwalletScreenState();
 }
 
-class _FormTopupScreenState extends State<FormTopupScreen> {
+class _FormEwalletScreenState extends State<FormEwalletScreen> {
+  bool isLoading=false,isError=false,isPending=false;
+  ConfigWalletModel configWalletModel;
   final FocusNode nominalFocus = FocusNode();
   var nominalController = MoneyMaskedTextControllerQ(decimalSeparator: '', thousandSeparator: ',');
   String idBank='';
@@ -39,8 +42,36 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
   int idx=10;
   dynamic dataBank;
   dynamic data;
-  ConfigWalletModel configWalletModel;
-
+  Future loadConfig()async{
+    final config = await BaseProvider().getProvider("transaction/wallet/config", configWalletModelFromJson);
+    if(config==Constant().errSocket||config==Constant().errTimeout){
+      setState(() {
+        isLoading=false;
+        isError=true;
+      });
+    }
+    else if(config==Constant().errExpToken){
+      setState(() {
+        isLoading=false;
+        isError=false;
+      });
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken, ()async{
+        FunctionHelper().logout(context);
+      });
+    }
+    else{
+      if(config is ConfigWalletModel){
+        ConfigWalletModel result=config;
+        if(this.mounted){
+          setState(() {
+            configWalletModel = result;
+            isLoading=false;
+            isError=false;
+          });
+        }
+      }
+    }
+  }
   Future handleNext()async{
     String msg='';
     if(nominalController.text==''){
@@ -80,9 +111,6 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed",msg);
     }
   }
-
-  bool isPending=false;
-
   Future checkout(pin)async{
     print(pin);
     print(dataBank['id']);
@@ -130,11 +158,15 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadConfig();
+    isLoading=true;
   }
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: WrapperPageWidget(children: [
+  Widget build(BuildContext context){
+    return WrapperPageWidget(
+      dataMember: widget.dataMember,
+      children: [
+        if(isLoading)LinearProgressIndicator(),
         ClipPath(
           clipper: WaveClipperOne(flip: true),
           child: Container(
@@ -185,7 +217,7 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
                         onFieldSubmitted: (term){
                         },
                         inputFormatters: <TextInputFormatter>[
-                          LengthLimitingTextInputFormatter(13),
+                          // LengthLimitingTextInputFormatter(10),
                           WhitelistingTextInputFormatter.digitsOnly,
                           BlacklistingTextInputFormatter.singleLineFormatter,
                         ],
@@ -205,9 +237,7 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
                     ),
                     SizedBox(height: 20.0),
                     WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color: Colors.grey[200]),
-                    Divider(),
                     BankWidget(callback: (val){
-                      print(val);
                       setState(() {
                         idBank=val['id'];
                         dataBank=val;
@@ -219,7 +249,11 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
                       child: FlatButton(
                           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
                           onPressed: () {
-                            handleNext();
+                            if(!isPending){
+                              handleNext();
+                            }else{
+                              showNotif(context);
+                            }
                           },
                           padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
                           color: Constant().mainColor,
@@ -241,20 +275,15 @@ class _FormTopupScreenState extends State<FormTopupScreen> {
                 ),
               )
           ),
-        ),
-      ],callback:(val){
-        if(val['trx_dp']!='-'){
-          setState(() {
-            isPending=true;
-          });
-        }
-        setState(() {
-          saldo=int.parse(val['dp_min']);
-        });
-      }),
+        )
+      ],
+      action: HeaderWidget(title:widget.title,action: Text('')),
     );
   }
 
+  void showNotif(BuildContext context){
+    WidgetHelper().notifOneBtnDialog(context,"Transaksi Pending","Maaf, terdapat transaksi anda yang masih pending", (){
+      WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    });
+  }
 }
-
-

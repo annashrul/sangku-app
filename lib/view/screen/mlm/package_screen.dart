@@ -2,6 +2,8 @@ part of '../pages.dart';
 
 
 class ProductScreen extends StatefulWidget {
+  final dynamic dataMember;
+  ProductScreen({this.dataMember});
   @override
   _ProductScreenState createState() => _ProductScreenState();
 }
@@ -12,8 +14,6 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   TabController _tabController;
   bool isLoading=false,isError=false,isErrToken;
   int total=0;
-  String img='',name='',referralCode='';
-  bool isLoadingMember=false;
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -77,22 +77,10 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     }
 
   }
-  Future loadDataMember()async{
-    final picture = await UserHelper().getDataUser('picture');
-    final fullName = await UserHelper().getDataUser('full_name');
-    final referral = await UserHelper().getDataUser('referral_code');
-    setState(() {
-      img=picture;
-      name=fullName;
-      referralCode=referral;
-    });
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    isLoadingMember=true;
-    loadDataMember();
     loadCart();
     _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
@@ -123,18 +111,18 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         child: Scaffold(
           primary: true,
           key:_scaffoldKey,
-          appBar: WidgetHelper().appBarWithTab(context,_tabController, name,row,_tabIndex==0?"Aktivasi":"Repeat Order",(idx){
+          appBar: WidgetHelper().appBarWithTab(context,_tabController, widget.dataMember['full_name'],row,_tabIndex==0?"Aktivasi":"Repeat Order",(idx){
             setState(() {lbl = idx;});
           },leading:Padding(
             padding: EdgeInsets.all(8.0),
             child:  CircleImage(
               param: 'network',
               key: Key("packageScreen"),
-              image: img,
+              image: widget.dataMember['picture'],
               size: 50.0,
               padding: 0.0,
             ),
-          ),description:'MB5711868825',widget: [
+          ),description:widget.dataMember['referral_code'],widget: [
             WidgetHelper().myCart(context, (){if(total>0){WidgetHelper().myPushAndLoad(context,CartScreen(),()=>loadCart());}}, total>0?Colors.redAccent:Colors.transparent)
           ]),
           body: Padding(

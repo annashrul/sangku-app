@@ -5,6 +5,9 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
 class HeaderWidget extends StatelessWidget {
+  String title;
+  Widget action;
+  HeaderWidget({this.title,this.action});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,69 +29,12 @@ class HeaderWidget extends StatelessWidget {
             const SizedBox(
               width: 10.0,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                // color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 2, 8, 2),
-                  child: Row(
-                    children: <Widget>[
-                      ColorizeAnimatedTextKit(
-                        onTap: () {
-                          print("Tap Event");
-                        },
-                        text: [
-                          "ASSALAMUAIKUM",
-                          "ANNASHRUL YUSUF",
-                          "DI APLIKASI SANQU",
-                        ],
-                        textStyle: TextStyle(
-                          fontSize: 18.0,
-                          color: Constant().secondDarkColor,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing:3.0,
-                        ),
-                        colors: [
-                          Constant().secondDarkColor,
-                          Colors.blue,
-                          Colors.yellow,
-                          Colors.red,
-                        ],
-                        textAlign: TextAlign.start,
-                      )
-                      // WidgetHelper().textQ("SangQu App", 18, Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            WidgetHelper().textQ("${this.title.toUpperCase()}", 14, Constant().secondDarkColor,FontWeight.bold),
             Flexible(
               child: Container(),
               flex: 1,
             ),
-            FlatButton(
-                padding: EdgeInsets.all(0.0),
-                highlightColor:Colors.black38,
-                splashColor:Colors.black38,
-                onPressed:(){},
-                child: Container(
-                  padding: EdgeInsets.only(right: 0.0,top:0),
-                  child: Stack(
-                    alignment: AlignmentDirectional.topEnd,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0),
-                        child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(color:Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
-                        constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
-                      ),
-                    ],
-                  ),
-                )
-            )
+            this.action
             // WidgetHelper().myCart(context,(){},Colors.redAccent),
 
           ],

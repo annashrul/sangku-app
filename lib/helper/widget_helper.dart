@@ -359,6 +359,31 @@ class WidgetHelper{
     )..show(context);
   }
 
+  myNotif(BuildContext context,Function callback,Color color){
+    return FlatButton(
+        padding: EdgeInsets.all(0.0),
+        highlightColor:Colors.black38,
+        splashColor:Colors.black38,
+        onPressed:callback,
+        child: Container(
+          padding: EdgeInsets.only(right: 0.0,top:0),
+          child: Stack(
+            alignment: AlignmentDirectional.topEnd,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
+              ),
+              Container(
+                decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
+                constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+              ),
+            ],
+          ),
+        )
+    );
+  }
+
   myCart(BuildContext context,Function callback,Color color){
     return FlatButton(
         padding: EdgeInsets.all(0.0),

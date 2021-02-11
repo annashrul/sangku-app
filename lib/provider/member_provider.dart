@@ -21,6 +21,10 @@ class MemberProvider{
     else{
       if(res is DataMemberModel){
         DataMemberModel result=res;
+        // SharedPreferences preferences = await SharedPreferences.getInstance();
+        // List<String> val=['${result.result.toJson()}'];
+        // print("######################## SUCCESS LOAD MEMBER $val #########################");
+        // preferences.setStringList("member",val);
         if(result.status=='success'){
           return DataMemberModel.fromJson(result.toJson());
         }

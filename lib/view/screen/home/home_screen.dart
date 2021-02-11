@@ -2,6 +2,8 @@ part of '../pages.dart';
 
 
 class HomeScreen extends StatefulWidget {
+  final dynamic dataMember;
+  HomeScreen({this.dataMember});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -31,30 +33,19 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoadingNews=false,isErrorNews=false,isTokenExpNews=false;
   bool isLoadingRedeem=false,isErrorRedeem=false,isTokenExpRedeem=false;
   bool isLoadingMember=false;
-  int poin=0,idxAddress=0;
+  int idxAddress=0;
   String idAddress='';
   ContentModel contentModel;
   ListRedeemModel listRedeemModel;
-  DataMemberModel dataMemberModel;
   Future loadData()async{
     setState(() {
-      isLoadingMember=true;
       isLoadingRedeem=true;
       isLoadingNews=true;
     });
-    loadMember();
     loadRedeem();
     loadNews();
   }
-  Future loadMember()async{
-    final member = await MemberProvider().getDataMember();
-    if(this.mounted)
-    setState(() {
-      dataMemberModel = member;
-      isLoadingMember=false;
-      poin=int.parse(dataMemberModel.result.pointRo.split(".")[0]);
-    });
-  }
+ 
   Future loadNews()async{
     var res = await ContentProvider().loadData("page=1");
     if(res=='error' || res=='failed'){
@@ -72,12 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     else{
       if(this.mounted)
-      setState(() {
-        contentModel = res;
-        isLoadingNews=false;
-        isErrorNews=false;
-        isTokenExpNews=false;
-      });
+        setState(() {
+          contentModel = res;
+          isLoadingNews=false;
+          isErrorNews=false;
+          isTokenExpNews=false;
+        });
     }
   }
   Future loadRedeem()async{
@@ -97,12 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     else{
       if(this.mounted)
-      setState(() {
-        listRedeemModel = res;
-        isLoadingRedeem=false;
-        isErrorRedeem=false;
-        isTokenExpRedeem=false;
-      });
+        setState(() {
+          listRedeemModel = res;
+          isLoadingRedeem=false;
+          isErrorRedeem=false;
+          isTokenExpRedeem=false;
+        });
     }
   }
   Future postRedeem(idBarang)async{
@@ -127,9 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
           },titleBtn1:"Kembali",titleBtn2: "Coba Lagi");
         }
         else if(res==Constant().errExpToken){
-         WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken, ()async{
-           FunctionHelper().logout(context);
-         });
+          WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken, ()async{
+            FunctionHelper().logout(context);
+          });
         }
         else{
           print(res);
@@ -154,63 +145,31 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     loadData();
+    print("======================== DATA MEMBER GLOBAL =======================");
+    print(widget.dataMember);
+    print("======================== DATA MEMBER GLOBAL =======================");
   }
 
 
   @override
   Widget build(BuildContext context) {
-    return buildContent(context);
-  }
-  Widget buildContent(BuildContext context){
     return SafeArea(
-      child: RefreshWidget(
-        widget: DetailScaffold(
-            hasPinnedAppBar: true,
-            expandedHeight:90,
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: <Widget>[
-              SliverAppBar(
-                floating: false,
-                pinned: true,
-                expandedHeight: 90.0,
-                flexibleSpace: HeaderWidget(),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  switch (index) {
-                    case 0:
-                      return section1(context);
-                    case 1:
-                      return section2(context);
-                    case 2:
-                      return Divider(thickness: 10.0,);
-                    case 3:
-                      return section6(context);
-                    case 4:
-                      return section3(context);
-                    case 5:
-                      return section4(context);
-                    case 6:
-                      return Container();
-                    case 7:
-                      return Container();
-                    case 8:
-                      return Container();
-                    case 9:
-                      return Container();
-                    default:
-                      return Container();
-                  }
-                }, childCount: 10),
-              ),
-            ]
-        ),
-        callback: (){
-          loadData();
-        },
+      child:  WrapperPageWidget(
+        dataMember: widget.dataMember,
+        children: [
+          section1(context),
+          section2(context),
+          Divider(thickness: 10.0),
+          section6(context),
+          section3(context),
+          section4(context)
+        ],
+        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,(){},Colors.redAccent)),
       ),
     );
   }
+  
+  
   Widget section2(BuildContext context){
     return Container(
       padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10.0,top:0.0),
@@ -230,25 +189,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: FlatButton(
                     onPressed: (){
                       if(dataWallet[index]['title']=='Top Up'){
-                        WidgetHelper().myPush(context,FormTopupScreen());
+                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'TOP UP'));
                       }
                       if(dataWallet[index]['title']=='Transfer'){
-                        WidgetHelper().myPush(context,FormTransferScreen());
+                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'TRANSFER'));
                       }
                       if(dataWallet[index]['title']=='Penarikan'){
-                        WidgetHelper().myPush(context,FormPenarikanScreen());
+                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'PENARIKAN'));
                       }
                     },
-                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                     padding: EdgeInsets.all(10.0),
                     color: Color(0xFFEEEEEE),
                     child: Column(
                       children: [
                         SvgPicture.asset(
-                          dataWallet[index]['icon'],
-                          height: 30,
-                          width: 30,
-                          color:Constant().secondColor
+                            dataWallet[index]['icon'],
+                            height: 30,
+                            width: 30,
+                            color:Constant().secondColor
                         ),
                         SizedBox(height:5.0),
                         WidgetHelper().textQ(dataWallet[index]['title'],12,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.center),
@@ -267,72 +226,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
   Widget section1(BuildContext context){
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
-          isLoadingMember?MemberLoading():Row(
-            children: <Widget>[
-              CircleImage(
-                param: 'network',
-                key: Key("profile"),
-                image: Constant().avatar,
-                size: 50.0,
-                padding: 0.0,
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
-                  const SizedBox(
-                    height: 2,
-                  ),
-                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
-
-                ],
-              ),
-              Flexible(
-                flex: 1,
-                child: Container(),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  color: Colors.black12,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
-                    child: Row(
-                      children: <Widget>[
-                        Image.network(dataMemberModel.result.membershipBadge,width: 16,height: 16),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        WidgetHelper().textQ("${dataMemberModel.result.membership}",10,Constant().darkMode,FontWeight.bold)
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          SizedBox(height:10.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
                 width: MediaQuery.of(context).size.width/2.2,
                 child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
                   color: Color(0xFFEEEEEE),
                   onPressed: (){},
@@ -357,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: MediaQuery.of(context).size.width/2.2,
                 child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
                   color: Color(0xFFEEEEEE),
                   onPressed: (){},
@@ -483,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 15.0,
                   width:MediaQuery.of(context).size.width/10,
                   color: Colors.white,
-                )):WidgetHelper().textQ("${FunctionHelper().formatter.format(poin)} POIN",14,Constant().moneyColor,FontWeight.bold),
+                )):WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.dataMember['point_ro'].split(".")[0]))} POIN",14,Constant().moneyColor,FontWeight.bold),
               ],
             ),
 
@@ -505,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Color colorBadge = Constant().moneyColor;
                 String status='${FunctionHelper().formatter.format(points)} POIN';
                 bool isTrue=true;
-                if(poin<points){
+                if(int.parse(widget.dataMember['point_ro'].split(".")[0])<points){
                   colorBadge = Constant().secondColor;
                   status='Poin Tidak Cukup';
                   isTrue=false;
@@ -517,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 return Container(
                   child: FlatButton(
-                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                     padding: EdgeInsets.all(0.0),
                     color: Color(0xFFEEEEEE),
                     onPressed: (){

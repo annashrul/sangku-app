@@ -82,7 +82,10 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
       child: Scaffold(
         key: key,
         appBar: WidgetHelper().appBarWithButton(context,"Transaksi Berhasil", (){
-          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          // WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          IndexScreen(currentTab: 2).createState().rebuildData().then((value){
+            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          });
         },<Widget>[]),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(vertical: 10),
