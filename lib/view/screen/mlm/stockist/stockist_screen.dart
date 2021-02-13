@@ -160,7 +160,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
       ]),
       body:Scrollbar(
           child: Container(
-            padding: EdgeInsets.only(left:0.0,right: 0.0),
+            padding: EdgeInsets.only(left:10.0,right: 10.0,top:10),
             child: Column(
               children: [
                 Expanded(
@@ -172,27 +172,18 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                         return Container(
                           color: Colors.transparent,
                           child: InkWell(
-                            borderRadius:new BorderRadius.circular(10.0),
+                            borderRadius:new BorderRadius.circular(4.0),
                             onTap: (){},
                             child: Card(
-                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                               elevation: 0.0,
-                              color: Colors.transparent,
-                              margin: const EdgeInsets.all(0.0),
+                              color: Color(0xFFEEEEEE),
                               child: Row(
                                 children: <Widget>[
-                                  Container(
-                                    margin: EdgeInsets.only(right:10.0),
-                                    width: 10.0,
-                                    height: 60.0,
-                                    decoration: BoxDecoration(
-                                        color:Constant().mainColor,
-                                        borderRadius: new BorderRadius.circular(10.0)
-                                    ),
-                                  ),
                                   Expanded(
                                     flex: 1,
                                     child: Container(
+                                      padding: EdgeInsets.all(10.0),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
@@ -215,34 +206,31 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                                       ),
                                     ),
                                   ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                  Row(
                                     children: [
-                                      WidgetHelper().myPress((){},Container(
-                                        margin: EdgeInsets.only(right: 10.0),
-                                        color: Constant().mainColor,
-                                        padding: EdgeInsets.all(5.0),
-                                        child:  WidgetHelper().textQ("Transfer", 10, Constant().secondDarkColor,FontWeight.bold),
-                                      )),
-                                      if(widget.type=='ro')SizedBox(height:5.0),
-                                      if(widget.type=='ro')WidgetHelper().myPress((){},Container(
-                                        margin: EdgeInsets.only(right: 10.0),
+                                      FlatButton(
                                         color: Constant().blueColor,
-                                        padding: EdgeInsets.all(5.0),
+                                        padding: EdgeInsets.all(0.0),
+                                        child:  WidgetHelper().textQ("Transfer", 10, Constant().secondDarkColor,FontWeight.bold),
+                                        onPressed: (){},
+                                      ),
+                                      if(widget.type=='ro')SizedBox(width:5.0),
+                                      if(widget.type=='ro')FlatButton(
+                                        color: Constant().secondColor,
+                                        padding: EdgeInsets.all(0.0),
                                         child:  WidgetHelper().textQ("Aktivasi", 10, Constant().secondDarkColor,FontWeight.bold),
-                                      )),
-                                      // WidgetHelper().textQ("Transfer", 10, Constant().secondColor,FontWeight.bold),
-
+                                        onPressed: (){},
+                                      ),
                                     ],
                                   )
+
                                 ],
                               ),
                             ),
                           ),
                         );
                       },
-                      separatorBuilder: (context,index){return Divider();},
+                      separatorBuilder: (context,index){return SizedBox(height:1);},
                       itemCount: pinModel.result.data.length
                   ):WidgetHelper().noDataWidget(context),
                 ),
