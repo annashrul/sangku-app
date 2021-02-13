@@ -9,11 +9,15 @@ import 'package:sangkuy/helper/money_format_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/member/available_member_model.dart';
+import 'package:sangkuy/model/member/bank_member_model.dart';
 import 'package:sangkuy/model/wallet/config_wallet_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
+import 'package:sangkuy/view/widget/bank_member_widget.dart';
 import 'package:sangkuy/view/widget/bank_widget.dart';
+import 'package:sangkuy/view/widget/camera_widget.dart';
 import 'package:sangkuy/view/widget/confirm_widget.dart';
 import 'package:sangkuy/view/widget/detail_scaffold.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
@@ -37,11 +41,18 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
   ConfigWalletModel configWalletModel;
   final FocusNode nominalFocus = FocusNode();
   var nominalController = MoneyMaskedTextControllerQ(decimalSeparator: '', thousandSeparator: ',');
+  final FocusNode penerimaFocus = FocusNode();
+  var penerimaController = TextEditingController();
   String idBank='';
   int saldo=0;
   int idx=10;
+  bool isHaveKtp=false;
   dynamic dataBank;
   dynamic data;
+  String image='';
+  String title='';
+  String desc='';
+  AvailableMemberModel availableMemberModel;
   Future loadConfig()async{
     final config = await BaseProvider().getProvider("transaction/wallet/config", configWalletModelFromJson);
     if(config==Constant().errSocket||config==Constant().errTimeout){
@@ -67,37 +78,104 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             configWalletModel = result;
             isLoading=false;
             isError=false;
+            isHaveKtp=result.result.isHaveKtp;
           });
+          if(widget.title=='TOP UP'){
+            saldo=int.parse(result.result.dpMin);
+            if(result.result.trxDp!='-'){
+              setState(() {
+                isPending=true;
+                title='Transaksi Pending';
+                desc = 'Maaf, terdapat transaksi anda yang masih pending';
+              });
+              return showNotif(context);
+            }
+          }
+          if(widget.title=='TRANSFER'){
+            saldo=int.parse(result.result.tfMin);
+            setState(() {});
+          }
+          if(widget.title=='PENARIKAN'){
+            saldo=int.parse(result.result.wdMin);
+            setState(() {});
+            if(!isHaveKtp){
+              setState(() {
+                isPending=true;
+                title='Informasi';
+                desc = 'Untuk melakukan penarikan, kami harus memastikan bahwa anda bukan robot. Maka dari itu silahkan unggah foto identitas anda seperti KTP/SIM/KITAS dsb.';
+              });
+              return showNotif(context);
+            }
+            if(result.result.trxWd!='0'){
+              setState(() {
+                isPending=true;
+                title='Transaksi Pending';
+                desc = 'Maaf, terdapat transaksi anda yang masih pending';
+              });
+              return showNotif(context);
+            }
+          }
+
         }
       }
     }
   }
   Future handleNext()async{
     String msg='';
+    if(widget.title=='TRANSFER'){
+      if(penerimaController.text==''){
+        msg='Penerima tidak boleh kosong';
+      }
+      else{
+        WidgetHelper().loadingDialog(context);
+        var checkingMember=await BaseProvider().getProvider('member/data/${penerimaController.text}', availableMemberModelFromJson);
+        Navigator.pop(context);
+        if(checkingMember is General){
+          General result=checkingMember;
+          msg=result.msg;
+        }
+        else{
+          availableMemberModel = checkingMember;
+        }
+      }
+    }
     if(nominalController.text==''){
       msg='nominal tidak boleh kosong';
       nominalFocus.requestFocus();
     }
-    else if(nominalController.text=='0'){
+    if(nominalController.text=='0'){
       msg='nominal harus lebih dari 0';
       nominalFocus.requestFocus();
     }
-    else if(int.parse(nominalController.text.replaceAll(",",""))<saldo){
-      msg='Deposit minimal Rp ${FunctionHelper().formatter.format(saldo)}';
+    if(int.parse(nominalController.text.replaceAll(",",""))<saldo){
+      msg='${widget.title.toLowerCase()} minimal Rp ${FunctionHelper().formatter.format(saldo)}';
       nominalFocus.requestFocus();
     }
+
     if(msg==''){
       nominalFocus.unfocus();
-      data={
-        "nominal":nominalController.text.replaceAll(",",""),
-        "admin":"0",
-        "total":int.parse(nominalController.text.replaceAll(",",""))+0,
-        "bankTujuan":dataBank['bank_name'],
-        "atasNama":dataBank['acc_name'],
-      };
-      setState(() {
-        // data={"data1":""};
-      });
+      double admin = int.parse(configWalletModel.result.tfCharge)/100*int.parse(nominalController.text.replaceAll(",",""));
+      String charge=admin.toString().split(".")[0];
+      if(widget.title=='TRANSFER'){
+        data={
+          "param":'transfer',
+          "nominal":nominalController.text.replaceAll(",",""),
+          "admin":'$charge',
+          "total":'${int.parse(nominalController.text.replaceAll(",",""))+int.parse(charge)}',
+          "penerima":availableMemberModel.result.fullName,
+        };
+      }
+      if(widget.title=='TOP UP'||widget.title=='PENARIKAN'){
+        data={
+          "param":'topup-penarikan',
+          "nominal":nominalController.text.replaceAll(",",""),
+          "admin":widget.title=='PENARIKAN'?'$charge':'0',
+          "total":'${widget.title=='PENARIKAN'?int.parse(nominalController.text.replaceAll(",",""))+int.parse(charge):int.parse(nominalController.text.replaceAll(",",""))+0}',
+          "bankTujuan":dataBank['bank_name'],
+          "atasNama":dataBank['acc_name'],
+        };
+      }
+      setState(() {});
       WidgetHelper().myModal(context,Container(
         height: MediaQuery.of(context).size.height/1.7,
         child: ConfirmWidget(data:data,callback: (){
@@ -112,15 +190,26 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
     }
   }
   Future checkout(pin)async{
-    print(pin);
-    print(dataBank['id']);
+    String url='';
     final val={
-      "id_bank_destination":dataBank['id'],
       "amount":data['nominal'],
       "member_pin":pin
     };
+    if(widget.title=='TOP UP'){
+      url='transaction/deposit';
+      val['id_bank_destination']=dataBank['id'];
+    }
+    if(widget.title=='TRANSFER'){
+      url='transaction/transfer';
+      val['id_penerima']=penerimaController.text;
+    }
+    if(widget.title=='PENARIKAN'){
+      url='transaction/withdrawal';
+      val['id_bank']=dataBank['id'];
+    }
+    print(val);
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider("transaction/deposit", val);
+    var res = await BaseProvider().postProvider(url, val);
     Navigator.pop(context);
     if(res==Constant().errTimeout||res==Constant().errSocket){
       WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi Kesalahan Koneksi");
@@ -144,11 +233,31 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           },titleBtn1: "Kembali",titleBtn2: "Detail Transksi");
           // WidgetHelper().showFloatingFlushbar(context,"failed",res['msg']);
-        }else{
+        }
+        else{
           print("RESPONSE CHECKOUT ${res['result']}");
-          WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
-          await Future.delayed(Duration(seconds: 2));
-          WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx: base64.encode(utf8.encode(res['result']['kd_trx']))));
+          String kdTrx='';
+          if(widget.title=='TOP UP'){
+            kdTrx= base64.encode(utf8.encode(res['result']['kd_trx']));
+            WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
+            await Future.delayed(Duration(seconds: 2));
+            WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
+          }
+          if(widget.title=='TRANSFER'){
+            WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+              IndexScreen(currentTab: 2).createState().rebuildData().then((value){
+                WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+              });
+            });
+          }
+          if(widget.title=='PENARIKAN'){
+            WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
+              IndexScreen(currentTab: 2).createState().rebuildData().then((value){
+                WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+              });
+            });
+          }
+          // WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
         }
       }
     }
@@ -163,127 +272,206 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
   }
   @override
   Widget build(BuildContext context){
-    return WrapperPageWidget(
-      dataMember: widget.dataMember,
-      children: [
-        if(isLoading)LinearProgressIndicator(),
-        ClipPath(
-          clipper: WaveClipperOne(flip: true),
-          child: Container(
-              padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0),
-              width: double.infinity,
-              color: Constant().secondColor,
-              child:Padding(
-                padding: EdgeInsets.only(left:10,right:10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color: Colors.grey[200]),
-                    SizedBox(height: 10.0),
-                    NominalWidget(callback: (amount,index){
-                      setState(() {
-                        nominalController.text=amount;
-                        idx=index;
-                      });
-                    },idx:idx),
-                    SizedBox(height: 20.0),
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color: Colors.grey[200]),
-                    SizedBox(height: 10.0),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).focusColor.withOpacity(0.3),
-                      ),
-                      child: TextFormField(
-                        style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().secondDarkColor),
-                        controller: nominalController,
-                        maxLines: 1,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1)),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          prefixText: 'Rp.',
-                          hintStyle: TextStyle(color:Constant().secondDarkColor, fontSize:12,fontFamily:Constant().fontStyle),
-                        ),
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        focusNode: nominalFocus,
-                        onFieldSubmitted: (term){
-                        },
-                        inputFormatters: <TextInputFormatter>[
-                          // LengthLimitingTextInputFormatter(10),
-                          WhitelistingTextInputFormatter.digitsOnly,
-                          BlacklistingTextInputFormatter.singleLineFormatter,
-                        ],
-                        onChanged: (e){
-                          int amount;
-                          for(int i=0;i<FunctionHelper.dataNominal.length;i++){
-                            if(FunctionHelper.dataNominal[i]==e){
-                              amount=i;
-                              break;
-                            }
-                            continue;
-                          }
-                          idx = amount!=null?amount:10;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 20.0),
-                    WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color: Colors.grey[200]),
-                    BankWidget(callback: (val){
-                      setState(() {
-                        idBank=val['id'];
-                        dataBank=val;
-                      });
-                    },id: idBank,isSaldo: false),
-                    SizedBox(height: 70.0),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      child: FlatButton(
-                          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-                          onPressed: () {
-                            if(!isPending){
-                              handleNext();
-                            }else{
-                              showNotif(context);
-                            }
-                          },
-                          padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-                          color: Constant().mainColor,
-                          child:Container(
-                            padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                                SizedBox(width:10.0),
-                                WidgetHelper().textQ("LANJUT", 14, Constant().secondDarkColor, FontWeight.bold),
+    return Scaffold(
+      body: SafeArea(
+        child: RefreshWidget(
+          widget: WrapperPageWidget(
+            dataMember: widget.dataMember,
+            children: [
+              if(isLoading)LinearProgressIndicator(),
+              ClipPath(
+                clipper: WaveClipperOne(flip: true),
+                child: Container(
+                    padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0),
+                    width: double.infinity,
+                    color: Constant().secondColor,
+                    child:Padding(
+                      padding: EdgeInsets.only(left:10,right:10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color: Colors.grey[200]),
+                          SizedBox(height: 10.0),
+                          NominalWidget(callback: (amount,index){
+                            setState(() {
+                              nominalController.text=amount;
+                              idx=index;
+                            });
+                          },idx:idx),
+                          SizedBox(height: 20.0),
+                          WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color: Colors.grey[200]),
+                          SizedBox(height: 10.0),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Theme.of(context).focusColor.withOpacity(0.3),
+                            ),
+                            child: TextFormField(
+                              style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().secondDarkColor),
+                              controller: nominalController,
+                              maxLines: 1,
+                              autofocus: false,
+                              decoration: InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1)),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                prefixText: 'Rp.',
+                                hintStyle: TextStyle(color:Constant().secondDarkColor, fontSize:12,fontFamily:Constant().fontStyle),
+                              ),
+                              keyboardType: TextInputType.number,
+                              textInputAction: TextInputAction.done,
+                              focusNode: nominalFocus,
+                              onFieldSubmitted: (term){
+                              },
+                              inputFormatters: <TextInputFormatter>[
+                                if(widget.title=='TRANSFER'||widget.title=='PENARIKAN')LengthLimitingTextInputFormatter(10),
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                BlacklistingTextInputFormatter.singleLineFormatter,
                               ],
+                              onChanged: (e){
+                                int amount;
+                                for(int i=0;i<FunctionHelper.dataNominal.length;i++){
+                                  if(FunctionHelper.dataNominal[i]==e){
+                                    amount=i;
+                                    break;
+                                  }
+                                  continue;
+                                }
+                                idx = amount!=null?amount:10;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20.0),
+                          if(widget.title=='TRANSFER')transfer(),
+                          if(widget.title=='PENARIKAN'||widget.title=='TOP UP')WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color: Colors.grey[200]),
+                          SizedBox(height: 10.0),
+                          if(widget.title=='PENARIKAN')penarikan(),
+                          if(widget.title=='TOP UP')topup(),
+                          SizedBox(height: 70.0),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                            child: FlatButton(
+                                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                                onPressed: () {
+                                  if(!isPending){
+                                    handleNext();
+                                  }else{
+                                    showNotif(context);
+                                  }
+                                },
+                                padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
+                                color: Constant().mainColor,
+                                child:Container(
+                                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
+                                      SizedBox(width:10.0),
+                                      WidgetHelper().textQ("LANJUT", 14, Constant().secondDarkColor, FontWeight.bold),
+                                    ],
+                                  ),
+                                )
+                              // child:Text("abus")
                             ),
                           )
-                        // child:Text("abus")
+                        ],
                       ),
                     )
-                  ],
                 ),
               )
+            ],
+            action: HeaderWidget(title:widget.title,action: Text('')),
           ),
-        )
-      ],
-      action: HeaderWidget(title:widget.title,action: Text('')),
+          callback: (){
+            setState(() {
+              isLoading=true;
+            });
+            loadConfig();
+          },
+        ),
+      ),
     );
   }
 
+  Widget transfer(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        WidgetHelper().titleNoButton(context,AntDesign.user,"ID Penerima",color: Colors.grey[200]),
+        SizedBox(height: 10.0),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).focusColor.withOpacity(0.3),
+          ),
+          child: TextFormField(
+            style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().secondDarkColor),
+            controller: penerimaController,
+            maxLines: 1,
+            autofocus: false,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1)),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              hintStyle: TextStyle(color:Constant().secondDarkColor, fontSize:12,fontFamily:Constant().fontStyle),
+            ),
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.done,
+            focusNode: penerimaFocus,
+            // textCapitalization: TextCapitalization.sentences,
+            textCapitalization: TextCapitalization.characters,
+
+          ),
+        ),
+        WidgetHelper().textQ('ID Penerima bisa dilihat melalui profil penerima yang akan di transfer',10.0,Colors.grey[200],FontWeight.normal),
+      ],
+    );
+  }
+
+  Widget topup(){
+    return BankWidget(callback: (val){
+      setState(() {
+        idBank=val['id'];
+        dataBank=val;
+      });
+    },id: idBank,isSaldo: false);
+  }
+
+  Widget penarikan(){
+    return BankMemberWidget(callback: (id){
+      Datum datum=id;
+      setState(() {
+        idBank=datum.id;
+        dataBank=datum.toJson();
+      });
+      print(id);
+    },id: idBank);
+  }
+
   void showNotif(BuildContext context){
-    WidgetHelper().notifOneBtnDialog(context,"Transaksi Pending","Maaf, terdapat transaksi anda yang masih pending", (){
-      WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    WidgetHelper().notifOneBtnDialog(context,title,desc, (){
+      if(!isHaveKtp){
+        WidgetHelper().myModal(context,CameraWidget(callback: (img){
+          setState(() {
+            image=img;
+          });
+        }));
+      }
+      else{
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      }
     });
   }
 }

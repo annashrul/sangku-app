@@ -45,10 +45,18 @@ class CartProvider{
     else if(res==Constant().errExpToken){
       return Constant().errExpToken;
     }
+    else if(res==Constant().errNoData){
+      return Constant().errNoData;
+    }
+    else if(res is General){
+      General result=res;
+      return General.fromJson(result.toJson());
+    }
     else{
       if(res is CartModel){
         CartModel result=res;
         if(result.status=='success'){
+          print("RESPONSE CART ${result.toJson()}");
           cartModel = CartModel.fromJson(result.toJson());
           return cartModel;
         }

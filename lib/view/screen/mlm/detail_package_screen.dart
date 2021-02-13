@@ -30,6 +30,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   int _tabIndex = 0,qty=1,stock=0,total=0;
   bool isLoading=false,isError=false;
   DetailPackageModel detailPackageModel;
+  String tipe='';
   Future loadData()async{
     await loadDetail();
     await loadCart();
@@ -51,6 +52,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
       setState(() {
         isLoading=false;
         isError=false;
+        tipe = cartModel.result.length>0?cartModel.result[0].type.toString():'';
         total = cartModel.result.length;
       });
     }
@@ -102,16 +104,33 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
       WidgetHelper().notifBar(context,"failed","qty tidak boleh kurang dari 1");
     }
     else{
-      if(package!=widget.tipe&&package!=null){
-        WidgetHelper().notifDialog(context,"Informasi !","ada paket ${widget.tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
+      if(tipe==''){
+        postCart();
+        return;
+      }
+      if(tipe!=widget.tipe){
+        WidgetHelper().notifDialog(context,"Informasi !","ada paket ${widget.tipe=='0'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
           Navigator.pop(context);
         }, ()async{
           Navigator.pop(context);
           postCart();
         });
-      }else{
-        postCart();
+        return;
       }
+      if(tipe==widget.tipe){
+        postCart();
+        return;
+      }
+      // if(package!=widget.tipe&&package!=null){
+      //   WidgetHelper().notifDialog(context,"Informasi !","ada paket ${widget.tipe=='0'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
+      //     Navigator.pop(context);
+      //   }, ()async{
+      //     Navigator.pop(context);
+      //     postCart();
+      //   });
+      // }else{
+      //   postCart();
+      // }
     }
   }
   void addQty(){
@@ -147,7 +166,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("TOTAL CART $total");
+    print("TYPE PACKAGE ${widget.tipe}");
     _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
     isLoading=true;

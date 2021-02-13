@@ -184,7 +184,7 @@ class WidgetHelper{
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,16,Colors.grey,FontWeight.bold),
+      title:textQ(title.toUpperCase(),16,Colors.grey,FontWeight.bold),
       leading: IconButton(
         icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){
@@ -232,7 +232,7 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ("$title",16,Colors.black,FontWeight.bold,letterSpacing: 3.0),
+          WidgetHelper().textQ("$title",16,Colors.grey,FontWeight.bold,letterSpacing: 3.0),
           if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
         ],
       ),
@@ -289,7 +289,7 @@ class WidgetHelper{
           return Center(
             child: AlertDialog(
               title:textQ(title,14,Colors.black,FontWeight.bold),
-              content:textQ(desc,12,Colors.black,FontWeight.bold),
+              content:textQ(desc,12,Colors.black,FontWeight.bold,maxLines:100),
               // content:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.caption, children: [TextSpan(text:widget.wrongPassContent),],),),
               actions: <Widget>[
                 FlatButton(

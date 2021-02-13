@@ -15,6 +15,7 @@ class Constant{
   final String errTimeout     = 'TimeoutException';
   final String errSocket      = 'SocketException';
   final String errExpToken    = 'TokenExpiredError';
+  final String errNoData    = 'nodata';
   final String msgConnection  = 'Terjadi Kesalahan Jaringan';
   final String localAssets    = 'assets/img/';
   final String localIcon      = 'assets/icon/';
@@ -29,6 +30,7 @@ class Constant{
   final Color mainColor       = Color(0xFF03AC0E);
   final Color mainDarkColor   = Color(0xFF22B7CE);
   final Color secondColor     = Color(0xFF04526B);
+  final Color blueColor       = Color(0xFF138496);
   final Color secondDarkColor = Color(0xFFE7F6F8);
   final Color darkMode        = Color(0xFF2C2C2C);
   final Color moneyColor      = Color(0xFFFA591D);

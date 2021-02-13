@@ -52,8 +52,7 @@ class CardWidget extends StatelessWidget {
                 ),
 
               ) : Container(),
-              (this.icon != null)
-                  ? Container(
+              (this.icon != null) ? Container(
                 margin: const EdgeInsets.all(5.0),
                 width: 50.0,
                 height: 50.0,
@@ -63,10 +62,7 @@ class CardWidget extends StatelessWidget {
                       ? this.iconColor
                       : Colors.black,
                 ),
-              )
-                  : Container(
-                margin: const EdgeInsets.only(left: 20.0),
-              ),
+              ) : Container(margin: const EdgeInsets.only(left: 20.0),),
               Expanded(
                 flex: 1,
                 child: Container(

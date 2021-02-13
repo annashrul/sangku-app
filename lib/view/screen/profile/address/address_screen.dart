@@ -37,7 +37,7 @@ class _AddressScreenState extends State<AddressScreen> {
   ScrollController controller;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   AddressModel listAddressModel;
-  bool isLoading=false,isLoadmore=false,isError=false,isErrToken=false;
+  bool isLoading=false,isLoadmore=false,isError=false,isErrToken=false,isNodata=false;
   int total=0,perpage=10;
   DatabaseConfig db = DatabaseConfig();
 
@@ -48,6 +48,7 @@ class _AddressScreenState extends State<AddressScreen> {
         isError=true;
         isLoading=false;
         isLoadmore=false;
+        isNodata=false;
       });
     }
     else if(res=='failed'){
@@ -55,6 +56,7 @@ class _AddressScreenState extends State<AddressScreen> {
         isError=true;
         isLoading=false;
         isLoadmore=false;
+        isNodata=false;
       });
       WidgetHelper().showFloatingFlushbar(context,"failed",'gagal mengambil data');
     }
@@ -64,10 +66,27 @@ class _AddressScreenState extends State<AddressScreen> {
         isLoading=false;
         isLoadmore=false;
         isErrToken=true;
+        isNodata=false;
       });
       WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
         await FunctionHelper().logout(context);
       },titleBtn1: "Login");
+    }
+    else if(res==Constant().errNoData){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      isNodata=true;
+      total=0;
+      setState(() {});
+    }
+    else if(res is General){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      isNodata=true;
+      total=0;
+      setState(() {});
     }
     else{
       if (this.mounted) {
@@ -75,6 +94,7 @@ class _AddressScreenState extends State<AddressScreen> {
           listAddressModel = res;
           isError = false;
           isLoading = false;
+          isNodata=false;
           total = listAddressModel.result.total;
         });
       }
@@ -144,7 +164,7 @@ class _AddressScreenState extends State<AddressScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: FlatButton(
                     onPressed: (){
-                      WidgetHelper().myModal(context, ModalForm(total:listAddressModel.result.data.length,id:"",callback:(String par){
+                      WidgetHelper().myModal(context, ModalForm(total:total,id:"",callback:(String par){
                         if(par=='berhasil'){
                           loadData();
                           WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
@@ -161,7 +181,7 @@ class _AddressScreenState extends State<AddressScreen> {
           ),
         )
       ],brightness: Brightness.light),
-      body: isLoading?AddressLoading():isError?ErrWidget(callback: (){loadData();}):isErrToken?Text(''):listAddressModel.result.data.length>0?RefreshWidget(
+      body: isLoading?AddressLoading():isError?ErrWidget(callback: (){loadData();}):isErrToken?Text(''):!isNodata?RefreshWidget(
         widget: Column(
           children: [
             Expanded(

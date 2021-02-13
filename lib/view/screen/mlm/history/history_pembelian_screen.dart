@@ -24,7 +24,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   ScrollController controller;
   int perpage=10;
   int total=0;
-  bool isLoading=false,isLoadmore=false,isError=false,isErrToken;
+  bool isLoading=false,isLoadmore=false,isError=false,isErrToken,isNodata=false;
   String lbl='';
   int filterStatus=5;
 
@@ -34,6 +34,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
       setState(() {
         isLoading=false;
         isError=true;
+        isNodata=false;
       });
     }
     else if(res==Constant().errExpToken){
@@ -41,8 +42,18 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
         isLoading=false;
         isError=false;
         isErrToken=true;
+        isNodata=false;
+
       });
     }
+    else if(res==Constant().errNoData){
+      setState(() {
+        isLoading=false;
+        isError=false;
+        isNodata=true;
+      });
+    }
+
     else{
       if(res is HistoryPemberlianModel){
         HistoryPemberlianModel result=res;
@@ -54,6 +65,8 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
             isLoadmore=false;
             isError=false;
             isErrToken=false;
+            isNodata=false;
+
           });
         }
         else{
@@ -61,6 +74,8 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
             isLoading=false;
             isError=false;
             isErrToken=false;
+            isNodata=false;
+
           });
         }
       }
@@ -139,7 +154,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
               ),
               Expanded(
                 flex: 19,
-                child: isLoading?HistoryPembelianLoading(tot: 10):Scrollbar(child: Column(
+                child: isLoading?HistoryPembelianLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):Scrollbar(child: Column(
                   children: [
                     Expanded(
                         flex:16,

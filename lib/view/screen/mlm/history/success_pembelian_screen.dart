@@ -4,6 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
@@ -73,19 +74,16 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
         key: key,
-        appBar: WidgetHelper().appBarWithButton(context,"Transaksi Berhasil", (){
+        appBar: WidgetHelper().appBarWithButton(context,"Transaksi Berhasil", ()async{
           // WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          IndexScreen(currentTab: 2).createState().rebuildData().then((value){
-            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          });
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+
         },<Widget>[]),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(vertical: 10),

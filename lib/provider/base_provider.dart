@@ -20,14 +20,22 @@ class BaseProvider{
         "HttpHeaders.contentTypeHeader": "application/json"
       };
       final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
-      final res = jsonDecode(response.body);
+      print("=================== GET DATA $url = ${response.statusCode} ============================");
+      final jsonResponse = json.decode(response.body);
       if (response.statusCode == 200) {
-        return param(response.body);
+        if(jsonResponse['result'].length>0){
+          return param(response.body);
+        }else{
+          print("=================== GET DATA $url = NODATA ============================");
+          return Constant().errNoData;
+        }
       }
       else if(response.statusCode == 400){
-        return Constant().errExpToken;
+        if(jsonResponse['name']==Constant().errExpToken){
+          return Constant().errExpToken;
+        }
+        return General.fromJson(jsonResponse);
       }
-      // else if(res.)
     }on TimeoutException catch (_) {
       return Constant().errTimeout;
     } on SocketException catch (_) {

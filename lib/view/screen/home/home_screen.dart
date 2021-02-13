@@ -9,26 +9,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List data=[
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2020/8/28/47197032/47197032_914c9752-19e1-42b0-8181-91ef0629fd8a.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/10/22/21181130/21181130_907dac9a-c185-43d1-b459-2389f0b6efea.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/10/22/21181130/21181130_53682a49-5247-4374-82c0-4c2a8d3bdbea.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/12/13/51829405/51829405_77281743-12fd-402b-b212-67b52516229c.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_5ee75889-94bc-45d3-9ce6-5ecf466fb385.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/10/22/21181130/21181130_5e0e4f34-0e41-48c4-baa0-dbf8a5e151d2.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_a40bc9db-8fd8-426f-985f-9930fe83711a.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2020/1/23/47197032/47197032_0de76bd3-0481-4ee2-8c52-9700cbbc3ae7.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2020/3/27/41313334/41313334_ed6fac94-00eb-4a37-bd4e-6ecab312e6f2.png',
-    'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_0653d8df-0bb4-4714-9267-b987298c0420.png'
-  ];
-  List dataWallet=[
-    {'title':"Top Up",'icon':Constant().localIcon+'topup_icon.svg'},
-    {'title':"Transfer",'icon':Constant().localIcon+'transfer_icon.svg'},
-    {'title':"Penarikan",'icon':Constant().localIcon+'history_icon.svg'},
-    // Constant().localIcon+'topup_icon.svg',
-    // Constant().localIcon+'transfer_icon.svg',
-    // Constant().localIcon+'history_icon.svg',
-  ];
 
   bool isLoadingNews=false,isErrorNews=false,isTokenExpNews=false;
   bool isLoadingRedeem=false,isErrorRedeem=false,isTokenExpRedeem=false;
@@ -183,20 +163,12 @@ class _HomeScreenState extends State<HomeScreen> {
               shrinkWrap: true,
               primary: false,
               crossAxisCount: 3,
-              itemCount:  dataWallet.length,
+              itemCount:  DataHelper.dataWallet.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   child: FlatButton(
                     onPressed: (){
-                      if(dataWallet[index]['title']=='Top Up'){
-                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'TOP UP'));
-                      }
-                      if(dataWallet[index]['title']=='Transfer'){
-                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'TRANSFER'));
-                      }
-                      if(dataWallet[index]['title']=='Penarikan'){
-                        WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:'PENARIKAN'));
-                      }
+                      WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:DataHelper.dataWallet[index]['title'].toUpperCase()));
                     },
                     shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                     padding: EdgeInsets.all(10.0),
@@ -204,13 +176,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         SvgPicture.asset(
-                            dataWallet[index]['icon'],
+                            DataHelper.dataWallet[index]['icon'],
                             height: 30,
                             width: 30,
                             color:Constant().secondColor
                         ),
                         SizedBox(height:5.0),
-                        WidgetHelper().textQ(dataWallet[index]['title'],12,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.center),
+                        WidgetHelper().textQ(DataHelper.dataWallet[index]['title'],12,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.center),
                       ],
                     ),
                   ),
@@ -229,64 +201,42 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget section1(BuildContext context){
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width/2.2,
-                child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                  padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
-                  color: Color(0xFFEEEEEE),
-                  onPressed: (){},
-                  child: Container(
-                    padding:EdgeInsets.only(left:0.0),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                            Constant().localIcon+"lainnya_icon.svg",
-                            height: 30,
-                            width: 30,
-                            color:Constant().secondColor
-                        ),
-                        // Icon(AntDesign.piechart,size:30.0,color: Constant().secondColor,),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Pin Aktivasi",12,Constant().secondColor,FontWeight.bold)
-                      ],
+      child: StaggeredGridView.countBuilder(
+        shrinkWrap: true,
+        primary: false,
+        crossAxisCount: 2,
+        itemCount:  DataHelper.dataStockist.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            width: MediaQuery.of(context).size.width/2.2,
+            child: FlatButton(
+              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+              padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
+              color: Color(0xFFEEEEEE),
+              onPressed: (){
+                WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataStockist[index]['type']));
+              },
+              child: Container(
+                padding:EdgeInsets.only(left:0.0),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                        DataHelper.dataStockist[index]['icon'],
+                        height: 30,
+                        width: 30,
+                        color:Constant().secondColor
                     ),
-                  ),
+                    SizedBox(width:10.0),
+                    WidgetHelper().textQ(DataHelper.dataStockist[index]['title'],12,Constant().secondColor,FontWeight.bold)
+                  ],
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width/2.2,
-                child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                  padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
-                  color: Color(0xFFEEEEEE),
-                  onPressed: (){},
-                  child: Container(
-                    padding:EdgeInsets.only(left:0.0),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                            Constant().localIcon+"lainnya_icon.svg",
-                            height: 30,
-                            width: 30,
-                            color:Constant().secondColor
-                        ),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Pin Repeat Order",12,Constant().secondColor,FontWeight.bold)
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-            ],
-          )
-        ],
+            ),
+          );
+        },
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        mainAxisSpacing: 0.0,
+        crossAxisSpacing: 20.0,
       ),
     );
   }
@@ -302,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
               shrinkWrap: true,
               primary: false,
               crossAxisCount: 5,
-              itemCount:  data.length,
+              itemCount:  DataHelper.dataPPOB.length,
               itemBuilder: (BuildContext context, int index) {
                 return WidgetHelper().myPress((){},
                     Container(
@@ -315,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 0),
                               child:CachedNetworkImage(
-                                imageUrl:data[index],
+                                imageUrl:DataHelper.dataPPOB[index],
                                 width: double.infinity ,
                                 fit:BoxFit.scaleDown,
                                 placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),

@@ -200,12 +200,15 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
     }
     else if(res==Constant().errExpToken){
-      WidgetHelper().showFloatingFlushbar(context,"failed","token kadaluarsa");
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+        FunctionHelper().logout(context);
+      });
     }
     else if(res is General){
       General result=res;
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }else{
+      await FunctionHelper().removePackage();
       WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx: base64.encode(utf8.encode(res['result']['kd_trx']))));
     }
   }
@@ -678,9 +681,6 @@ class _ModalKurirState extends State<ModalKurir> {
     );
   }
 }
-
-
-
 
 class ModalLayanan extends StatefulWidget {
   ModalLayanan({

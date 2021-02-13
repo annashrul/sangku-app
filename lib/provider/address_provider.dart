@@ -13,6 +13,13 @@ class AddressProvider{
     else if(res==Constant().errExpToken){
       return Constant().errExpToken;
     }
+    else if(res==Constant().errNoData){
+      return Constant().errNoData;
+    }
+    else if(res is General){
+      General result=res;
+      return General.fromJson(result.toJson());
+    }
     else{
       if(res is AddressModel){
         AddressModel result=res;

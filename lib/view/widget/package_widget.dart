@@ -119,7 +119,10 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
               itemBuilder: (context,index){
                 var val = packageModel.result.data[index];
                 return WidgetHelper().myPress((){
-                  WidgetHelper().myPush(context,DetailPackageScreen(id:val.id,tipe: widget.tipe));
+                  WidgetHelper().myPushAndLoad(context, DetailPackageScreen(id:val.id,tipe: widget.tipe=='1'?'0':'1'), (){
+                    widget.callback(val.id,1,'');
+                  });
+                  // WidgetHelper().myPush(context,DetailPackageScreen(id:val.id,tipe: widget.tipe=='1'?'0':'1'));
                 },Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,14 +149,13 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
                         errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
                       ),
                       SizedBox(height:10),
-
                       WidgetHelper().textQ(val.deskripsi,12,Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
                       SizedBox(height:10),
                       FlatButton(
                         padding: EdgeInsets.all(10.0),
                         color: Constant().moneyColor,
                         onPressed: (){
-                          widget.callback(val.id,1,widget.tipe);
+                          widget.callback(val.id,1,widget.tipe=='1'?'0':'1');
                         },
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,

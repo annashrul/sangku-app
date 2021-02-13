@@ -14,6 +14,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   TabController _tabController;
   bool isLoading=false,isError=false,isErrToken;
   int total=0;
+  String tipe='';
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -35,13 +36,28 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       },titleBtn1: "Login");
       setState(() {});
     }
+    else if(res==Constant().errNoData){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      total = 0;
+      setState(() {});
+    }
+    else if(res is General){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      total = 0;
+      setState(() {});
+    }
     else{
-      CartModel cartModel=res;
       if(this.mounted){
+        CartModel cartModel=res;
         setState(() {
           isLoading=false;
           isError=false;
           total = cartModel.result.length;
+          tipe = cartModel.result.length>0?cartModel.result[0].type.toString():'';
         });
       }
     }
@@ -61,19 +77,30 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       WidgetHelper().notifBar(context,"failed",res);
     }
   }
-  Future postCart(id,qty,tipe)async{
+  Future postCart(id,qty,type)async{
     final package=await FunctionHelper().isPackage();
-    if(package!=tipe&&package!=null){
-      WidgetHelper().notifDialog(context,"Informasi !","ada paket ${tipe=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
+    print("SESSION $package");
+    print("VARIABLE $tipe");
+    print("PARAMETER $type");
+    if(tipe==''){
+      WidgetHelper().loadingDialog(context);
+      handleSubmit(id,qty,tipe);
+      return;
+    }
+    if(tipe!=type){
+      WidgetHelper().notifDialog(context,"Informasi !","ada paket ${type=='1'?'Aktivasi':'Repeat Order'}. Anda yakin akan melanjutkan transaksi ??", (){
         Navigator.pop(context);
       }, ()async{
         Navigator.pop(context);
         WidgetHelper().loadingDialog(context);
-        handleSubmit(id,qty,tipe);
+        handleSubmit(id,qty,type);
       });
-    }else{
+      return;
+    }
+    if(tipe==type){
       WidgetHelper().loadingDialog(context);
       handleSubmit(id,qty,tipe);
+      return;
     }
 
   }
@@ -133,12 +160,23 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                 children: [
                   Scrollbar(
                     child: PackageWidget(tipe:'1',callback: (id,qty,tipe){
-                      postCart(id, qty,tipe);
+                      print(tipe);
+                      if(tipe==''){
+                        loadCart();
+                      }
+                      else{
+                        postCart(id, qty,tipe);
+                      }
                     }),
                   ),
                   Scrollbar(
                     child: PackageWidget(tipe:'ro',callback: (id,qty,tipe){
-                      postCart(id, qty,tipe);
+                      if(tipe==''){
+                        loadCart();
+                      }
+                      else{
+                        postCart(id, qty,tipe);
+                      }
                     },),
                   ),
                 ]

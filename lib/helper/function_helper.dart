@@ -35,7 +35,10 @@ class FunctionHelper{
     final pickedFile = await picker.getImage(source: imageSource);
     return File(pickedFile.path);
   }
-
+  Future removePackage()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.remove("packageType");
+  }
   Future isPackage()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final packageType=prefs.getString("packageType");

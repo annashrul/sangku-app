@@ -6,6 +6,7 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/cart_model.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/mlm/checkout_screen.dart';
@@ -21,7 +22,7 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   CartModel cartModel;
-  bool isLoading=false,isError=false,isErrToken=false;
+  bool isLoading=false,isError=false,isErrToken=false,isNodata=false;
   String tipe='';
   int total=0;
   Future loadPackageType()async{
@@ -36,17 +37,34 @@ class _CartScreenState extends State<CartScreen> {
     if(res=='error'){
       isLoading=false;
       isError=true;
+      isNodata=false;
       setState(() {});
     }
     else if(res=='failed'){
       isLoading=false;
       isError=true;
+      isNodata=false;
       setState(() {});
     }
     else if(res==Constant().errExpToken){
       isLoading=false;
       isError=false;
       isErrToken=true;
+      isNodata=false;
+      setState(() {});
+    }
+    else if(res==Constant().errNoData){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      isNodata=true;
+      setState(() {});
+    }
+    else if(res is General){
+      isLoading=false;
+      isError=false;
+      isErrToken=false;
+      isNodata=true;
       setState(() {});
     }
     else{
@@ -54,6 +72,10 @@ class _CartScreenState extends State<CartScreen> {
       setState(() {
         isLoading=false;
         isError=false;
+        isErrToken=false;
+        isNodata=false;
+        // isLoading=false;
+        // isError=false;
         cartModel = res;
       });
       if(cartModel.result.length<1){
@@ -117,7 +139,7 @@ class _CartScreenState extends State<CartScreen> {
           isLoading=true;
         });
         loadCart();
-      }):cartModel.result.length>0?RefreshWidget(
+      }):!isNodata?RefreshWidget(
         widget: ListView.separated(
             padding: EdgeInsets.all(0.0),
             itemCount: cartModel.result.length,
@@ -134,7 +156,7 @@ class _CartScreenState extends State<CartScreen> {
           loadCart();
         },
       ):WidgetHelper().noDataWidget(context),
-      bottomNavigationBar:isLoading?Text(''):cartModel.result.length>0?Container(
+      bottomNavigationBar:isLoading?Text(''):!isNodata?Container(
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           color: Constant().moneyColor,
           child: FlatButton(

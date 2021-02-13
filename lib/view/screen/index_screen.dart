@@ -56,25 +56,24 @@ class _IndexScreenState extends State<IndexScreen> {
     return WillPopScope(
         child: Scaffold(
           key: scaffoldKey,
-          body: RefreshWidget(
-            widget: PageStorage(
-              child: currentScreen,
-              bucket: bucket,
+          body: PageStorage(
+            child: RefreshWidget(
+              widget: currentScreen,
+              callback: (){
+                WidgetsBinding.instance.addPostFrameCallback((_)async{
+                  isLoadingMember=true;
+                  await loadMember();
+                  if(widget.currentTab==2){
+                    currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
+                  }
+                  if(widget.currentTab==4){
+                    currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson());
+                  }
+                  print("BUILD BERES");
+                });
+              },
             ),
-            callback: (){
-              loadMember();
-              WidgetsBinding.instance.addPostFrameCallback((_)async{
-                isLoadingMember=true;
-                await loadMember();
-                if(widget.currentTab==2){
-                  currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
-                }
-                if(widget.currentTab==4){
-                  currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson());
-                }
-                print("BUILD BERES");
-              });
-            },
+            bucket: bucket,
           ),
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,

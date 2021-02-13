@@ -64,22 +64,8 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
                 child: Scrollbar(
                     child: ListView(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(left:10,right:10),
-                          child: Column(
-                            children: [
-                              content(context,'Bank Tujuan',widget.data['bankTujuan'],Constant().darkMode),
-                              Divider(),
-                              content(context,'Pemilik Bank',widget.data['atasNama'],Constant().darkMode),
-                              Divider(),
-                              content(context,'Jumlah Transfer',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['nominal']}'))+' .-',Constant().moneyColor),
-                              Divider(),
-                              content(context,'Biaya Admin',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['admin']}'))+' .-',Constant().moneyColor),
-                              Divider(),
-                              content(context,'Total Pembayaran',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['total']}'))+' .-',Constant().moneyColor)
-                            ],
-                          ),
-                        )
+                        if(widget.data['param']=='transfer')transfer(),
+                        if(widget.data['param']=='topup-penarikan')topup(),
                       ],
                     )
                 )
@@ -109,6 +95,43 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
       )
     );
   }
+
+  Widget transfer(){
+    return Padding(
+      padding: EdgeInsets.only(left:10,right:10),
+      child: Column(
+        children: [
+          content(context,'Penerima',widget.data['penerima'],Constant().darkMode),
+          Divider(),
+          content(context,'Jumlah',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['nominal']}'))+' .-',Constant().moneyColor),
+          Divider(),
+          content(context,'Biaya Admin',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['admin']}'))+' .-',Constant().moneyColor),
+          Divider(),
+          content(context,'Total Pembayaran',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['total']}'))+' .-',Constant().moneyColor),
+        ],
+      ),
+    );
+  }
+
+  Widget topup(){
+    return Padding(
+      padding: EdgeInsets.only(left:10,right:10),
+      child: Column(
+        children: [
+          content(context,'Bank Tujuan',widget.data['bankTujuan'],Constant().darkMode),
+          Divider(),
+          content(context,'Atas Nama',widget.data['atasNama'],Constant().darkMode),
+          Divider(),
+          content(context,'Jumlah Transfer',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['nominal']}'))+' .-',Constant().moneyColor),
+          Divider(),
+          content(context,'Biaya Admin',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['admin']}'))+' .-',Constant().moneyColor),
+          Divider(),
+          content(context,'Total Pembayaran',"Rp "+FunctionHelper().formatter.format(int.parse('${widget.data['total']}'))+' .-',Constant().moneyColor)
+        ],
+      ),
+    );
+  }
+
   Widget content(BuildContext context, title,desc,Color color){
     return ListTile(
       contentPadding: EdgeInsets.all(0.0),

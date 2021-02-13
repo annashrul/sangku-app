@@ -29,7 +29,7 @@ class ContentProvider{
     }
   }
   Future loadRedeem(String where)async{
-    String url = 'redeem/barang?page=1';
+    String url = 'redeem/barang';
     if(where!=''){
       url+='?$where';
     }

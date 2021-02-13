@@ -48,9 +48,8 @@ class _AppState extends State<App> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.dark, statusBarColor: Colors.black12));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.dark));
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // visualDensity: VisualDensity.adaptivePlatformDensity,
