@@ -19,6 +19,7 @@ import 'package:sangkuy/view/widget/card_widget.dart';
 import 'package:sangkuy/view/widget/detail_scaffold.dart';
 import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:sangkuy/view/widget/loading/detail_history_pembelian_loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailHistoryPembelianScreen extends StatefulWidget {
   final String kdTrx;
@@ -67,16 +68,6 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
       }
     }
   }
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    isLoading=true;
-    loadData();
-    initializeDateFormatting('id');
-
-
-  }
   int retry=0;
   Future checkingAgain()async{
     await checkResi();
@@ -91,13 +82,18 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     }
     else{
       WidgetHelper().loadingDialog(context);
-      var res=await TrackingProvider().checkResi(detailHistoryPembelianModel.result.resi,detailHistoryPembelianModel.result.layananPengiriman,widget.kdTrx);
+      var res=await TrackingProvider().checkResi(
+        // 'JD0099164063',
+          detailHistoryPembelianModel.result.resi,
+          // 'jnt',
+          detailHistoryPembelianModel.result.layananPengiriman.split("|")[0],
+          widget.kdTrx
+      );
+      Navigator.pop(context);
       if(res == 'error'){
-        Navigator.pop(context);
         WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){Navigator.of(context).pop();},(){Navigator.of(context).pop();});
       }
       else if(res =='failed'){
-        Navigator.pop(context);
         if(retry>=3){
           WidgetHelper().notifOneBtnDialog(context, 'Terjadi Kesalahan Server', "Silahkan hubungi admin kami", (){
             WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
@@ -105,13 +101,11 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
         }
         else{
           WidgetHelper().notifDialog(context,"Terjadi Kesalahan","silahkan coba lagi", (){Navigator.pop(context);},(){
-            Navigator.pop(context);
             checkingAgain();
           },titleBtn1: "kembali",titleBtn2: "Coba lagi");
         }
       }
       else{
-        Navigator.pop(context);
         setState(() {
           resiModel = res;
         });
@@ -121,16 +115,140 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
 
   }
 
+  Future doneTrx()async{
+    WidgetHelper().loadingDialog(context);
+    var res=await BaseProvider().putProvider('transaction/done/${widget.kdTrx}', {});
+    Navigator.pop(context);
+    if(res is General){
+      General result=res;
+      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    }
+    else{
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isLoading=true;
+    loadData();
+    initializeDateFormatting('id');
+
+
+  }
+  Widget btnBottom;
+
   @override
   Widget build(BuildContext context) {
     print(widget.kdTrx);
+    if(!isLoading){
+      if(detailHistoryPembelianModel.result.metodePembayaran=='transfer'){
+        btnBottom=Container(
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          color: Constant().moneyColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              FlatButton(
+                onPressed: (){
+                  checkResi();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                  decoration: BoxDecoration(
+                      color: Constant().secondColor
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(AntDesign.eyeo,color: Constant().secondDarkColor),
+                      SizedBox(width:10.0),
+                      WidgetHelper().textQ("Lacak Resi", 14, Constant().secondDarkColor, FontWeight.normal),
+                    ],
+                  ),
+                ),
+              ),
+              if(detailHistoryPembelianModel.result.status!=4)
+              FlatButton(
+                onPressed: (){
+                  print(detailHistoryPembelianModel.result.metodePembayaran.split("|"));
+                  print(detailHistoryPembelianModel.result.resi);
+                  if(detailHistoryPembelianModel.result.metodePembayaran.split("|")[0]=='COD'){
+                    doneTrx();
+                  }else if(detailHistoryPembelianModel.result.resi=='-'){
+                    WidgetHelper().showFloatingFlushbar(context,"failed","maaf no resi belum tersedia");
+                  }
+                  else{
+                    WidgetHelper().notifDialog(context,"Informasi","apakah barang anda sudah sampai",(){
+                      Navigator.pop(context);
+                    },(){
+                      doneTrx();
+                    },titleBtn1: 'Belum',titleBtn2: 'sudah');
+                  }
+
+
+                },
+                child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                    decoration: BoxDecoration(
+                        color: Constant().mainColor
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
+                        SizedBox(width:10.0),
+                        WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
+                      ],
+                    ),
+                  ),
+              )
+            ],
+          ),
+        );
+      }
+      else{
+        btnBottom=Container(
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          color: Constant().moneyColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FlatButton(
+                onPressed: (){
+                  doneTrx();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                  decoration: BoxDecoration(
+                      color: Constant().secondColor
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(AntDesign.eyeo,color: Constant().secondDarkColor),
+                      SizedBox(width:10.0),
+                      WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context,"Detail Pembelian",(){Navigator.pop(context);},<Widget>[
         isLoading?Text(''):(detailHistoryPembelianModel.result.metodePembayaran!='saldo') ?FlatButton(
             padding: EdgeInsets.all(0.0),
             highlightColor:Colors.black38,
             splashColor:Colors.black38,
-            onPressed:(){
+            onPressed:()async{
+              SharedPreferences pres=await SharedPreferences.getInstance();
+              pres.setString("isDetailPembelian", "true");
               WidgetHelper().myPush(context, SuccessPembelianScreen(kdTrx: widget.kdTrx));
             },
             child: Padding(
@@ -148,71 +266,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
           loadData();
         },
       ),
-      bottomNavigationBar:isLoading?Text(''):Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        color: Constant().moneyColor,
-        child: FlatButton(
-            onPressed: () {
-              // WidgetHelper().myPushAndLoad(context,ChaeckoutScreen(), (){loadCart();});
-            },
-            padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().moneyColor,
-            child:Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                detailHistoryPembelianModel.result.resi!='-'?Container(
-                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: Constant().secondColor
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                      SizedBox(width:10.0),
-                      WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
-                    ],
-                  ),
-                ):Text(''),
-                detailHistoryPembelianModel.result.metodePembayaran!='saldo'?FlatButton(
-                  onPressed: (){
-                    checkResi();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Constant().secondColor
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(AntDesign.eyeo,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Lacak Resi", 14, Constant().secondDarkColor, FontWeight.normal),
-                      ],
-                    ),
-                  ),
-                ):FlatButton(
-                  onPressed: (){
-                    checkResi();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Constant().secondColor
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            )
-          // child:Text("abus")
-        ),
-      ),
+      bottomNavigationBar:isLoading?Text(''):btnBottom,
     );
   }
 

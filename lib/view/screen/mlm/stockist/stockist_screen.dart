@@ -178,6 +178,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                         shrinkWrap: true,
                         controller: controller,
                         itemBuilder: (context,index){
+                          print(pinModel.result.data[index].toJson());
                           return Container(
                             color: Colors.transparent,
                             child: InkWell(
@@ -228,7 +229,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                                           color: Constant().secondColor,
                                           padding: EdgeInsets.all(0.0),
                                           child:  WidgetHelper().textQ("Aktivasi", 10, Constant().secondDarkColor,FontWeight.bold),
-                                          onPressed: (){},
+                                          onPressed: (){WidgetHelper().myModal(context,AktivasiRO(val:  pinModel.result.data[index].toJson(),));},
                                         ),
                                       ],
                                     )
@@ -263,7 +264,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
         child:  FlatButton(
             padding: EdgeInsets.all(15.0),
             onPressed: (){
-              WidgetHelper().myModal(context, ModalReaktivasiPin());
+              WidgetHelper().myModal(context, ReaktivasiPin());
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -276,11 +277,8 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
             )
         ),
       ):Text(''),
-
-
     );
   }
-
   Widget loading(BuildContext context,int idx){
     return ListView.separated(
         itemBuilder: (context,index){
@@ -342,15 +340,128 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
         itemCount: idx
     );
   }
-
 }
 
-class ModalReaktivasiPin extends StatefulWidget {
+
+class AktivasiRO extends StatefulWidget {
+  dynamic val;
+  AktivasiRO({this.val});
   @override
-  _ModalReaktivasiPinState createState() => _ModalReaktivasiPinState();
+  _AktivasiROState createState() => _AktivasiROState();
 }
 
-class _ModalReaktivasiPinState extends State<ModalReaktivasiPin> {
+class _AktivasiROState extends State<AktivasiRO> {
+  Future handleSubmit()async{
+    WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
+      final data={
+        "pin_member":pin.toString(),
+        "pin_aktivasi":widget.val['kode']
+      };
+      WidgetHelper().loadingDialog(context);
+      var res=await BaseProvider().postProvider('pin/aktivasi/ro', data);
+      print(res);
+      Navigator.pop(context);
+      if(res is General){
+        General result=res;
+        WidgetHelper().showFloatingFlushbar(context, "failed",result.msg);
+      }
+      else{
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        });
+      }
+
+
+    }));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height/2.5,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
+      ),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height:10.0),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.only(right:10.0),
+            leading: IconButton(icon: Icon(AntDesign.back,color: Colors.grey), onPressed:(){
+                Navigator.pop(context);
+            }),
+            title: WidgetHelper().textQ("AKTIVASI PIN RO",12,Colors.grey,FontWeight.bold),
+          ),
+          ClipPath(
+            clipper: WaveClipperOne(flip: true),
+            child: Container(
+              width: double.infinity,
+              color: Constant().secondColor,
+              padding: EdgeInsets.only(bottom:50.0,top:0.0,left:10.0,right:10.0),
+              child: Column(
+                children: [
+                  Container(
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(0.0),
+                      title: WidgetHelper().textQ("${widget.val['kode']}",12,Constant().secondDarkColor,FontWeight.bold),
+                      subtitle: WidgetHelper().textQ("${widget.val['full_name']}",12,Colors.grey,FontWeight.bold),
+                      trailing:WidgetHelper().textQ("${widget.val['status']}",10,Constant().mainColor,FontWeight.bold),
+                    ),
+                  ),
+
+                  SizedBox(height: 50.0),
+                  Container(
+                    color: Constant().moneyColor,
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    child:  FlatButton(
+                        padding: EdgeInsets.all(15.0),
+                        onPressed: (){
+                          handleSubmit();
+                          // checkingAccount();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(AntDesign.checkcircleo,color: Colors.white),
+                            SizedBox(width: 10.0),
+                            WidgetHelper().textQ("AKTIVASI", 14,Colors.white,FontWeight.bold)
+                          ],
+                        )
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ]
+
+      ),
+    );
+  }
+}
+
+
+class ReaktivasiPin extends StatefulWidget {
+  @override
+  _ReaktivasiPinState createState() => _ReaktivasiPinState();
+}
+
+class _ReaktivasiPinState extends State<ReaktivasiPin> {
   PinAvailableModel pinAvailableModel;
   bool isLoading=false,isNodata=false,isNext=false;
   String gambar='';
@@ -471,8 +582,8 @@ class _ModalReaktivasiPinState extends State<ModalReaktivasiPin> {
                       height: 40.0,
                       width: 40.0,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle
+                          color: Colors.white,
+                          shape: BoxShape.circle
                       ),
                     ),
                     title: Container(color: Colors.white,width:70.0,height: 10),
@@ -524,7 +635,6 @@ class _ModalReaktivasiPinState extends State<ModalReaktivasiPin> {
       ),
     );
   }
-
   Widget step2(BuildContext context){
     return ListView(
       children: [
@@ -591,7 +701,7 @@ class _ModalReaktivasiPinState extends State<ModalReaktivasiPin> {
                               children: [
                                 Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
                                 SizedBox(width:10.0),
-                                WidgetHelper().textQ("Reaktivasi", 12, Constant().secondDarkColor, FontWeight.normal),
+                                WidgetHelper().textQ("Aktivasi", 12, Constant().secondDarkColor, FontWeight.normal),
                               ],
                             ),
                           ),
@@ -816,7 +926,6 @@ class _TransferPinState extends State<TransferPin> {
                         padding: EdgeInsets.all(15.0),
                         onPressed: (){
                           checkingAccount();
-                          // WidgetHelper().myModal(context, ModalReaktivasiPin());
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -892,7 +1001,6 @@ class _TransferPinState extends State<TransferPin> {
     );
   }
 }
-
 
 class StatusStockistModal extends StatefulWidget {
   int index;

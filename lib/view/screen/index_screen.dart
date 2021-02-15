@@ -78,17 +78,7 @@ class _IndexScreenState extends State<IndexScreen> {
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
-            child:widget.currentTab == 2 ? SvgPicture.asset(
-              Constant().localIcon+"Icon_Utama_Home_Warna.svg",
-              height: 30,
-              width: 30,
-              color:Colors.white
-            ) : SvgPicture.asset(
-              Constant().localIcon+"Icon_Utama_Home_Abu.svg",
-              height: 30,
-              width: 30,
-              color:Constant().mainColor
-            ),
+            child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
             onPressed: () {
               setState(() {
                 currentScreen = HomeScreen(dataMember: dataMemberModel.result.toJson());
@@ -118,18 +108,11 @@ class _IndexScreenState extends State<IndexScreen> {
                             widget.currentTab = 0;
                           });
                         },
+
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            widget.currentTab == 0 ? SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Home_Warna.svg",
-                              height: 30,
-                              width: 30,
-                            ) : SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Home_Abu.svg",
-                              height: 30,
-                              width: 30,
-                            )
+                            Icon(AntDesign.gift,color: widget.currentTab == 0?Constant().mainColor:Constant().secondColor,size: 30.0),
                           ],
                         ),
                       ),
@@ -146,15 +129,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            widget.currentTab == 1 ? SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Produk_Warna.svg",
-                              height: 30,
-                              width: 30,
-                            ) : SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Produk_abu.svg",
-                              height: 30,
-                              width: 30,
-                            )
+                            Icon(AntDesign.shoppingcart,color: widget.currentTab == 1?Constant().mainColor:Constant().secondColor,size: 30.0),
                           ],
                         ),
                       )
@@ -177,15 +152,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            widget.currentTab == 3 ? SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Testimoni_Warna.svg",
-                              height: 30,
-                              width: 30,
-                            ) : SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Testimoni_Abu.svg",
-                              height: 30,
-                              width: 30,
-                            )
+                            Icon(AntDesign.addusergroup,color: widget.currentTab == 3?Constant().mainColor:Constant().secondColor,size: 30.0),
                           ],
                         ),
                       ),
@@ -202,15 +169,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            widget.currentTab == 4 ? SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Profile_Warna.svg",
-                              height: 30,
-                              width: 30,
-                            ) : SvgPicture.asset(
-                              Constant().localIcon+"Icon_Utama_Profile_abu.svg",
-                              height: 30,
-                              width: 30,
-                            )
+                            Icon(AntDesign.user,color: widget.currentTab == 4?Constant().mainColor:Constant().secondColor,size: 30.0),
                           ],
                         ),
                       )

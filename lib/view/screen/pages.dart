@@ -27,6 +27,7 @@ import 'package:sangkuy/view/screen/content/news/news_screen.dart';
 import 'package:sangkuy/view/screen/content/news/news_widget.dart';
 import 'package:sangkuy/view/screen/mlm/cart_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/history_pembelian_screen.dart';
+import 'package:sangkuy/view/screen/mlm/history/history_transaction_screen.dart';
 import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/screen/wallet/form_ewallet_screen.dart';

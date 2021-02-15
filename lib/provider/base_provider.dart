@@ -43,6 +43,7 @@ class BaseProvider{
     }
   }
   Future postProvider(url,Map<String, Object> data) async {
+    print(data);
     try {
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -57,6 +58,7 @@ class BaseProvider{
           headers: head,
           body:data
       ).timeout(Duration(seconds: Constant().timeout));
+      print("=================== POST DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
         return jsonDecode(request.body);
       }
@@ -84,7 +86,7 @@ class BaseProvider{
           headers:head,
           body:data
       ).timeout(Duration(seconds: Constant().timeout));
-      print(request.body);
+      print("=================== PUT DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
         return jsonDecode(request.body);
       }

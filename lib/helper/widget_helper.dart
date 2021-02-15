@@ -3,8 +3,10 @@ import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
@@ -15,24 +17,24 @@ class WidgetHelper{
     Color color;
     String txt="";
     if(param==0){
-      color = Colors.red;
-      txt = "Belum dibayar";
+      color = Color(0xFF475F7B);
+      txt = "Menunggu Pembayaran";
     }
     if(param==1){
       color = Color(0xFFF7AD17);
-      txt = "Menunggu konfirmasi";
+      txt = "Dikemas";
     }
     if(param==2){
       color = Color(0xFF1cbac8);
-      txt = "Barang sedang dikemas";
-    }
-    if(param==3){
-      color = Colors.greenAccent;
       txt = "Dikirim";
     }
-    if(param==4){
+    if(param==3){
       color = Colors.green;
       txt = "Selesai";
+    }
+    if(param==4){
+      color = Colors.red;
+      txt = "Dibatalkan";
     }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -184,7 +186,7 @@ class WidgetHelper{
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title.toUpperCase(),16,Colors.grey,FontWeight.bold),
+      title:textQ(title,14,Colors.grey,FontWeight.bold),
       leading: IconButton(
         icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){
@@ -426,4 +428,42 @@ class WidgetHelper{
       ],
     );
   }
+
+  myFilter(Function callback,{IconData icon}){
+    return FlatButton(
+        padding: EdgeInsets.all(10.0),
+        highlightColor:Colors.black38,
+        splashColor:Colors.black38,
+        onPressed:callback,
+        child: Icon(icon,color: Colors.grey)
+    );
+  }
+
+  Future showDatePickerQ(BuildContext context,title,Function(DateTime dateTime,List<int> index) callback) async {
+    String _format = 'yyyy-MM-dd';
+    DateTime _dateTime = DateTime.now();
+    DateTimePickerLocale _locale = DateTimePickerLocale.id;
+    DatePicker.showDatePicker(
+      context,
+      onMonthChangeStartWithFirstDate: true,
+      pickerTheme: DateTimePickerTheme(
+        cancel:Text(title, style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+        showTitle: true,
+        confirm: Text('Selesai', style: TextStyle(color:Constant().mainColor,fontWeight: FontWeight.bold)),
+      ),
+      minDateTime: DateTime.parse("2010-05-12"),
+      maxDateTime: DateTime.parse('3000-01-01'),
+      initialDateTime: _dateTime,
+      dateFormat: _format,
+      locale: _locale,
+      onClose: () => print("----- onClose -----"),
+      onCancel: () => print('onCancel'),
+      onChange: (dateTime, List<int> index) {
+        dateTime = dateTime;
+      },
+      onConfirm: callback,
+    );
+  }
+
+
 }

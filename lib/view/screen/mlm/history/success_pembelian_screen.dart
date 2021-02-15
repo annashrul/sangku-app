@@ -11,6 +11,7 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/mlm/history/detail_history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/camera_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SuccessPembelianScreen extends StatefulWidget {
   final String kdTrx;
@@ -82,7 +83,14 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
         key: key,
         appBar: WidgetHelper().appBarWithButton(context,"Transaksi Berhasil", ()async{
           // WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          SharedPreferences pres=await SharedPreferences.getInstance();
+          if(pres.getString("isDetailPembelian")=='true'){
+            Navigator.pop(context);
+          }
+          else{
+            pres.remove('isDetailPembelian');
+            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          }
 
         },<Widget>[]),
         body: SingleChildScrollView(

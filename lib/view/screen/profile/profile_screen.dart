@@ -1,5 +1,6 @@
 part of '../pages.dart';
 
+
 class ProfileScreen extends StatefulWidget {
   final dynamic dataMember;
   ProfileScreen({this.dataMember});
@@ -102,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: WidgetHelper().textQ("Laporan",12,Colors.black,FontWeight.bold),
                 ),
                 section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},0,iconData: AntDesign.shoppingcart),
-                section2("Transaksi",(){},1,iconData: AntDesign.wallet),
+                section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},1,iconData: AntDesign.wallet),
                 section2("Deposit",(){},0,iconData: AntDesign.swapleft),
                 section2("Penarikan",(){},1,iconData: AntDesign.swapright),
 

@@ -29,7 +29,11 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   int filterStatus=5;
 
   Future loadData()async{
-    var res = await BaseProvider().getProvider('transaction/penjualan/report?page=1&perpage=$perpage&status=$filterStatus',historyPemberlianModelFromJson);
+    String url='transaction/penjualan/report?page=1&perpage=$perpage';
+    if(filterStatus!=5){
+      url+='&status=$filterStatus';
+    }
+    var res = await BaseProvider().getProvider(url,historyPemberlianModelFromJson);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       setState(() {
         isLoading=false;
@@ -166,6 +170,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                           itemBuilder: (context,index){
                             final val=historyPemberlianModel.result.data[index];
                             final valDet = historyPemberlianModel.result.data[index].detail;
+
                             return WidgetHelper().myPress(
                                     (){
                                   WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:base64.encode(utf8.encode(val.kdTrx))));
@@ -207,7 +212,6 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                               ),
                                             ),
                                             WidgetHelper().myStatus(context,val.status)
-
                                           ],
                                         ),
                                       ),
@@ -285,24 +289,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                 ],
                                               ),
                                             ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                              child:InkWell(
-                                                onTap: (){
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                    decoration: BoxDecoration(
-                                                      color: Constant().mainColor,
-                                                      borderRadius: BorderRadius.circular(10.0),
 
-                                                    ),
-                                                    child: Center(
-                                                      child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Lacak Resi",10,Colors.white, FontWeight.bold),
-                                                    )
-                                                ),
-                                              ),
-                                            ),
                                           ],
                                         ),
                                       ),

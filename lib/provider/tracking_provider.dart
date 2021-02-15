@@ -10,6 +10,7 @@ class TrackingProvider{
       "kurir":kurir,
       "kd_trx": kd_trx
     });
+    print(res);
     if(res == '${Constant().errTimeout}'|| res=='${Constant().errSocket}'){
       return 'error';
     }

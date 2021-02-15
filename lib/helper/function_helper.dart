@@ -16,11 +16,11 @@ class FunctionHelper{
   static var dataNominal=["100000","200000","300000","400000","500000","1000000"];
 
   static var arrStatus=[
-    "Belum dibayar",
-    "Menunggu konfirmasi",
-    "Barang sedang dikemas",
+    "Menunggu Pembayaran",
+    "Dikemas",
     "Dikirim",
     "Selesai",
+    "Dibatalkan",
     "Semua status",
   ];
   Future getImage(param) async {
