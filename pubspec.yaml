@@ -53,6 +53,8 @@ dependencies:
   flutter_icons: ^1.1.0
   animated_text_kit:
   flutter_html:
+  html: ^0.14.0+4
+
 
 
   #  graphview: ^0.6.1
