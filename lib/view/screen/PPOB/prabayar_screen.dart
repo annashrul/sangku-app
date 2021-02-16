@@ -319,7 +319,7 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
             ListTile(
                 contentPadding: EdgeInsets.only(left:10),
                 leading:Icon(Icons.info_outline,color:Constant().mainColor),
-              title:WidgetHelper().textQ("Konfirmasi Transaksi",12,Constant().mainColor, FontWeight.bold)
+              title:WidgetHelper().textQ("Konfirmasi Pembayaran",12,Constant().mainColor, FontWeight.bold)
             ),
             desc(context,"Jenis Layanan",widget.val['provider']),
             Divider(),
