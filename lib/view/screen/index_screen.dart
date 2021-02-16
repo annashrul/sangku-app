@@ -36,8 +36,8 @@ class _IndexScreenState extends State<IndexScreen> {
     // TODO: implement initState
     super.initState();
     currentScreen = WidgetHelper().loadingWidget(context);
+    isLoadingMember=true;
     WidgetsBinding.instance.addPostFrameCallback((_)async{
-      isLoadingMember=true;
       await loadMember();
       currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
       print("BUILD BERES");
@@ -75,7 +75,7 @@ class _IndexScreenState extends State<IndexScreen> {
             ),
             bucket: bucket,
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: isLoadingMember?Text(''):FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
             child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
@@ -87,7 +87,7 @@ class _IndexScreenState extends State<IndexScreen> {
             },
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: BottomAppBar(
+          bottomNavigationBar: isLoadingMember?Text(''):BottomAppBar(
             shape: CircularNotchedRectangle(),
             notchMargin: 10,
             child: Container(
@@ -145,7 +145,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            // currentScreen = TestimoniProduk(); // if user taps on this dashboard tab will be active
+                            currentScreen = BinaryScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 3;
                           });
                         },

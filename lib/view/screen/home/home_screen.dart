@@ -125,9 +125,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     loadData();
-    print("======================== DATA MEMBER GLOBAL =======================");
-    print(widget.dataMember);
-    print("======================== DATA MEMBER GLOBAL =======================");
   }
 
 
@@ -242,49 +239,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Widget section3(BuildContext context){
     return Container(
-      padding: EdgeInsets.only(top:10),
+      padding: EdgeInsets.only(top:10,left:10.0,right:10.0),
+      child: MenuPPOBScreen(),
+    );
+  }
+  Widget section4(BuildContext context){
+    return Container(
+      padding: EdgeInsets.only(top:0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            child: StaggeredGridView.countBuilder(
-              shrinkWrap: true,
-              primary: false,
-              crossAxisCount: 5,
-              itemCount:  DataHelper.dataPPOB.length,
-              itemBuilder: (BuildContext context, int index) {
-                return WidgetHelper().myPress((){},
-                    Container(
-                      padding: EdgeInsets.only(left:10.0,right:10.0,bottom: 10.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 0),
-                              child:CachedNetworkImage(
-                                imageUrl:DataHelper.dataPPOB[index],
-                                width: double.infinity ,
-                                fit:BoxFit.scaleDown,
-                                placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                                errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                              )
-                          ),
-                          SizedBox(height:5.0),
-                          WidgetHelper().textQ("Pulsa",10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
-                        ],
-                      ),
-                    ),
-                    color: Colors.black38
-                );
-              },
-              staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-              mainAxisSpacing: 20.0,
-              crossAxisSpacing: 20.0,
-            ),
-          ),
+        children: [
           ListTile(
             onTap: (){WidgetHelper().myPush(context,NewsScreen());},
             contentPadding: EdgeInsets.only(left:10.0,right:10.0),
@@ -298,24 +263,22 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             trailing: Icon(Icons.arrow_right),
+          ),
+          Container(
+            height: 200,
+            child: isLoadingNews?AddressLoading(tot: 1):ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: AlwaysScrollableScrollPhysics(),
+              primary: true,
+              // reverse:true ,
+              padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              itemCount: contentModel.result.data.length,
+              itemBuilder: (context, index) {
+                return NewsWidget(contentModel: contentModel,idx: index);
+              },separatorBuilder: (context,index){return SizedBox(width: 10);},
+            ),
           )
         ],
-      ),
-    );
-  }
-  Widget section4(BuildContext context){
-    return Container(
-      height: 200,
-      child: isLoadingNews?AddressLoading(tot: 1):ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: AlwaysScrollableScrollPhysics(),
-        primary: true,
-        // reverse:true ,
-        padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        itemCount: contentModel.result.data.length,
-        itemBuilder: (context, index) {
-          return NewsWidget(contentModel: contentModel,idx: index);
-        },separatorBuilder: (context,index){return SizedBox(width: 10);},
       ),
     );
   }

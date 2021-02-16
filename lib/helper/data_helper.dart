@@ -28,4 +28,11 @@ class DataHelper{
     {"kode":"3","value": "TERPAKAI"},
     {"kode":"4","value": "DI TRANSFER"},
   ];
+  static List filterHistoryDeposit=[
+    {"kode":"","value": "Semua"},
+    {"kode":"0","value": "Pending"},
+    {"kode":"1","value": "Selesai"},
+    {"kode":"2","value": "Batal"},
+  ];
+
 }

@@ -9,6 +9,7 @@ import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/history/history_transaction_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
 
 class HistoryTransactionScreen extends StatefulWidget {
   @override
@@ -125,6 +126,22 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     super.dispose();
 
   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var date = new DateTime.now().toString();
+    var dateParse = DateTime.parse(date);
+
+    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
+    dateFrom = "${DateFormat('yyyy-MM-dd').format(DateTime(dateParse.year, dateParse.month - 1, dateParse.day))}";
+    dateTo = formattedDate;
+    controller = new ScrollController()..addListener(_scrollListener);
+    isLoading=true;
+    loadData();
+    initializeDateFormatting('id');
+
+  }
   void _showDatePicker(var param) async{
     await WidgetHelper().showDatePickerQ(context,param=='1'?'Dari':'Sampai', (_dateTime,index)async{
       isLoading=true;
@@ -141,23 +158,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
       loadData();
     });
-
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    var date = new DateTime.now().toString();
-    var dateParse = DateTime.parse(date);
-
-    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
-    dateFrom = "${DateFormat('yyyy-MM-dd').format(DateTime(dateParse.year, dateParse.month - 1, dateParse.day))}";
-    dateTo = formattedDate;
-    controller = new ScrollController()..addListener(_scrollListener);
-    isLoading=true;
-    loadData();
-    initializeDateFormatting('id');
 
   }
 
@@ -246,7 +246,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
             ),
             Expanded(
                 flex: 19,
-                child: isLoading?loading(context,10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
+                child: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
                   controller: controller,
                   separatorBuilder: (context,index){return Divider();},
                   itemBuilder: (context,index){
@@ -273,7 +273,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
             ),
             if(isLoadmore)Expanded(
                 flex: 1,
-                child: loading(context,1)
+                child: HistoryTransactionLoading(tot: 1)
             )
           ],
         ),
@@ -281,26 +281,5 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     );
   }
 
-  Widget loading(BuildContext context,tot){
-    return ListView.separated(
-      padding: EdgeInsets.all(10.0),
-      itemCount: tot,
-      itemBuilder: (context,index){
-        return WidgetHelper().baseLoading(context,Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(height: 10,width: MediaQuery.of(context).size.width/1,color: Colors.white),
-            SizedBox(height: 5.0),
-            Container(height: 10,width: MediaQuery.of(context).size.width/2,color: Colors.white),
-            SizedBox(height: 5.0),
-            Container(height: 10,width: MediaQuery.of(context).size.width/3,color: Colors.white),
-            SizedBox(height: 5.0),
-            Container(height: 10,width: MediaQuery.of(context).size.width/4,color: Colors.white),
-          ],
-        ));
-      },
-      separatorBuilder: (context,index){return Divider();},
-    );
-  }
+
 }

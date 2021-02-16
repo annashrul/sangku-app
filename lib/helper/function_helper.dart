@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/database_config.dart';
 import 'package:sangkuy/helper/table_helper.dart';
@@ -23,6 +24,16 @@ class FunctionHelper{
     "Dibatalkan",
     "Semua status",
   ];
+  formateDate(val,param){
+    initializeDateFormatting('id');
+    if(param=='ymd'){
+      return DateFormat.yMMMMEEEEd('id').format(val);
+    }
+    else{
+      return '${DateFormat.yMMMMEEEEd('id').format(val)} ${DateFormat.Hms().format(val)}';
+    }
+
+  }
   Future getImage(param) async {
     ImageSource imageSource;
     if(param == 'kamera'){
