@@ -10,12 +10,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  List dataWallet=[
-    {'title':"Sponsor",'icon':AntDesign.addusergroup},
-    {'title':"PIN",'icon':AntDesign.chrome},
-    {'title':"PV Kiri",'icon':AntDesign.left},
-    {'title':"PV Kanan",'icon':AntDesign.right},
-  ];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -40,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shrinkWrap: true,
                     primary: false,
                     crossAxisCount: 4,
-                    itemCount:  dataWallet.length,
+                    itemCount:  DataHelper.dataProfile.length,
                     itemBuilder: (BuildContext context, int index) {
                       IconData icon;
                       String title='';
@@ -60,13 +55,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Color(0xFFEEEEEE),
                           child: Row(
                             children: [
-                              Icon(icon,size: 15.0,color: color),
+                              Icon(icon,size: 10.0,color: color),
                               SizedBox(width:5.0),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  WidgetHelper().textQ(title,10,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.center),
-                                  WidgetHelper().textQ(value,12,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.center),
+                                  WidgetHelper().textQ(title,9,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
+                                  WidgetHelper().textQ(value,10,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.left),
                                 ],
                               ),
                             ],

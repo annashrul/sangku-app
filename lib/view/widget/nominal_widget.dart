@@ -24,7 +24,7 @@ class _NominalWidgetState extends State<NominalWidget> {
       itemBuilder: (BuildContext context, int index) {
         return Container(
           child: FlatButton(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             onPressed: (){
               setState(() {
                 widget.idx=index;
@@ -38,7 +38,7 @@ class _NominalWidgetState extends State<NominalWidget> {
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-      mainAxisSpacing: 0.0,
+      mainAxisSpacing: 5.0,
       crossAxisSpacing: 10.0,
     );
   }

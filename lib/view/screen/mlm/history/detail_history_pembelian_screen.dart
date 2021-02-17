@@ -116,18 +116,24 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
   }
 
   Future doneTrx()async{
-    WidgetHelper().loadingDialog(context);
-    var res=await BaseProvider().putProvider('transaction/done/${widget.kdTrx}', {});
-    Navigator.pop(context);
-    if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    if(detailHistoryPembelianModel.result.resi=='-'){
+      WidgetHelper().showFloatingFlushbar(context,"failed","No.Resi belum tersedia");
     }
     else{
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-      });
+      WidgetHelper().loadingDialog(context);
+      var res=await BaseProvider().putProvider('transaction/done/${widget.kdTrx}', {});
+      Navigator.pop(context);
+      if(res is General){
+        General result=res;
+        WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+      }
+      else{
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        });
+      }
     }
+
   }
 
   @override
@@ -137,103 +143,54 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     isLoading=true;
     loadData();
     initializeDateFormatting('id');
-
-
   }
   Widget btnBottom;
-
+  Widget btn(BuildContext context,Function callback,title,Color color,{IconData icon}){
+    return FlatButton(
+      onPressed:callback,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+        decoration: BoxDecoration(
+            color: color
+        ),
+        child: Row(
+          children: [
+            Icon(icon,color: Constant().secondDarkColor),
+            SizedBox(width:10.0),
+            WidgetHelper().textQ(title, 14, Constant().secondDarkColor, FontWeight.normal),
+          ],
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     print(widget.kdTrx);
     if(!isLoading){
-      if(detailHistoryPembelianModel.result.metodePembayaran=='transfer'){
-        btnBottom=Container(
-          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-          color: Constant().moneyColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FlatButton(
-                onPressed: (){
-                  checkResi();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: Constant().secondColor
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(AntDesign.eyeo,color: Constant().secondDarkColor),
-                      SizedBox(width:10.0),
-                      WidgetHelper().textQ("Lacak Resi", 14, Constant().secondDarkColor, FontWeight.normal),
-                    ],
-                  ),
-                ),
-              ),
-              if(detailHistoryPembelianModel.result.status!=4)
-              FlatButton(
-                onPressed: (){
-                  print(detailHistoryPembelianModel.result.metodePembayaran.split("|"));
-                  print(detailHistoryPembelianModel.result.resi);
-                  if(detailHistoryPembelianModel.result.metodePembayaran.split("|")[0]=='COD'){
-                    doneTrx();
-                  }else if(detailHistoryPembelianModel.result.resi=='-'){
-                    WidgetHelper().showFloatingFlushbar(context,"failed","maaf no resi belum tersedia");
-                  }
-                  else{
-                    WidgetHelper().notifDialog(context,"Informasi","apakah barang anda sudah sampai",(){
-                      Navigator.pop(context);
-                    },(){
-                      doneTrx();
-                    },titleBtn1: 'Belum',titleBtn2: 'sudah');
-                  }
-
-
-                },
-                child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: Constant().mainColor
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
-                      ],
-                    ),
-                  ),
-              )
-            ],
-          ),
-        );
-      }
-      else{
+      var val=detailHistoryPembelianModel.result;
+      print(val.layananPengiriman);
+      if(val.layananPengiriman.split("|")[0]=='COD'&&val.status!=4){
         btnBottom=Container(
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           color: Constant().moneyColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FlatButton(
-                onPressed: (){
-                  doneTrx();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: Constant().secondColor
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(AntDesign.eyeo,color: Constant().secondDarkColor),
-                      SizedBox(width:10.0),
-                      WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
-                    ],
-                  ),
-                ),
-              )
+              btn(context,(){doneTrx();},"Selesai",Constant().mainColor,icon: AntDesign.checkcircleo)
+            ],
+          ),
+        );
+      }
+
+      if(val.layananPengiriman.split("|")[0]!='COD'&&val.status!=4){
+        btnBottom=Container(
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          color: Constant().moneyColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              btn(context,(){checkResi();},"Lacak Resi",Constant().secondColor,icon: AntDesign.eyeo),
+              btn(context,(){doneTrx();},"Selesai",Constant().mainColor,icon: AntDesign.checkcircleo)
             ],
           ),
         );
@@ -269,9 +226,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
       bottomNavigationBar:isLoading?Text(''):btnBottom,
     );
   }
-
   Widget buildContent(BuildContext context){
-
     return  SingleChildScrollView(
       primary: true,
       scrollDirection: Axis.vertical,
@@ -288,7 +243,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Status",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Status",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().myStatus(context,detailHistoryPembelianModel.result.status),
                         ],
                       ),
@@ -297,7 +252,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Tanggal Pembelian",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Tanggal Pembelian",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(detailHistoryPembelianModel.result.createdAt)} ${DateFormat.Hms().format(detailHistoryPembelianModel.result.createdAt)}",10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -305,7 +260,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("No.Invoice",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("No.Invoice",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryPembelianModel.result.kdTrx}",10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -318,8 +273,8 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                 Container(
                   child: ListTile(
                     contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.shoppingcart,color: Constant().mainColor),
-                    title: WidgetHelper().textQ("Ringkasan Belanja",14.0,Constant().mainColor,FontWeight.bold),
+                    leading: Icon(AntDesign.shoppingcart,color: Constant().mainColor,size: 20.0),
+                    title: WidgetHelper().textQ("Ringkasan Belanja",12.0,Constant().mainColor,FontWeight.bold),
                   ),
                 ),
                 Wrap(
@@ -333,8 +288,8 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                 Container(
                   child: ListTile(
                     contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.form,color: Constant().mainColor),
-                    title: WidgetHelper().textQ("Detail Pengiriman",14.0,Constant().mainColor,FontWeight.bold),
+                    leading: Icon(AntDesign.form,color: Constant().mainColor,size: 20.0),
+                    title: WidgetHelper().textQ("Detail Pengiriman",12.0,Constant().mainColor,FontWeight.bold),
                   ),
                 ),
 
@@ -345,7 +300,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Nama Toko",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Nama Toko",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${Constant().siteName}",10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -353,7 +308,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Layanan Pengiriman",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Layanan Pengiriman",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryPembelianModel.result.layananPengiriman}",10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -361,8 +316,8 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("No.Resi",12.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryPembelianModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryPembelianModel.result.resi}",10.0,Constant().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("No.Resi",10.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("${detailHistoryPembelianModel.result.layananPengiriman.split("|")[0]=='COD'?'-':detailHistoryPembelianModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryPembelianModel.result.resi}",10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
                       detailHistoryPembelianModel.result.resi=="-"?Container():GestureDetector(
@@ -372,14 +327,14 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                         child:Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            WidgetHelper().textQ("",12.0,Constant().secondColor,FontWeight.bold),
-                            WidgetHelper().textQ("Salin No.Resi",12.0,Constant().secondColor,FontWeight.bold),
+                            WidgetHelper().textQ("",10.0,Constant().secondColor,FontWeight.bold),
+                            WidgetHelper().textQ("Salin No.Resi",10.0,Constant().secondColor,FontWeight.bold),
                           ],
                         ),
                       ) ,
 
                       Divider(),
-                      WidgetHelper().textQ(detailHistoryPembelianModel.result.mainAddress,10.0,Constant().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ(detailHistoryPembelianModel.result.mainAddress.toLowerCase(),10.0,Constant().darkMode,FontWeight.normal),
                     ],
                   ),
                 ),
@@ -387,8 +342,8 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                 Container(
                   child: ListTile(
                     contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor),
-                    title: WidgetHelper().textQ("Informasi Pembayaran",14.0,Constant().mainColor,FontWeight.bold),
+                    leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor,size: 20.0),
+                    title: WidgetHelper().textQ("Informasi Pembayaran",12.0,Constant().mainColor,FontWeight.bold),
                   ),
                 ),
 
@@ -398,7 +353,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Metode Pembayaran",12.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Metode Pembayaran",10.0,Constant().darkMode,FontWeight.normal),
                           WidgetHelper().textQ(detailHistoryPembelianModel.result.metodePembayaran,10.0,Constant().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -407,16 +362,16 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Belanja",12.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.subtotal))} .-",12.0,Constant().moneyColor,FontWeight.bold),
+                          WidgetHelper().textQ("Total Belanja",10.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.subtotal))} .-",10.0,Constant().moneyColor,FontWeight.bold),
                         ],
                       ),
                       SizedBox(height: 5.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Ongkos Kirim",12.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",12.0,Constant().moneyColor,FontWeight.bold),
+                          WidgetHelper().textQ("Total Ongkos Kirim",10.0,Constant().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",10.0,Constant().moneyColor,FontWeight.bold),
                         ],
                       ),
                     ],
@@ -434,7 +389,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           WidgetHelper().textQ("Total Pembayaran",12.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.grandTotal))} .-",12.0,Constant().moneyColor,FontWeight.bold),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.grandTotal))} .-",10.0,Constant().moneyColor,FontWeight.bold),
                         ],
                       ),
                     ],
@@ -448,7 +403,6 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     );
 
   }
-
   Widget buildItem(BuildContext context){
     var width = MediaQuery.of(context).size.width;
     return Container(
@@ -467,11 +421,11 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
               child: ListTile(
                 contentPadding: EdgeInsets.all(0.0),
                 leading: Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain),
-                title: WidgetHelper().textQ(valDet[key].paket,12,Colors.black87,FontWeight.normal),
+                title: WidgetHelper().textQ(valDet[key].paket,10,Colors.black87,FontWeight.normal),
                 subtitle: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      WidgetHelper().textQ("${valDet[key].qty} ITEM",10,Colors.grey,FontWeight.normal),
+                      WidgetHelper().textQ("${valDet[key].qty} Item",10,Colors.grey,FontWeight.normal),
                       SizedBox(width: 20.0),
                       WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",10,Constant().moneyColor,FontWeight.normal),
                   ],
@@ -490,9 +444,6 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
       // color: Colors.white,
     );
   }
-
-
-
 }
 
 
@@ -518,7 +469,7 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height/1.2,
+      // height: MediaQuery.of(context).size.height/1.2,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
@@ -546,15 +497,14 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
                 width: double.infinity,
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
                   color: Constant().mainColor,
-                  // border: Border.all(color:SiteConfig().accentDarkColor)
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline,color: Colors.white),
+                    Icon(Icons.info_outline,color: Colors.white,size: 20),
                     SizedBox(width: 5),
-                    WidgetHelper().textQ("Daftar PIN ${widget.title}",12,Colors.white, FontWeight.bold)
+                    Expanded(child: WidgetHelper().textQ("Daftar PIN ${widget.title} ( ${ widget.detailHistoryPembelianModel.result.detail[widget.idx].listPin[0].type==0?'Aktivasi':'Repeat Order'} )",10,Colors.white, FontWeight.normal))
                   ],
                 )
             ),
@@ -571,28 +521,23 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
                     if(val.status==1){status='dibeli';color=Constant().secondColor;}
                     if(val.status==2){status='digunakan';color=Constant().darkMode;}
                     if(val.status==3){status='pending';color=Constant().moneyColor;}
-                    return ListTile(
-                      leading: Container(
-                        padding: EdgeInsets.all(0.0),
-                        width: 10.0,
-                        height: 60.0,
-                        color:Constant().secondColor,
-                      ),
-                      title: WidgetHelper().textQ(val.kode,12,Constant().darkMode,FontWeight.bold),
-                      subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          WidgetHelper().textQ("${val.type==0?"AKTIVASI":"REPEAT ORDER"}",10,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Expired : ${DateFormat.yMMMMEEEEd('id').format(val.expDate)}",10,Constant().darkMode,FontWeight.normal),
-
-                        ],
-                      ),
-                      trailing: FlatButton(
-                        child: Container(
-                          padding: EdgeInsets.all(10.0),
-                          color: color,
-                          child: WidgetHelper().textQ(status,10,Constant().secondDarkColor, FontWeight.bold),
+                    return  Container(
+                      color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                      child: ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            WidgetHelper().textQ(val.kode,10,Constant().darkMode,FontWeight.bold),
+                            SizedBox(height:5),
+                            WidgetHelper().textQ("Exp : ${DateFormat.yMMMMEEEEd('id').format(val.expDate)}",10,Constant().moneyColor,FontWeight.normal),
+                          ],
+                        ),
+                        trailing: FlatButton(
+                          child: Container(
+                            padding: EdgeInsets.all(10.0),
+                            color: color,
+                            child: WidgetHelper().textQ(status,10,Constant().secondDarkColor, FontWeight.bold),
+                          ),
                         ),
                       ),
                     );

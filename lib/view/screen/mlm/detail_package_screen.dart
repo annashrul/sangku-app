@@ -31,6 +31,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   bool isLoading=false,isError=false;
   DetailPackageModel detailPackageModel;
   String tipe='';
+  String param='plus';
   Future loadData()async{
     await loadDetail();
     await loadCart();
@@ -45,6 +46,12 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     else if(res=='failed'){
       isLoading=false;
       isError=true;
+      setState(() {});
+    }
+    else if(res==Constant().errNoData){
+      isLoading=false;
+      isError=false;
+      total = 0;
       setState(() {});
     }
     else{
@@ -83,9 +90,10 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
       }
     }
   }
-  Future postCart()async{
+  Future postCart(param)async{
+    print(param);
     WidgetHelper().loadingDialog(context);
-    var res = await CartProvider().postCart(widget.id,qty.toString(),widget.tipe);
+    var res = await CartProvider().postCart(widget.id,param,widget.tipe);
     Navigator.pop(context);
     if(res=='error'){
       WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
@@ -98,14 +106,13 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
       WidgetHelper().notifBar(context,"failed",res);
     }
   }
-  Future validate()async{
-    final package=await FunctionHelper().isPackage();
+  Future validate(param)async{
     if(qty<1){
       WidgetHelper().notifBar(context,"failed","qty tidak boleh kurang dari 1");
     }
     else{
       if(tipe==''){
-        postCart();
+        postCart(param);
         return;
       }
       if(tipe!=widget.tipe){
@@ -113,12 +120,12 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
           Navigator.pop(context);
         }, ()async{
           Navigator.pop(context);
-          postCart();
+          postCart(param);
         });
         return;
       }
       if(tipe==widget.tipe){
-        postCart();
+        postCart(param);
         return;
       }
       // if(package!=widget.tipe&&package!=null){
@@ -137,6 +144,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     if(qty<stock){
       setState(() {
         qty+=1;
+        param='plus';
       });
     }else{
       WidgetHelper().notifBar(context,"failed","stock hanya tersedia $stock lagi");
@@ -147,6 +155,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     if(qty>1){
       setState(() {
         qty-=1;
+        param='min';
+
       });
     }
   }
@@ -181,35 +191,35 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         color: Constant().moneyColor,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                FlatButton(
-                    onPressed: () {
-                      minQty();
-                    },
-                    padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-                    color: Constant().moneyColor,
-                    child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
-                  // child:Text("abus")
-                ),
-                WidgetHelper().textQ("${qty}", 12, Constant().secondDarkColor, FontWeight.bold),
-                FlatButton(
-                    onPressed: () {
-                      addQty();
-                    },
-                    padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-                    color: Constant().moneyColor,
-                    child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
-                  // child:Text("abus")
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     FlatButton(
+            //         onPressed: () {
+            //           minQty();
+            //         },
+            //         padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+            //         color: Constant().moneyColor,
+            //         child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
+            //       // child:Text("abus")
+            //     ),
+            //     WidgetHelper().textQ("${qty}", 12, Constant().secondDarkColor, FontWeight.bold),
+            //     FlatButton(
+            //         onPressed: () {
+            //           addQty();
+            //         },
+            //         padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
+            //         color: Constant().moneyColor,
+            //         child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
+            //       // child:Text("abus")
+            //     ),
+            //   ],
+            // ),
             FlatButton(
               onPressed: (){
-                validate();
+                validate(param);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),

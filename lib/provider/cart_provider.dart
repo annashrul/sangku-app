@@ -10,8 +10,10 @@ class CartProvider{
     prefs.setString("packageType", tipe);
     final data={
       "id_paket":id,
-      "qty":qty
+      "type":qty,
+      "qty":"-"
     };
+    print(data);
     var res = await BaseProvider().postProvider('transaction/cart', data);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       return 'error';

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -16,14 +17,14 @@ class FunctionHelper{
   DatabaseConfig db = DatabaseConfig();
   static var dataNominal=["100000","200000","300000","400000","500000","1000000"];
 
-  static var arrStatus=[
-    "Menunggu Pembayaran",
-    "Dikemas",
-    "Dikirim",
-    "Selesai",
-    "Dibatalkan",
-    "Semua status",
-  ];
+  // static var arrStatus=[
+  //   "Menunggu Pembayaran",
+  //   "Dikemas",
+  //   "Dikirim",
+  //   "Selesai",
+  //   "Dibatalkan",
+  //   "Semua status",
+  // ];
   formateDate(val,param){
     initializeDateFormatting('id');
     if(param=='ymd'){
@@ -46,6 +47,11 @@ class FunctionHelper{
     final pickedFile = await picker.getImage(source: imageSource);
     return File(pickedFile.path);
   }
+
+  decode(val){
+    return base64.encode(utf8.encode(val));
+  }
+
   Future removePackage()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.remove("packageType");

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/data_helper.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -26,14 +28,15 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   int total=0;
   bool isLoading=false,isLoadmore=false,isError=false,isErrToken,isNodata=false;
   String lbl='';
-  int filterStatus=5;
+  String filterStatus='';
 
   Future loadData()async{
     String url='transaction/penjualan/report?page=1&perpage=$perpage';
-    if(filterStatus!=5){
+    if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
     var res = await BaseProvider().getProvider(url,historyPemberlianModelFromJson);
+    print(res);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       setState(() {
         isLoading=false;
@@ -115,43 +118,22 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarNoButton(),
+      appBar: WidgetHelper().appBarWithButton(context,"Laporan Pembelian", (){Navigator.pop(context);},<Widget>[]),
       body: RefreshWidget(
         widget: Container(
-          padding: EdgeInsets.only(top:10,bottom:10,left:20,right:20),
+          padding: EdgeInsets.only(top:10,bottom:10,left:10,right:10),
           child: Column(
             children: [
+              // Expanded
               Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: FunctionHelper.arrStatus.length,
-                    itemBuilder: (context,index){
-                      return  WidgetHelper().myPress((){
-                        setState(() {
-                          filterStatus = index;
-                          isLoading=true;
-                        });
-                        loadData();
-                      },
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                            decoration: BoxDecoration(
-                              color: filterStatus==index?Constant().mainColor:Constant().secondColor,
-                              // border: Border.all(width:1.0,color: filterStatus==index?Constant().mainColor:Colors.grey[200]),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                WidgetHelper().textQ("${FunctionHelper.arrStatus[index]}", 10,Constant().secondDarkColor, FontWeight.bold),
-                              ],
-                            ),
-                          )
-                      );
-                    },
-                  )
+                flex: 1,
+                child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryPembelian, (val){
+                  setState(() {
+                    filterStatus = val['kode'];
+                    isLoading=true;
+                  });
+                  loadData();
+                },filterStatus),
               ),
               SizedBox(
                 height: 10.0,
@@ -170,7 +152,6 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                           itemBuilder: (context,index){
                             final val=historyPemberlianModel.result.data[index];
                             final valDet = historyPemberlianModel.result.data[index].detail;
-
                             return WidgetHelper().myPress(
                                     (){
                                   WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:base64.encode(utf8.encode(val.kdTrx))));
@@ -199,7 +180,12 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          Icon(AntDesign.home,size: 10,color:Colors.black87),
+                                                          SvgPicture.asset(
+                                                              Constant().localIcon+'lainnya_icon.svg',
+                                                              height: 10,
+                                                              width: 10,
+                                                              color:Constant().secondColor
+                                                          ),
                                                           SizedBox(width: 5.0),
                                                           WidgetHelper().textQ("${val.type==0?'Aktivasi':'Repeat Order'}",10,Colors.black87,FontWeight.normal),
                                                         ],
@@ -261,7 +247,6 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                       ),
                                                     ],
                                                   ),
-                                                  WidgetHelper().textQ(val.metodePembayaran,10,Colors.grey,FontWeight.normal)
                                                 ],
                                               ),
                                             ),
@@ -289,7 +274,22 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                 ],
                                               ),
                                             ),
+                                            Container(
+                                              child: Column(
+                                                children: [
+                                                  Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                                    children: [
+                                                      WidgetHelper().textQ(val.metodePembayaran,10,Colors.grey,FontWeight.normal),
+                                                      Image.network(val.kurir,height: 30,width: 40,fit: BoxFit.contain)
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            )
 
+                                            // WidgetHelper().textQ(val.kurir,10,Colors.black87,FontWeight.normal),
                                           ],
                                         ),
                                       ),

@@ -125,6 +125,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
     if(widget.title=='TRANSFER'){
       if(penerimaController.text==''){
         msg='Penerima tidak boleh kosong';
+        penerimaFocus.requestFocus();
       }
       else{
         WidgetHelper().loadingDialog(context);
@@ -245,16 +246,13 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
           }
           if(widget.title=='TRANSFER'){
             WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-              IndexScreen(currentTab: 2).createState().rebuildData().then((value){
-                WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-              });
+              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+
             });
           }
           if(widget.title=='PENARIKAN'){
             WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
-              IndexScreen(currentTab: 2).createState().rebuildData().then((value){
-                WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-              });
+              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
             });
           }
           // WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
@@ -282,7 +280,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
               ClipPath(
                 clipper: WaveClipperOne(flip: true),
                 child: Container(
-                    padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0),
+                    padding: EdgeInsets.only(bottom:50.0,top:10.0,left:0.0),
                     width: double.infinity,
                     color: Constant().secondColor,
                     child:Padding(

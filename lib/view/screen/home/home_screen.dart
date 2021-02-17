@@ -130,10 +130,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.dataMember);
     return SafeArea(
       child:  WrapperPageWidget(
         dataMember: widget.dataMember,
         children: [
+          Container(
+            height: 90,
+            child: StaggeredGridView.countBuilder(
+              padding: EdgeInsets.all(0.0),
+              shrinkWrap: true,
+              primary: false,
+              scrollDirection: Axis.horizontal,
+              crossAxisCount: 2,
+              itemCount:  DataHelper.dataProfile.length,
+              itemBuilder: (BuildContext context, int index) {
+                IconData icon;
+                String title='';
+                Color color;
+                String value='';
+                if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=widget.dataMember['sponsor'];}
+                if(index==1){icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);value='${widget.dataMember['plafon']}'.split(".")[0];}
+                if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='${widget.dataMember['left_reward_point']} | ${widget.dataMember['right_reward_point']}';}
+                if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
+                return Container(
+                  child: FlatButton(
+                    onPressed: ()async{
+                      await MemberProvider().getDataMember();
+                    },
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
+                    padding: EdgeInsets.all(10.0),
+                    color: Color(0xFFEEEEEE),
+                    child: Row(
+                      children: [
+                        Icon(icon,size: 10.0,color: color),
+                        SizedBox(width:5.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            WidgetHelper().textQ(title,8,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(value,8,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              staggeredTileBuilder: (int index) => new StaggeredTile.fit(10),
+              mainAxisSpacing: 10.0,
+              crossAxisSpacing: 0.0,
+            ),
+          ),
+          ChartWidgetHome1(data: widget.dataMember),
           section1(context),
           section2(context),
           Divider(thickness: 10.0),
@@ -147,6 +196,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
   
+  Widget section1(BuildContext context){
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: StaggeredGridView.countBuilder(
+        shrinkWrap: true,
+        primary: false,
+        crossAxisCount: 2,
+        itemCount:  DataHelper.dataStockist.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+
+            child: FlatButton(
+              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+              padding: EdgeInsets.only(top:10.0,bottom:10.0,left:10.0),
+              color: Color(0xFFEEEEEE),
+              onPressed: (){
+                WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataStockist[index]['type']));
+              },
+              child: Container(
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                        DataHelper.dataStockist[index]['icon'],
+                        height: 30,
+                        width: 30,
+                        color:Constant().secondColor
+                    ),
+                    SizedBox(height:5.0),
+                    WidgetHelper().textQ(DataHelper.dataStockist[index]['title'],12,Constant().secondColor,FontWeight.bold)
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        mainAxisSpacing: 0.0,
+        crossAxisSpacing: 20.0,
+      ),
+    );
+  }
   Widget section2(BuildContext context){
     return Container(
       padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10.0,top:0.0),
@@ -190,50 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisSpacing: 20.0,
             ),
           ),
-
         ],
-      ),
-    );
-  }
-  Widget section1(BuildContext context){
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: StaggeredGridView.countBuilder(
-        shrinkWrap: true,
-        primary: false,
-        crossAxisCount: 2,
-        itemCount:  DataHelper.dataStockist.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            width: MediaQuery.of(context).size.width/2.2,
-            child: FlatButton(
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-              padding: EdgeInsets.only(top:20.0,bottom:20.0,left:10.0),
-              color: Color(0xFFEEEEEE),
-              onPressed: (){
-                WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataStockist[index]['type']));
-              },
-              child: Container(
-                padding:EdgeInsets.only(left:0.0),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                        DataHelper.dataStockist[index]['icon'],
-                        height: 30,
-                        width: 30,
-                        color:Constant().secondColor
-                    ),
-                    SizedBox(width:10.0),
-                    WidgetHelper().textQ(DataHelper.dataStockist[index]['title'],12,Constant().secondColor,FontWeight.bold)
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-        mainAxisSpacing: 0.0,
-        crossAxisSpacing: 20.0,
       ),
     );
   }
@@ -296,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().textQ("Poin Anda",10,Constant().secondColor,FontWeight.normal),
+                WidgetHelper().textQ("Poin Anda",12,Constant().secondColor,FontWeight.normal),
                 isLoadingMember?WidgetHelper().baseLoading(context,Container(
                   height: 15.0,
                   width:MediaQuery.of(context).size.width/10,
@@ -304,10 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 )):WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.dataMember['point_ro'].split(".")[0]))} POIN",14,Constant().moneyColor,FontWeight.bold),
               ],
             ),
-
             trailing: Icon(Icons.arrow_right),
           ),
-          WidgetHelper().textQ("Redeem Poin RO Anda Dengan Hadiah - Hadiah Yang Menarik",10,Colors.grey[400],FontWeight.normal),
+          WidgetHelper().textQ("Redeem Poin RO Anda Dengan Hadiah - Hadiah Yang Menarik",12,Colors.grey,FontWeight.normal),
           SizedBox(height:5.0),
           Container(
             height: 300,
@@ -372,17 +418,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     imageUrl: listRedeemModel.result.data[index].gambar,
                                     width: double.infinity ,
                                     fit:BoxFit.fill,
-                                    placeholder: (context, url) => Image.network('https://allrelease.id/wp-content/uploads/2020/03/Telkomsel-Tanggap-Covid-19.jpg', fit:BoxFit.fill,width: double.infinity,),
-                                    errorWidget: (context, url, error) => Image.network('https://allrelease.id/wp-content/uploads/2020/03/Telkomsel-Tanggap-Covid-19.jpg', fit:BoxFit.fill,width: double.infinity,),
+                                    placeholder: (context, url) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
+                                    errorWidget: (context, url, error) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
                                   ),
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+                                padding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', 10,Constant().darkMode,FontWeight.normal,maxLines:3 ),
+                                    WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', 12,Constant().darkMode,FontWeight.bold),
                                     SizedBox(height: 14),
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
@@ -391,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: double.infinity,
                                     ),
                                     SizedBox(height: 14),
-                                    WidgetHelper().textQ('${listRedeemModel.result.data[index].deskripsi}', 10,Constant().darkMode,FontWeight.normal,maxLines:3 ),
+                                    WidgetHelper().textQ('${listRedeemModel.result.data[index].deskripsi}', 12,Constant().darkMode,FontWeight.normal,maxLines:3 ),
                                   ],
                                 ),
                               ),

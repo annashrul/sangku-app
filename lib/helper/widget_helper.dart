@@ -234,8 +234,8 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ("$title",16,Colors.grey,FontWeight.bold,letterSpacing: 3.0),
-          if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
+          WidgetHelper().textQ("$title",14,Colors.grey,FontWeight.bold),
+          if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal),
         ],
       ),
       // title:textQ(title,18,Colors.black,FontWeight.bold),
@@ -419,10 +419,10 @@ class WidgetHelper{
       child: widget,
     );
   }
-  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white}){
+  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white,double iconSize=20.0}){
     return  Row(
       children: [
-        Icon(icon,color:color),
+        Icon(icon,color:color,size: iconSize),
         SizedBox(width:5.0),
         WidgetHelper().textQ(title,12,color, FontWeight.normal),
       ],
@@ -465,5 +465,38 @@ class WidgetHelper{
     );
   }
 
+
+  filterStatus(BuildContext context,List data,Function(dynamic val) callback,filterStatus){
+
+    return ListView.builder(
+      padding: EdgeInsets.only(top:10),
+      scrollDirection: Axis.horizontal,
+      itemCount: data.length,
+      itemBuilder: (context,index){
+        return  Container(
+          padding: EdgeInsets.only(right:5),
+          child: WidgetHelper().myPress((){
+            callback(data[index]);
+            filterStatus=data[index]['kode'];
+          },
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                decoration: BoxDecoration(
+                  color: filterStatus==data[index]['kode']?Constant().mainColor:Constant().secondColor,
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    WidgetHelper().textQ("${data[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
+                  ],
+                ),
+              )
+          ),
+        );
+      },
+    );
+  }
 
 }

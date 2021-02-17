@@ -84,7 +84,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     print("PARAMETER $type");
     if(tipe==''){
       WidgetHelper().loadingDialog(context);
-      handleSubmit(id,qty,tipe);
+      handleSubmit(id,'plus',tipe);
       return;
     }
     if(tipe!=type){
@@ -93,13 +93,13 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       }, ()async{
         Navigator.pop(context);
         WidgetHelper().loadingDialog(context);
-        handleSubmit(id,qty,type);
+        handleSubmit(id,'plus',type);
       });
       return;
     }
     if(tipe==type){
       WidgetHelper().loadingDialog(context);
-      handleSubmit(id,qty,tipe);
+      handleSubmit(id,'plus',tipe);
       return;
     }
 

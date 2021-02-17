@@ -105,7 +105,9 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return isLoading?PackageLoading():isError?ErrWidget(callback:(){}):isErrToken?Text(''):packageModel.result.data.length>0?RefreshWidget(
+    return isLoading?PackageLoading():isError?ErrWidget(callback:(){setState(() {
+      isLoading=true;
+    });loadData();}):isErrToken?Text(''):packageModel.result.data.length>0?RefreshWidget(
       widget: Column(
         children: [
           Expanded(

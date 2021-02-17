@@ -377,7 +377,7 @@ class _ModalFormState extends State<ModalForm> {
       final data={
         "title":"${titleController.text}",
         "penerima":"${receiverController.text}",
-        "main_address":"$namaJalan,$rt,$rw,$keluarahan,$districtName,$cityName,$provName,$kodePos".toUpperCase(),
+        "main_address":"$namaJalan,$rt,$rw,$keluarahan,$districtName,$cityName,$provName,$kodePos".toLowerCase(),
         "kd_prov":"$prov",
         "kd_kota":"$city",
         "kd_kec":"$district",
@@ -421,11 +421,11 @@ class _ModalFormState extends State<ModalForm> {
     }
     else{
       if(res is DetailAddressModel){
-
         DetailAddressModel result=res;
         String mainAdd=result.result.mainAddress;
         print(mainAdd);
         print(mainAdd.split(","));
+        print(result.toJson());
         setState(() {
           detailAddressModel = DetailAddressModel.fromJson(result.toJson());
           isLoading=false;
@@ -434,12 +434,12 @@ class _ModalFormState extends State<ModalForm> {
           receiverController.text = result.result.penerima;
           telpController.text=result.result.noHp;
           prov = result.result.kdProv;
-          // provName=result.result.provinsi;
+          provName=mainAdd.split(",")[6].toLowerCase();
           city=result.result.kdKota;
-          // cityName=result.result.kota;
+          cityName=mainAdd.split(",")[5].toLowerCase();
           district=result.result.kdKec;
-          // districtName=result.result.kecamatan;
-          mainAddressController.text = "${mainAdd.split(",")[0]},${mainAdd.split(",")[1]},${mainAdd.split(",")[2]},${mainAdd.split(",")[3]},${mainAdd.split(",")[7]}";
+          districtName=mainAdd.split(",")[4].toLowerCase();
+          mainAddressController.text = "${mainAdd.split(",")[0]},${mainAdd.split(",")[1]},${mainAdd.split(",")[2]},${mainAdd.split(",")[3]},${mainAdd.split(",")[4]},${mainAdd.split(",")[5]},${mainAdd.split(",")[6]},${mainAdd.split(",")[7]}".toLowerCase();
           namaJalan=mainAdd.split(",")[0];
           rt=mainAdd.split(",")[1];
           rw=mainAdd.split(",")[2];
@@ -495,7 +495,7 @@ class _ModalFormState extends State<ModalForm> {
                 child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",12, Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",14, Theme.of(context).hintColor, FontWeight.bold),
             trailing: InkWell(
                 onTap: ()async{
                   storeAddress();
@@ -625,7 +625,16 @@ class _ModalFormState extends State<ModalForm> {
                               WidgetHelper().myModal(context,ModalCity(
                                 callback:(id,name,idx){
                                   setState(() {city=id;cityName=name;idxCity=idx;district='';});
-                                  Navigator.pop(context);
+                                  WidgetHelper().myModal(context,ModalDisctrict(
+                                    callback:(id,name,idx){
+                                      setState(() {district=id;districtName=name;idxDistrict=idx;});
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      // Navigator.pop(context);
+                                    },
+                                    id:district,idCity: city,idx: idxDistrict,
+                                  ));
+                                  // Navigator.pop(context);
                                 },
                                 id:city,idProv: prov,idx: idxCity,
                               ));
@@ -640,11 +649,13 @@ class _ModalFormState extends State<ModalForm> {
                           if(prov!=''){
                             WidgetHelper().myModal(context,ModalCity(
                               callback:(id,name,idx){
+                                print('bus');
                                 setState(() {city=id;cityName=name;idxCity=idx;district='';});
-                                Navigator.pop(context);
+                                // Navigator.pop(context);
                                 WidgetHelper().myModal(context,ModalDisctrict(
                                   callback:(id,name,idx){
                                     setState(() {district=id;districtName=name;idxDistrict=idx;});
+                                    Navigator.pop(context);
                                     Navigator.pop(context);
                                   },
                                   id:district,idCity: city,idx: idxDistrict,
@@ -668,8 +679,9 @@ class _ModalFormState extends State<ModalForm> {
                             WidgetHelper().myModal(context,ModalDisctrict(
                               callback:(id,name,idx){
                                 setState(() {district=id;districtName=name;idxDistrict=idx;});
+                                // Navigator.pop(context);
                                 Navigator.pop(context);
-                                mainAddressFocus.requestFocus();
+                                // mainAddressFocus.requestFocus();
                               },
                               id:district,idCity: city,idx: idxDistrict,
                             ));
@@ -680,7 +692,8 @@ class _ModalFormState extends State<ModalForm> {
                               Timer(Duration(seconds:1), (){
                                 setState(() {isErrorProv=false;});
                               });
-                            }else{
+                            }
+                            else{
                               setState(() {isErrorCity=true;});
                               Timer(Duration(seconds:1), (){
                                 setState(() {isErrorCity=false;});
@@ -757,57 +770,57 @@ class _ModalFormState extends State<ModalForm> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("JALAN", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$namaJalan", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("JALAN".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$namaJalan".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("RT", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$rt", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("RT".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$rt".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("RW", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$rw", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("RW".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$rw".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("KELURAHAN", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$keluarahan", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("KELURAHAN".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$keluarahan".toLowerCase(), 10,Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("KECAMATAN", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$districtName", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("KECAMATAN".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$districtName".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("KOTA", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$cityName", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("KOTA".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$cityName".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("PROVINSI", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$provName", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("PROVINSI".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$provName".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
                                   ],
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    WidgetHelper().textQ("KODE POS", 10, Colors.grey,FontWeight.bold),
-                                    WidgetHelper().textQ("$kodePos", 10, Colors.grey,FontWeight.bold),
+                                    WidgetHelper().textQ("KODE POS".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
+                                    WidgetHelper().textQ("$kodePos".toLowerCase(), 10, Constant().darkMode,FontWeight.normal),
                                   ],
                                 )
 
@@ -1161,6 +1174,7 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
     super.initState();
     isLoading=true;
     getData();
+    print("HALAMAN KECAMATAM");
   }
 
   @override

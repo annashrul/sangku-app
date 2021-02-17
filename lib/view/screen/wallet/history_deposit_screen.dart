@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -9,6 +11,7 @@ import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/wallet/history_deposit_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
 import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
 
 class HistoryDepositScreen extends StatefulWidget {
@@ -18,7 +21,7 @@ class HistoryDepositScreen extends StatefulWidget {
 
 class _HistoryDepositScreenState extends State<HistoryDepositScreen> with SingleTickerProviderStateMixin  {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  String filterStatus='';
+  String filterStatus='',kode='';
   bool isLoading=false,isLoadmore=false,isNodata=false,isError=false;
   HistoryDepositModel historyDepositModel;
   ScrollController controller;
@@ -141,42 +144,57 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Expanded(
+              //     flex: 1,
+              //     child: ListView.builder(
+              //       padding: EdgeInsets.only(top:10),
+              //       scrollDirection: Axis.horizontal,
+              //       itemCount: DataHelper.filterHistoryDeposit.length,
+              //       itemBuilder: (context,index){
+              //         return  Container(
+              //           padding: EdgeInsets.only(right:5),
+              //           child: WidgetHelper().myPress((){
+              //             setState(() {
+              //               filterStatus = DataHelper.filterHistoryDeposit[index]['kode'];
+              //               isLoading=true;
+              //             });
+              //             loadData();
+              //           },
+              //               Container(
+              //                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+              //                 decoration: BoxDecoration(
+              //                   color: filterStatus==DataHelper.filterHistoryDeposit[index]['kode']?Constant().mainColor:Constant().secondColor,
+              //                   // border: Border.all(width:1.0,color: filterStatus==index?Constant().mainColor:Colors.grey[200]),
+              //                   borderRadius: BorderRadius.circular(4.0),
+              //                 ),
+              //                 child: Row(
+              //                   mainAxisAlignment: MainAxisAlignment.center,
+              //                   crossAxisAlignment: CrossAxisAlignment.center,
+              //                   children: [
+              //                     WidgetHelper().textQ("${DataHelper.filterHistoryDeposit[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
+              //                   ],
+              //                 ),
+              //               )
+              //           ),
+              //         );
+              //       },
+              //     )
+              // ),
               Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: DataHelper.filterHistoryDeposit.length,
-                    itemBuilder: (context,index){
-                      return  WidgetHelper().myPress((){
-                        setState(() {
-                          filterStatus = DataHelper.filterHistoryDeposit[index]['kode'];
-                          isLoading=true;
-                        });
-                        loadData();
-                      },
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                            decoration: BoxDecoration(
-                              color: filterStatus==DataHelper.filterHistoryDeposit[index]['kode']?Constant().mainColor:Constant().secondColor,
-                              // border: Border.all(width:1.0,color: filterStatus==index?Constant().mainColor:Colors.grey[200]),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                WidgetHelper().textQ("${DataHelper.filterHistoryDeposit[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
-                              ],
-                            ),
-                          )
-                      );
-                    },
-                  )
+                flex: 1,
+                child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
+                  setState(() {
+                    filterStatus = val['kode'];
+                    kode = val['kode'];
+                    isLoading=true;
+                  });
+                  loadData();
+                },filterStatus),
               ),
               Expanded(
                 flex: 19,
                 child: RefreshWidget(
-                  widget: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
+                  widget: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.builder(
                       padding: EdgeInsets.only(top:10.0),
                       physics: AlwaysScrollableScrollPhysics(),
                       controller: controller,
@@ -196,24 +214,83 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
                           status='Batal';
                           color = Colors.red;
                         }
-                        return ListTile(
-                          onTap: (){},
-                          title: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WidgetHelper().textQ(val.bankName, 10,Constant().darkMode,FontWeight.normal),
-                              SizedBox(height:5.0),
-                              WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.amount))} .-", 14,Constant().moneyColor,FontWeight.normal),
-                              SizedBox(height:5.0),
-                              WidgetHelper().textQ("${val.kdTrx} - ${DateFormat.yMMMMEEEEd('id').format(val.createdAt)}", 10,Colors.grey,FontWeight.normal),
-                            ],
-                          ),
-                          // subtitle: WidgetHelper().textQ("${val.kdTrx} - ${DateFormat.yMMMMEEEEd('id').format(val.createdAt)}", 10,Colors.grey,FontWeight.normal),
-                          trailing: WidgetHelper().textQ(status, 10,color,FontWeight.normal),
+                        return WidgetHistoryEwallet(
+                          color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                          statusColor: color,
+                          data: {
+                            'kdTrx':val.kdTrx,
+                            'bankName':val.bankName,
+                            'accNo':val.accNo,
+                            'amount':val.amount,
+                            'createdAt':val.createdAt,
+                            'status':status
+                          },
+                          callback: (){
+                            if(val.status==0){
+                              WidgetHelper().myPush(context,SuccessPembelianScreen(kdTrx: FunctionHelper().decode(val.kdTrx)));
+                            }
+                          },
                         );
+                        // return FlatButton(
+                        //   color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                        //   padding: EdgeInsets.only(top:10.0,bottom: 10.0),
+                        //   onPressed: (){
+                        //     if(val.status==0){
+                        //       WidgetHelper().myPush(context,SuccessPembelianScreen(kdTrx: FunctionHelper().decode(val.kdTrx)));
+                        //     }
+                        //   },
+                        //   child: ListTile(
+                        //     title: Column(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         WidgetHelper().textQ(val.kdTrx, 10,Constant().darkMode,FontWeight.normal),
+                        //         SizedBox(height: 5),
+                        //         Row(
+                        //           children: [
+                        //             Icon(AntDesign.creditcard,size: 10),
+                        //             SizedBox(width: 5),
+                        //             WidgetHelper().textQ(val.bankName, 10,Constant().darkMode,FontWeight.normal),
+                        //           ],
+                        //         ),
+                        //         SizedBox(height: 5),
+                        //         Row(
+                        //           children: [
+                        //             Icon(AntDesign.creditcard,size: 10),
+                        //             SizedBox(width: 5),
+                        //             WidgetHelper().textQ(val.accNo, 10,Constant().darkMode,FontWeight.normal),
+                        //           ],
+                        //         ),
+                        //         SizedBox(height: 5),
+                        //         Row(
+                        //           children: [
+                        //             Icon(Entypo.credit,size: 10),
+                        //             SizedBox(width: 5),
+                        //             WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.amount))} .-", 10,Constant().moneyColor,FontWeight.normal),
+                        //           ],
+                        //         ),
+                        //         SizedBox(height: 5),
+                        //         Row(
+                        //           children: [
+                        //             Icon(AntDesign.calendar,size: 10),
+                        //             SizedBox(width: 5),
+                        //             WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(val.createdAt)}", 10,Colors.grey,FontWeight.normal),
+                        //           ],
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     trailing:Container(
+                        //       padding: EdgeInsets.only(top:10.0,bottom: 10),
+                        //       height: 40,
+                        //       child: FlatButton(
+                        //           color: color,
+                        //           onPressed: (){},
+                        //           child: WidgetHelper().textQ(status,10,Colors.white,FontWeight.bold)
+                        //       ),
+                        //     ),
+                        //   ),
+                        // );
                       },
-                      separatorBuilder: (context,index){return Divider();},
                       itemCount: historyDepositModel.result.data.length
                   ),
                   callback: (){
@@ -230,6 +307,79 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
               )
             ],
           )
+      ),
+    );
+  }
+}
+
+
+class WidgetHistoryEwallet extends StatelessWidget {
+  Color color;
+  Color statusColor;
+  Function callback;
+  dynamic data;
+  WidgetHistoryEwallet({
+    this.color,
+    this.statusColor,
+    this.callback,
+    this.data
+  });
+  @override
+  Widget build(BuildContext context) {
+    print(this.data);
+    return FlatButton(
+      color: color,
+      padding: EdgeInsets.only(top:10.0,bottom: 10.0),
+      onPressed:callback,
+      child: ListTile(
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            WidgetHelper().textQ(data['kdTrx'], 10,Constant().mainColor,FontWeight.bold),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Icon(AntDesign.creditcard,size: 10),
+                SizedBox(width: 5),
+                WidgetHelper().textQ(data['bankName'], 10,Constant().darkMode,FontWeight.bold),
+              ],
+            ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Icon(AntDesign.creditcard,size: 10),
+                SizedBox(width: 5),
+                WidgetHelper().textQ(data['accNo'], 10,Constant().darkMode,FontWeight.bold),
+              ],
+            ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Icon(Entypo.credit,size: 10),
+                SizedBox(width: 5),
+                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(data['amount']))} .-", 10,Constant().moneyColor,FontWeight.bold),
+              ],
+            ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Icon(AntDesign.calendar,size: 10),
+                SizedBox(width: 5),
+                WidgetHelper().textQ(FunctionHelper().formateDate(data['createdAt'], 'ymd'), 10,Colors.grey,FontWeight.bold),
+              ],
+            ),
+          ],
+        ),
+        trailing:Container(
+          padding: EdgeInsets.only(top:10.0,bottom: 10),
+          height: 40,
+          child: FlatButton(
+              color: statusColor,
+              onPressed: (){},
+              child: WidgetHelper().textQ(data['status'],10,Colors.white,FontWeight.bold)
+          ),
+        ),
       ),
     );
   }

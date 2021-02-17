@@ -21,6 +21,7 @@ import 'package:sangkuy/provider/bank_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/mlm/history/detail_history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
@@ -47,6 +48,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   CartModel cartModel;
   OngkirModel ongkirModel;
   Prefix1.AddressModel addressModel;
+  var voucherController = TextEditingController();
+  final FocusNode voucherFocus = FocusNode();
+  bool isVoucher=false;
   Future loadCart()async{
     var res=await CartProvider().getCart();
     if(res=='error'){
@@ -184,13 +188,15 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     subTotal = st;
   }
   Future postCheckout(pin)async{
+
     final data={
       "ongkir":cost.toString(),
       "layanan_pengiriman":kurirTitle.toString(),
       "alamat":idAddress.toString(),
       "metode_pembayaran":idBank=='-'?'saldo':'transfer',
       "id_bank_destination":idBank.toString(),
-      "pin_member":pin.toString()
+      "pin_member":pin.toString(),
+      "voucher":isVoucher?voucherController.text:'-'
     };
 
     WidgetHelper().loadingDialog(context);
@@ -209,7 +215,11 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }else{
       await FunctionHelper().removePackage();
-      WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx: base64.encode(utf8.encode(res['result']['kd_trx']))));
+      if(idBank=='-'){
+        WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
+      }else{
+        WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
+      }
     }
   }
 
@@ -237,6 +247,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
             expedisi(),
             produk(),
             metode(context),
+            voucher()
           ],
         ),
         callback: (){
@@ -250,7 +261,13 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           color: Constant().moneyColor,
           child: FlatButton(
-              onPressed: () {
+              onPressed: () async{
+                if(isVoucher){
+                  WidgetHelper().showFloatingFlushbar(context,"failed","silahkan masukan kode voucher anda");
+                  await Future.delayed(Duration(seconds: 1));
+                  voucherFocus.requestFocus();
+                  return;
+                }
                 WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,pin){
                   postCheckout(pin);
                 }));
@@ -302,14 +319,14 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(AntDesign.home,size: 30,color:Constant().mainColor),
+                      Icon(AntDesign.home,size: 20,color:Constant().mainColor),
                       SizedBox(width:5.0),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          WidgetHelper().textQ("Alamat Pengiriman",12,Constant().mainColor, FontWeight.bold),
-                          WidgetHelper().textQ("$title",12,Constant().darkMode, FontWeight.bold),
+                          WidgetHelper().textQ("Alamat Pengiriman",10,Constant().mainColor, FontWeight.bold),
+                          WidgetHelper().textQ("$title",10,Constant().darkMode, FontWeight.bold),
                         ],
                       )
                     ],
@@ -368,9 +385,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
         children: [
           Row(
             children: [
-              Icon(AntDesign.car,size: 30,color:Constant().mainColor),
+              Icon(AntDesign.car,size: 20,color:Constant().mainColor),
               SizedBox(width:5.0),
-              WidgetHelper().textQ("Jasa Pengiriman",12,Constant().mainColor, FontWeight.bold),
+              WidgetHelper().textQ("Jasa Pengiriman",10,Constant().mainColor, FontWeight.bold),
             ],
           ),
           Divider(),
@@ -445,9 +462,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(AntDesign.shoppingcart,size: 30,color:Constant().mainColor),
+                      Icon(AntDesign.shoppingcart,size: 20,color:Constant().mainColor),
                       SizedBox(width:5.0),
-                      WidgetHelper().textQ("Ringkasan Belanja",12,Constant().mainColor, FontWeight.bold),
+                      WidgetHelper().textQ("Ringkasan Belanja",10,Constant().mainColor, FontWeight.bold),
                     ],
                   ),
                   new Container(
@@ -494,8 +511,8 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          WidgetHelper().textQ("${cartModel.result[index].title}",12,Constant().darkMode,FontWeight.normal),
-                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].harga}"))} .-",12,Constant().moneyColor,FontWeight.normal),
+                                          WidgetHelper().textQ("${cartModel.result[index].title}",10,Constant().darkMode,FontWeight.normal),
+                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].harga}"))} .-",10,Constant().moneyColor,FontWeight.normal),
                                         ],
                                       ),
                                     ],
@@ -553,9 +570,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
         children: [
           Row(
             children: [
-              Icon(AntDesign.wallet,size: 30,color:Constant().mainColor),
+              Icon(AntDesign.wallet,size: 20,color:Constant().mainColor),
               SizedBox(width:5.0),
-              WidgetHelper().textQ("Metode Pembayaran",12,Constant().mainColor, FontWeight.bold),
+              WidgetHelper().textQ("Metode Pembayaran",10,Constant().mainColor, FontWeight.bold),
             ],
           ),
           Divider(),
@@ -565,6 +582,63 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 idBank=val['id'];
               });
             },id: idBank,isSaldo: true)
+          ),
+        ],
+      ),
+    );
+  }
+  Widget voucher(){
+    return Padding(
+      padding: EdgeInsets.only(left:0,right:10,top:10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                activeColor: Constant().mainColor,
+                checkColor: Constant().secondDarkColor,
+                value: isVoucher,
+                onChanged: (bool value) {
+                  setState(() {
+                    isVoucher = value;
+                  });
+                },
+              ),
+              WidgetHelper().textQ("gunakan voucher ?",10,Constant().mainColor,FontWeight.bold),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(left:15,right:10),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Color(0xFFEEEEEE),
+              ),
+              child: TextFormField(
+                style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                controller: voucherController,
+                maxLines: 1,
+                autofocus: false,
+                readOnly: !isVoucher,
+                decoration: InputDecoration(
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFEEEEEE)),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  hintStyle: TextStyle(color:Constant().secondDarkColor, fontSize:12,fontFamily:Constant().fontStyle),
+                ),
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                focusNode: voucherFocus,
+                textCapitalization: TextCapitalization.characters,
+
+              ),
+            ),
           ),
         ],
       ),

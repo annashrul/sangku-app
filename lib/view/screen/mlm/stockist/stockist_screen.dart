@@ -538,7 +538,7 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: isNext?MediaQuery.of(context).size.height/1.6:MediaQuery.of(context).size.height/2.5,
+      // height: isNext?MediaQuery.of(context).size.height/1.6:MediaQuery.of(context).size.height/2.5,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
@@ -571,7 +571,7 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
               }
             }),
             title: WidgetHelper().textQ(isNext?"Kembali":"REAKTIVASI MEMBERSHIP".toLowerCase(),10,Colors.grey,FontWeight.bold),
-            trailing: WidgetHelper().textQ("PIN YANG ANDA MILIKI : ${isLoading?'':pinAvailableModel.result.totalPin}".toLowerCase(),10,Constant().moneyColor,FontWeight.bold),
+            trailing: isNext?WidgetHelper().textQ("PIN YANG ANDA MILIKI : ${isLoading?'':pinAvailableModel.result.totalPin}".toLowerCase(),10,Constant().moneyColor,FontWeight.bold):Text(''),
           ),
           Expanded(
             child: isNext?step2(context):isLoading?ListView.separated(
@@ -595,7 +595,6 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
             ):ListView.separated(
                 itemBuilder: (context,index){
                   var val=pinAvailableModel.result.data[index];
-
                   return ListTile(
                     onTap: (){
                       print(val.toJson());
@@ -624,11 +623,18 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
             ),
           ),
 
-          if(isNext)Container(
+          isNext?Container(
             color: Colors.redAccent,
             child: FlatButton(
               padding: EdgeInsets.all(10.0),
               child: WidgetHelper().textQ('Saat anda melakukan Reaktivasi, maka akan mempengaruhi Advantage yang akan anda peroleh kedepannya, pikirkan baik-baik jika akan melakukan reaktivasi dibawah membership anda saat ini.', 10, Colors.white, FontWeight.normal,maxLines: 100),
+            ),
+          ):Container(
+            color: Colors.redAccent,
+            width: double.infinity,
+            child: FlatButton(
+              padding: EdgeInsets.all(10.0),
+              child: WidgetHelper().textQ('PIN YANG ANDA MILIKI : ${isLoading?'':pinAvailableModel.result.totalPin}', 10, Colors.white, FontWeight.normal,maxLines: 100),
             ),
           )
         ],
@@ -636,7 +642,9 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
     );
   }
   Widget step2(BuildContext context){
-    return ListView(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           alignment: Alignment.center,
@@ -713,10 +721,9 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
                     top: 0,
                     right: 0,
                     child: Container(
-                      // width: double.infinity,
                       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 3),
                       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:Constant().mainColor),
-                      alignment: AlignmentDirectional.topCenter,
+                      alignment: AlignmentDirectional.center,
                       child: WidgetHelper().textQ('$title', 14,Constant().secondDarkColor,FontWeight.bold),
                     ),
                   )
@@ -761,6 +768,7 @@ class _TransferPinState extends State<TransferPin> {
     if(penerimaController.text==''){
       setState(() {
         msg='Penerima tidak boleh kosong';
+        penerimaFocus.requestFocus();
       });
     }
     else{

@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/mlm/get_payment_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/mlm/history/detail_history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
@@ -23,6 +27,8 @@ class SuccessPembelianScreen extends StatefulWidget {
 class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
   String url = '',image='';
   int retry=0;
+  GetPaymentModel getPaymentModel;
+  bool isLoading=false;
   Future uploadAgain()async{
     print('upload deui');
     await upload(image);
@@ -31,7 +37,6 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
     });
     print("RETRY $retry");
   }
-
   Future upload(img)async{
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().putProvider("transaction/deposit/${widget.kdTrx}", {"bukti":img});
@@ -74,9 +79,34 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
       }
     }
   }
+  Future loadPayment()async{
+    var res=await BaseProvider().getProvider("transaction/get_payment/SU5WL1NMLzIxMDIxNy8wMDM=", getPaymentModelFromJson);
+    if(res is GetPaymentModel){
+      GetPaymentModel result=res;
+      if(this.mounted){
+        setState(() {
+          getPaymentModel=result;
+          isLoading=false;
+        });
+      }
+    }
+  }
+  var hari  = DateFormat.d().format( DateTime.now().add(Duration(days: 3)));
+  var bulan = DateFormat.M().format( DateTime.now());
+  var tahun = DateFormat.y().format( DateTime.now());
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isLoading=true;
+    loadPayment();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.kdTrx);
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
@@ -91,14 +121,13 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
             pres.remove('isDetailPembelian');
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           }
-
         },<Widget>[]),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 10),
+        body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
+          padding: EdgeInsets.only(top:10,bottom:10),
           child: Container(
             alignment: AlignmentDirectional.center,
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            height: MediaQuery.of(context).size.height/100.0*60,
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            // height: MediaQuery.of(context).size.height/100.0*60,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -148,51 +177,125 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                 ),
                 SizedBox(height: 15),
                 Container(
+                  padding: EdgeInsets.only(left:10,right:10),
                   height: 50,
                   child: WavyAnimatedTextKit(
                     textStyle: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 14.0,
                         fontWeight: FontWeight.bold,
                         color: Constant().mainColor,
                         fontFamily: Constant().fontStyle
-
                     ),
                     text: [
                       "Transaksi Berhasil",
-                      "Pesanan Akan Segera Kami Proses",
+                      "Transaksi Anda Akan Segera Kami Proses",
                     ],
                     isRepeatingAnimation: true,
                   ),
                 ),
-                // WidgetHelper().textQ("Transaksi Berhasil !!!", 20,Constant().mainColor,FontWeight.bold,letterSpacing: 3.0),
-                // SizedBox(height: 15),
-                // WidgetHelper().textQ("Pesanan anda akan segera kami proses", 14,Constant().darkMode,FontWeight.bold,letterSpacing: 1.0),
                 Divider(),
-                WidgetHelper().textQ("Silahkan upload bukti transfer dibawah ini", 14,Constant().darkMode,FontWeight.bold,letterSpacing: 1.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                  child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", 12, Colors.black, FontWeight.bold),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                      child:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(getPaymentModel.result.grandTotal)+getPaymentModel.result.kdUnique)} .-", 18, Constant().moneyColor, FontWeight.bold),
+                    )
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                  child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, Colors.black, FontWeight.bold,textAlign: TextAlign.center),
+                ),
+                Container(
+                  color: Constant().secondColor,
+                  child: ListTile(
+                    onTap: (){
+                      Clipboard.setData(new ClipboardData(text:getPaymentModel.result.accNo));
+                      WidgetHelper().showFloatingFlushbar(context,'success',"No. Rekening berhasil disalin");
+                    },
+                    leading: Image.network(getPaymentModel.result.logo,width: 70,height: 50,),
+                    title: WidgetHelper().textQ(getPaymentModel.result.accName,12,Constant().secondDarkColor,FontWeight.bold),
+                    subtitle:Row(
+                      children: [
+                        WidgetHelper().textQ(getPaymentModel.result.accNo,12,Colors.grey[200],FontWeight.normal),
+                        SizedBox(width: 5),
+                        Icon(AntDesign.copy1, color: Colors.grey[200], size: 15,),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                        child:WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', 12,Constant().blueColor, FontWeight.bold, textAlign: TextAlign.center,maxLines: 4)
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    child: Container(
+                      color: const Color(0xffF4F7FA),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                      child: RichText(
+                        text: TextSpan(
+                            text: 'Anda dapat melakukan transfer menggunakan ATM, Mobile Banking atau SMS Banking dengan memasukan kode bank',
+                            style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
+                            children: <TextSpan>[
+                              TextSpan(text: ' ${getPaymentModel.result.bankName} ${getPaymentModel.result.tfCode}',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' ${getPaymentModel.result.accName}',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                            ]
+                        ),
+                      ),
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    child: Container(
+                        color: const Color(0xffF4F7FA),
+                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                        child:WidgetHelper().textQ('mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi', 12, Colors.black,FontWeight.normal,textAlign:TextAlign.left)
+                    )
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    child: Container(
+                      color: const Color(0xffF4F7FA),
+                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      child: RichText(
+                        text: TextSpan(
+                            text: 'Pastikan anda transfer sebelum hari ',
+                            style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
+                            children: <TextSpan>[
+                              TextSpan(text: FunctionHelper().formateDate(getPaymentModel.result.limitTf,""),style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
+                            ]
+                        ),
+                      ),
+                    )
+                ),
                 SizedBox(height: 25),
                 WidgetHelper().textQ("TERIMAKASIH !!!", 20,Constant().mainColor,FontWeight.bold,letterSpacing: 3.0),
-                SizedBox(height: 50),
-                FlatButton(
-                  onPressed: () {
-                    WidgetHelper().myModal(context, CameraWidget(
-                      callback: (String img)async{
-                        setState(() {
-                          image = img;
-                        });
-                        upload(image);
-                      },
-                    ));
-
-                  },
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                  color: Constant().moneyColor,
-                  shape: StadiumBorder(),
-                  child:WidgetHelper().textQ("UPLOAD BUKTI TRANSFER", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
-                ),
-
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: FlatButton(
+          onPressed: () {
+            WidgetHelper().myModal(context, CameraWidget(
+              callback: (String img)async{
+                setState(() {
+                  image = img;
+                });
+                upload(image);
+              },
+            ));
+          },
+          padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+          color: Constant().moneyColor,
+          child:WidgetHelper().textQ("UPLOAD BUKTI TRANSFER", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
         ),
       ),
       onWillPop:() async{

@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/history/history_transaction_model.dart';
@@ -202,8 +203,9 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
               child: WidgetHelper().textQ("Pecarian",10,Colors.black,FontWeight.bold),
             ),
             if(!isSelected)Expanded(
+              flex:1,
               child: ListView(
-                padding: EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(5.0),
                 scrollDirection: Axis.horizontal,
                 children: [
                   Container(
@@ -242,33 +244,75 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                   )
                 ],
               ),
-              flex:1
             ),
             Expanded(
                 flex: 19,
-                child: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
-                  controller: controller,
-                  separatorBuilder: (context,index){return Divider();},
-                  itemBuilder: (context,index){
-                    var val=historyTransactionModel.result.data[index];
-                    return ListTile(
-                      onTap: (){},
-                      title: WidgetHelper().textQ(val.note, 10,Constant().darkMode,FontWeight.bold),
-                      subtitle: WidgetHelper().textQ("${val.kdTrx} - ${DateFormat.yMMMMEEEEd('id').format(val.createdAt)}", 10,Colors.grey,FontWeight.normal),
-                      trailing: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            WidgetHelper().textQ("(+) Rp ${FunctionHelper().formatter.format(int.parse(val.trxIn))} .-", 10,Constant().mainColor,FontWeight.normal),
-                            SizedBox(height:5.0),
-                            WidgetHelper().textQ("(-) Rp ${FunctionHelper().formatter.format(int.parse(val.trxOut.split(".")[0]))} .-", 10,Constant().moneyColor,FontWeight.normal),
-                          ],
+                child: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):RefreshWidget(
+                  widget: ListView.builder(
+                    controller: controller,
+                    itemBuilder: (context,index){
+                      var val=historyTransactionModel.result.data[index];
+                      return FlatButton(
+                        onPressed: (){},
+                        padding: EdgeInsets.only(top:0,bottom:0),
+                        color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.only(left:10,right:10,top:10,bottom:10),
+                          onTap: (){},
+                          title: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(AntDesign.paperclip,size: 10),
+                                  SizedBox(width: 5.0),
+                                  Expanded(
+                                    child: WidgetHelper().textQ(val.note, 10,Constant().darkMode,FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Icon(AntDesign.codepen,size: 10),
+                                  SizedBox(width: 5.0),
+                                  WidgetHelper().textQ(val.kdTrx, 10,Constant().mainColor,FontWeight.bold)
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Icon(AntDesign.calendar,size: 10),
+                                  SizedBox(width: 5.0),
+                                  WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,"ymd"), 10,Colors.grey,FontWeight.bold)
+                                ],
+                              ),
+                            ],
+                          ),
+                          trailing: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxIn))} .- ( + )", 10,Constant().mainColor,FontWeight.bold),
+                                SizedBox(height:5.0),
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxOut.split(".")[0]))} .- ( - )", 10,Constant().moneyColor,FontWeight.bold),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    },
+                    itemCount: historyTransactionModel.result.data.length,
+                  ),
+                  callback: (){
+                    setState(() {
+                      isLoading=true;
+                      isNodata=false;
+                    });
+                    loadData();
                   },
-                  itemCount: historyTransactionModel.result.data.length,
                 )
             ),
             if(isLoadmore)Expanded(

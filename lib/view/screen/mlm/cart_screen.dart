@@ -242,7 +242,7 @@ class _CartScreenState extends State<CartScreen> {
                   setState(() {
                     jumlah+=1;
                   });
-                  await postCart(idPaket, jumlah.toString());
+                  await postCart(idPaket, 'plus');
                 },
                 iconSize: 20,
                 padding: EdgeInsets.symmetric(horizontal: 5),
@@ -256,7 +256,7 @@ class _CartScreenState extends State<CartScreen> {
                     setState(() {
                       jumlah-=1;
                     });
-                    await postCart(idPaket, jumlah.toString());
+                    await postCart(idPaket, 'min');
                   }
 
                 },

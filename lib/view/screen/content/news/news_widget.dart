@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/content/content_model.dart';
+import 'package:sangkuy/view/screen/content/news/detail_news_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 
 class NewsWidget extends StatefulWidget {
@@ -23,6 +24,7 @@ class _NewsWidgetState extends State<NewsWidget> {
     return InkWell(
       borderRadius: BorderRadius.circular(4.0),
       onTap: () {
+        WidgetHelper().myPush(context,DetailNewsScreen(contentModel:widget.contentModel,idx: widget.idx));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -42,7 +44,7 @@ class _NewsWidgetState extends State<NewsWidget> {
                 width: getWidth(context) * 0.78,
                 height: getWidth(context) * 0.28,
                 placeholder: (context, url) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
-                errorWidget: (context, url, error) => Image.network('https://allrelease.id/wp-content/uploads/2020/03/Telkomsel-Tanggap-Covid-19.jpg', fit:BoxFit.cover),
+                errorWidget: (context, url, error) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
               ),
 
             ),
@@ -53,14 +55,14 @@ class _NewsWidgetState extends State<NewsWidget> {
                 child: Container(
                   color: Constant().moneyColor,
                   padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
-                  child:WidgetHelper().textQ("Pengumuman",10,Constant().secondDarkColor,FontWeight.bold),
+                  child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].category,10,Constant().secondDarkColor,FontWeight.bold),
                 ),
               ),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-                child:WidgetHelper().textQ("MerdekaPilih hadiah undian yang Anda inginkan",12,Constant().darkMode,FontWeight.normal,maxLines: 2),
+                child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].title,12,Constant().darkMode,FontWeight.normal,maxLines: 2),
               ),
             )
           ],

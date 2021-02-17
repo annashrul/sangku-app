@@ -16,19 +16,34 @@ class _IndexScreenState extends State<IndexScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
   DataMemberModel dataMemberModel;
   dynamic dataMember;
-  bool isLoadingMember=false;
-  Future rebuildData()async{
-    final member = await MemberProvider().getDataMember();
-    dataMemberModel=member;
-    return dataMemberModel.result.toJson();
-  }
+  bool isLoadingMember=false,isError=false;
+  // Future rebuildData()async{
+  //   final member = await MemberProvider().getDataMember();
+  //   dataMemberModel=member;
+  //   return dataMemberModel.result.toJson();
+  // }
   Future loadMember()async{
     final member = await MemberProvider().getDataMember();
-    if(this.mounted)
+    if(member=='error'){
       setState(() {
-        dataMemberModel = member;
         isLoadingMember=false;
+        isError=true;
       });
+    }
+    else if(member==Constant().errExpToken){
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken, Constant().descErrToken,()async{
+        await FunctionHelper().logout(context);
+      });
+    }
+    else{
+      if(this.mounted)
+        setState(() {
+          dataMemberModel = member;
+          isLoadingMember=false;
+          isError=false;
+        });
+    }
+
   }
 
   @override
@@ -56,7 +71,12 @@ class _IndexScreenState extends State<IndexScreen> {
     return WillPopScope(
         child: Scaffold(
           key: scaffoldKey,
-          body: PageStorage(
+          body: isError?ErrWidget(callback: (){
+            setState(() {
+              isLoadingMember=true;
+            });
+            loadMember();
+          },):PageStorage(
             child: RefreshWidget(
               widget: currentScreen,
               callback: (){

@@ -238,9 +238,9 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
                     },
                     child: Column(
                       children: [
-                        WidgetHelper().textQ('Rp ${FunctionHelper().formatter.format(int.parse(val.price))} .-',12,Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                        WidgetHelper().textQ('Rp ${FunctionHelper().formatter.format(int.parse(val.price))} .-',10,Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                         SizedBox(height:5.0),
-                        WidgetHelper().textQ(val.note,10,idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.normal,textAlign: TextAlign.center,maxLines: 10),
+                        WidgetHelper().textQ(val.note,10,idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 10),
                       ],
                     )
                 );
@@ -316,28 +316,26 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
               ),
             ),
             SizedBox(height: 20.0),
-            ListTile(
-                contentPadding: EdgeInsets.only(left:10),
-                leading:Icon(Icons.info_outline,color:Constant().mainColor),
-              title:WidgetHelper().textQ("Konfirmasi Pembayaran",12,Constant().mainColor, FontWeight.bold)
+            Padding(
+              padding: EdgeInsets.only(left:10,bottom: 10),
+              child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor),
             ),
-            desc(context,"Jenis Layanan",widget.val['provider']),
+            desc(context,"Jenis Layanan",widget.val['provider'],color: Colors.grey[200]),
             Divider(),
-            desc(context,"Nomor",widget.val['nohp']),
+            desc(context,"Nomor",widget.val['nohp'],color: Colors.grey[200]),
             Divider(),
             desc(context,"Harga","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
             Divider(),
             if(widget.val['page']=='PULSA ALL OPERATOR')desc(context,"Nominal","Rp ${FunctionHelper().formatter.format(int.parse('${widget.val['note'].split(" ")[1]}'.replaceAll(".","")))} .-",color: Constant().moneyColor),
             if(widget.val['page']=='PULSA ALL OPERATOR')Divider(),
             desc(context,"Keterangan",''),
-            desc(context,widget.val['note'],'',colorttl: Colors.white),
+            desc(context,widget.val['note'],'',colorttl: Colors.grey[200]),
             Divider(),
-            ListTile(
-              contentPadding: EdgeInsets.only(left:10),
-                leading:Icon(Icons.info_outline,color:Constant().mainColor),
-                title:WidgetHelper().textQ("Ringkasan Pembayaran",12,Constant().mainColor, FontWeight.bold)
+            Padding(
+              padding: EdgeInsets.only(left:10,bottom: 10),
+              child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor),
             ),
-            desc(context,"Metode Pembayaran",widget.val['saldo']),
+            desc(context,"Metode Pembayaran",'Saldo',color: Colors.grey[200]),
             Divider(),
             desc(context,"Subtotal","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
             Divider(color: Colors.grey),
@@ -372,8 +370,8 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ(title,12,colorttl,FontWeight.normal),
-          WidgetHelper().textQ(desc,12,color,FontWeight.bold)
+          WidgetHelper().textQ(title,10,colorttl,FontWeight.normal),
+          WidgetHelper().textQ(desc,10,color,FontWeight.bold)
         ],
       ),
     );

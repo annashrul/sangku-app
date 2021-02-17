@@ -45,7 +45,7 @@ class CardWidget extends StatelessWidget {
             children: <Widget>[
               (this.prefixBadge != null) ? Container(
                 width: 10.0,
-                height: 60.0,
+                height: 40.0,
                 decoration: BoxDecoration(
                     color: this.prefixBadge,
                     borderRadius: new BorderRadius.circular(10.0)
@@ -70,10 +70,10 @@ class CardWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       (this.title != null) ? Container(
-                        child:WidgetHelper().textQ(title, 12, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)
+                        child:WidgetHelper().textQ(title, 10, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)
                       ): Container(),
                       (this.description != null)? Container(
-                        child:WidgetHelper().textQ(description, 12, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)
+                        child:WidgetHelper().textQ(description, 10, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)
                       )
                           : Container(),
                     ],

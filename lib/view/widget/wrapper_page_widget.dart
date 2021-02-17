@@ -98,7 +98,16 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                   const SizedBox(
                     height: 4,
                   ),
-                  WidgetHelper().textQ("${widget.dataMember['referral_code']}",10,Constant().darkMode,FontWeight.bold),
+                  Row(
+                    children: <Widget>[
+                      Image.network(widget.dataMember['membership_badge'],width: 16,height: 16),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      WidgetHelper().textQ(widget.dataMember['membership'],10,Constant().darkMode,FontWeight.bold)
+                    ],
+                  )
+
 
                 ],
               ),
@@ -117,25 +126,6 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                         padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
                         child: Row(
                           children: <Widget>[
-                            Image.network(widget.dataMember['membership_badge'],width: 16,height: 16),
-                            const SizedBox(
-                              width: 4,
-                            ),
-                            WidgetHelper().textQ(widget.dataMember['membership'],10,Constant().darkMode,FontWeight.bold)
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height:5.0),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      color: Colors.black12,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
-                        child: Row(
-                          children: <Widget>[
                             Image.network(widget.dataMember['jenjang_karir_badge'],width: 16,height: 16),
                             const SizedBox(
                               width: 4,
@@ -146,6 +136,9 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                       ),
                     ),
                   ),
+                  SizedBox(height:5.0),
+
+                  WidgetHelper().textQ("${widget.dataMember['referral_code']}",10,Constant().darkMode,FontWeight.bold),
                 ],
               )
             ],

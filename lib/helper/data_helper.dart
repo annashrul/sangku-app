@@ -1,3 +1,4 @@
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 
 class DataHelper{
@@ -33,6 +34,20 @@ class DataHelper{
     {"kode":"0","value": "Pending"},
     {"kode":"1","value": "Selesai"},
     {"kode":"2","value": "Batal"},
+  ];
+  static var filterHistoryPembelian=[
+    {"kode":"","value": "Semua"},
+    {"kode":"0","value": "Menunggu Pembayaran"},
+    {"kode":"1","value": "Dikemas"},
+    {"kode":"2","value": "Dikirim"},
+    {"kode":"3","value": "Selesai"},
+    {"kode":"4","value": "Dibatalkan"},
+  ];
+  static List dataProfile=[
+    {'title':"Sponsor",'icon':AntDesign.addusergroup},
+    {'title':"PIN",'icon':AntDesign.chrome},
+    {'title':"PV Kiri",'icon':AntDesign.left},
+    {'title':"PV Kanan",'icon':AntDesign.right},
   ];
 
 }
