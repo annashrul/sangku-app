@@ -15,9 +15,13 @@ class DataHelper{
     'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_0653d8df-0bb4-4714-9267-b987298c0420.png'
   ];
   static List dataWallet=[
-    {'title':"Top Up",'icon':Constant().localIcon+'topup_icon.svg'},
-    {'title':"Transfer",'icon':Constant().localIcon+'transfer_icon.svg'},
-    {'title':"Penarikan",'icon':Constant().localIcon+'history_icon.svg'},
+    {'title':"Pin Aktivasi",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"1"},
+    {'title':"Pin RO",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"ro"},
+    {'title':"Laporan",'icon':Constant().localIcon+'history_icon.svg',"type":"h"},
+    {'title':"Top Up",'icon':Constant().localIcon+'topup_icon.svg',"type":""},
+    {'title':"Transfer",'icon':Constant().localIcon+'transfer_icon.svg',"type":""},
+    {'title':"Penarikan",'icon':Constant().localIcon+'withdrawal.svg',"type":""},
+
   ];
   static List dataStockist=[
     {'title':"PIN Aktivasi",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"1"},
@@ -47,7 +51,7 @@ class DataHelper{
     {'title':"Sponsor",'icon':AntDesign.addusergroup},
     {'title':"PIN",'icon':AntDesign.chrome},
     {'title':"PV Kiri",'icon':AntDesign.left},
-    {'title':"PV Kanan",'icon':AntDesign.right},
+    // {'title':"PV Kanan",'icon':AntDesign.right},
   ];
 
 }

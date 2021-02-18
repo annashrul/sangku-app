@@ -22,19 +22,21 @@ class _NominalWidgetState extends State<NominalWidget> {
       crossAxisCount: 3,
       itemCount:  FunctionHelper.dataNominal.length,
       itemBuilder: (BuildContext context, int index) {
-        return Container(
-          child: FlatButton(
-            padding: EdgeInsets.all(10.0),
+        return FlatButton(
+            shape: RoundedRectangleBorder(side: BorderSide(
+                color: widget.idx==index?Constant().mainColor:Constant().greyColor,
+                width: 2,
+                style: BorderStyle.solid
+            ), borderRadius: BorderRadius.circular(10)),
+          padding: EdgeInsets.only(left:5.0,right: 5.0,top:15,bottom: 15),
             onPressed: (){
               setState(() {
                 widget.idx=index;
               });
               widget.callback(FunctionHelper.dataNominal[index],index);
             },
-            shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-            color: widget.idx==index?Color(0xFFEEEEEE):Theme.of(context).focusColor.withOpacity(0.3),
-            child: WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(FunctionHelper.dataNominal[index]))} .-",10,widget.idx==index?Constant().darkMode:Constant().secondDarkColor, FontWeight.normal,textAlign: TextAlign.center),
-          ),
+            // shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+            child: WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(FunctionHelper.dataNominal[index]))} .-",10,Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center),
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),

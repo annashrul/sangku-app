@@ -81,7 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
               },
               code:result.result.otpAnying,
               param: 'otp',
-              desc: otpVal?'WhatsApp':'SMS',
+              desc: !otpVal?'WhatsApp':'SMS',
               data: data,
 
             ));
@@ -156,9 +156,11 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constant().mainColor,
+      // backgroundColor: Constant().mainColor,
       key: _scaffoldKey,
+      appBar: WidgetHelper().appBarNoButton(context,"Form Login",<Widget>[]),
       body: isLoading?WidgetHelper().loadingWidget(context):isError?ErrWidget(callback:(){}):Stack(
+        alignment: Alignment.center,
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
@@ -170,6 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
           Container(
+            alignment: Alignment.center,
             width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.only(top: 300),
             decoration: BoxDecoration(
@@ -186,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WidgetHelper().textQ("No Handphone", 12, Colors.grey[200], FontWeight.normal,letterSpacing: 2.0),
+                        WidgetHelper().textQ("No Handphone", 12,Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
                         SizedBox(height: 10.0),
                         Container(
                           width: double.infinity,
@@ -196,7 +199,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             color: Theme.of(context).focusColor.withOpacity(0.1),
                           ),
                           child: TextFormField(
-                            style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color: Colors.white),
+                            style: TextStyle(letterSpacing:2.0,fontSize:16,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color: Constant().darkMode),
                             controller: nohpController,
                             maxLines: 1,
                             autofocus: false,
@@ -207,7 +210,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide.none,
                               ),
-                              hintStyle: TextStyle(color: Colors.black, fontSize:12,fontFamily: Constant().fontStyle),
+                              // hintStyle: TextStyle(color: Colors.black, fontSize:12,fontFamily: Constant().fontStyle),
                             ),
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.done,
@@ -227,12 +230,12 @@ class _SignInScreenState extends State<SignInScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            WidgetHelper().textQ("Kirim otp via ${otpVal?'SMS':'WhatsApp'} ", 12, Colors.grey[200],FontWeight.normal,letterSpacing: 2.0),
+                            WidgetHelper().textQ("Kirim otp via ${otpVal?'SMS':'WhatsApp'} ", 12, Constant().darkMode,FontWeight.bold,letterSpacing: 2.0),
                             SizedBox(
                                 width: 90,
                                 height: 10,
                                 child: Switch(
-                                  activeColor: Colors.grey[200],
+                                  activeColor: Constant().mainColor,
                                   value: otpVal,
                                   onChanged: (value) {
                                     setState(() {
@@ -255,7 +258,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         sendOtp();
                       },
                       child: WidgetHelper().textQ("MASUK",14,Colors.grey[200],FontWeight.bold),
-                      color: Colors.black38,
+                      color: Constant().mainColor,
                       elevation: 0,
                       minWidth: 400,
                       height: 50,
@@ -265,7 +268,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                   ),
-                  WidgetHelper().textQ("* Pastikan handphone anda terkoneksi dengan internet", 12, Colors.grey[200], FontWeight.normal)
+                  WidgetHelper().textQ("* Pastikan handphone anda terkoneksi dengan internet", 12,Constant().moneyColor, FontWeight.bold)
 
                 ],
               ),

@@ -26,9 +26,10 @@ import 'package:sangkuy/view/widget/loading/package_loading.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class AddressScreen extends StatefulWidget {
+  final String title;
   int idx;
   final Function(dynamic val,int idx) callback;
-  AddressScreen({this.idx,this.callback});
+  AddressScreen({this.title,this.idx,this.callback});
   @override
   _AddressScreenState createState() => _AddressScreenState();
 }
@@ -153,8 +154,8 @@ class _AddressScreenState extends State<AddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
-        Container(
+      appBar: WidgetHelper().appBarWithButton(context,widget.title==null?"Daftar Alamat":widget.title,(){Navigator.pop(context);},<Widget>[
+        if(widget.title==null)Container(
           color: Colors.transparent,
           padding: EdgeInsets.only(right: 0.0,top:5),
           child: Stack(

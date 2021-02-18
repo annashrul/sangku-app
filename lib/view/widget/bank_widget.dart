@@ -85,14 +85,14 @@ class _BankWidgetState extends State<BankWidget> {
             print(val['id']);
             widget.callback(bank[index]);
           },
-          titleColor: widget.isSaldo?Constant().darkMode:Constant().secondDarkColor,
-          prefixBadge: widget.isSaldo?Constant().secondColor:Theme.of(context).focusColor.withOpacity(0.3),
+          titleColor: Constant().darkMode,
+          prefixBadge: Constant().darkMode,
           title: '${val['bank_name']} ${val['id']=='-'?'':'( ${val['acc_no']} )'}',
           description: '${val['id']=='-'?'Rp '+FunctionHelper().formatter.format(int.parse(val['acc_name']))+' .-':val['acc_name']}',
-          descriptionColor: val['id']=='-'?Constant().moneyColor:Colors.grey[400],
+          descriptionColor: val['id']=='-'?Constant().moneyColor:Constant().darkMode,
           suffixIcon:AntDesign.checkcircleo,
-          suffixIconColor: widget.id==val['id']?!widget.isSaldo?Colors.grey[400]:Colors.black:Colors.transparent,
-          backgroundColor: widget.isSaldo?Colors.transparent:Theme.of(context).focusColor.withOpacity(0.3),
+          suffixIconColor: widget.id==val['id']?!widget.isSaldo?Constant().darkMode:Colors.black:Colors.transparent,
+          backgroundColor:Constant().greyColor,
         );
       },
       separatorBuilder: (_,i){return(Text(''));},

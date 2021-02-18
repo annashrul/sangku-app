@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -7,6 +8,7 @@ import 'package:sangkuy/helper/data_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/PPOB/menu_ppob_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/view/screen/PPOB/pascabayar_screen.dart';
 import 'package:sangkuy/view/screen/PPOB/prabayar_screen.dart';
 
 class MenuPPOBScreen extends StatefulWidget {
@@ -42,23 +44,31 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(left:0.0,right:0.0,bottom: 10.0),
-            child: WidgetHelper().textQ("Pulsa Reguler & Paket Data", 12, Constant().mainColor,FontWeight.bold),
+        ListTile(
+          // onTap: (){WidgetHelper().myPush(context,NewsScreen());},
+          contentPadding: EdgeInsets.only(left:0.0,right:0.0),
+          leading: Icon(AntDesign.wallet,size: 30.0,color:Constant().mainColor),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              WidgetHelper().textQ("Produk PPOB",12,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ("Beli pulsa,paket data, bayar tagihan dll",12,Constant().darkMode,FontWeight.normal),
+            ],
+          ),
+          trailing: Icon(Icons.arrow_right),
         ),
         Container(
-          height: 100,
+          // height: 75,
           child: isLoading?loading(context):StaggeredGridView.countBuilder(
-            padding: EdgeInsets.all(0.0),
             shrinkWrap: true,
+            // scrollDirection: menuPpobModel.result.topup.length<4?Axis.vertical:Axis.horizontal,
             primary: false,
-            scrollDirection: Axis.horizontal,
-            crossAxisCount: 3,
+            crossAxisCount: menuPpobModel.result.topup.length<4?3:4,
             itemCount:  menuPpobModel.result.topup.length,
             itemBuilder: (BuildContext context, int index) {
               var val=menuPpobModel.result.topup[index];
               var toArray = val.logo.split(".");
-              print(toArray);
               return FlatButton(
                   padding: EdgeInsets.all(10.0),
                   shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
@@ -71,88 +81,80 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
                       toArray[2]=='svg'?SvgPicture.network(
                         val.logo,
                         fit:BoxFit.contain,
-                        height: 50.0,
+                        height: 30.0,
                         placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
                       ):CachedNetworkImage(
                         imageUrl:val.logo,
                         width: double.infinity ,
-                        height: 50.0,
+                        height: 30.0,
                         fit:BoxFit.contain,
                         placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                         errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                       ),
                       SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title,10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                     ],
                   )
               );
             },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(20),
+            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
             mainAxisSpacing: 10.0,
-            crossAxisSpacing: 0.0,
+            crossAxisSpacing: 5.0,
           ),
         ),
-        SizedBox(height:10.0),
-        Padding(
-          padding: EdgeInsets.only(left:0.0,right:0.0,bottom: 10.0),
-          child: WidgetHelper().textQ("Bayar Tagihan", 12, Constant().mainColor,FontWeight.bold),
-        ),
+
         Container(
-          height: 100,
+          // height: 100,
           child: isLoading?loading(context):StaggeredGridView.countBuilder(
-            padding: EdgeInsets.all(0.0),
             shrinkWrap: true,
+            // scrollDirection: Axis.horizontal,
             primary: false,
-            scrollDirection: Axis.horizontal,
-            crossAxisCount: 3,
+            crossAxisCount: menuPpobModel.result.tagihan.length<4?3:4,
             itemCount:  menuPpobModel.result.tagihan.length,
             itemBuilder: (BuildContext context, int index) {
               var val=menuPpobModel.result.tagihan[index];
               var toArray = val.logo.split(".");
-              print(toArray);
               return FlatButton(
                   padding: EdgeInsets.all(10.0),
                   shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                   color: Color(0xFFEEEEEE),
-                  onPressed: (){},
+                  onPressed: (){
+                    WidgetHelper().myPush(context,PascabayarScreen(val:val.toJson()));
+
+                  },
                   child: Column(
                     children: [
                       toArray[2]=='svg'?SvgPicture.network(
                         val.logo,
                         fit:BoxFit.contain,
-                        height: 50.0,
+                        height: 30.0,
                         placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
                       ):CachedNetworkImage(
                         imageUrl:val.logo,
                         width: double.infinity ,
-                        height: 50.0,
+                        height: 30.0,
                         fit:BoxFit.contain,
                         placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                         errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                       ),
                       SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title,10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                     ],
                   )
               );
             },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(20),
+            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
             mainAxisSpacing: 10.0,
-            crossAxisSpacing: 0.0,
+            crossAxisSpacing: 5.0,
           ),
         ),
-        SizedBox(height:10.0),
-        Padding(
-          padding: EdgeInsets.only(left:0.0,right:0.0,bottom: 10.0),
-          child: WidgetHelper().textQ("Pembayaran Lainnya", 12, Constant().mainColor,FontWeight.bold),
-        ),
         Container(
-          height: 100,
+          // height: 100,
           child: isLoading?loading(context):StaggeredGridView.countBuilder(
             shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
+            // scrollDirection: Axis.horizontal,
             primary: false,
-            crossAxisCount: 3,
+            crossAxisCount: menuPpobModel.result.lain.length<4?3:4,
             itemCount:  menuPpobModel.result.lain.length,
             itemBuilder: (BuildContext context, int index) {
               var val=menuPpobModel.result.lain[index];
@@ -167,25 +169,25 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
                       toArray[2]=='svg'?SvgPicture.network(
                         val.logo,
                         fit:BoxFit.contain,
-                        height: 50.0,
+                        height: 30.0,
                         placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
                       ):CachedNetworkImage(
                         imageUrl:val.logo,
                         width: double.infinity ,
-                        height: 50.0,
+                        height: 30.0,
                         fit:BoxFit.contain,
                         placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                         errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
                       ),
                       SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title,10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                     ],
                   )
               );
             },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(20),
+            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
             mainAxisSpacing: 10.0,
-            crossAxisSpacing: 0.0,
+            crossAxisSpacing: 5.0,
           ),
         ),
 

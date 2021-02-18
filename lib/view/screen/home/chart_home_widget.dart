@@ -35,8 +35,8 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> {
     return Padding(
       padding: EdgeInsets.all(0),
       child: Container(
-        height: 90,
-        padding: EdgeInsets.only(right: 80,bottom: 35),
+        height: MediaQuery.of(context).size.height/6,
+        padding: EdgeInsets.only(right: 80,top: 0,left: 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flushbar/flushbar.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -119,7 +122,7 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.asset('${Constant().localAssets}no_data.png')
+          Image.network('https://lh3.googleusercontent.com/proxy/27oZlO859yameGqB3FjTaLHzJ2yYh-bATvQuVhVlmYWYiMiQzcNSKBLNAuDP6EL-v7KE7r5tUUteyqNTw_lqB_EqFEwitIqWTzIfW_E')
         ],
       ),
     );
@@ -186,7 +189,7 @@ class WidgetHelper{
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,14,Colors.grey,FontWeight.bold),
+      title:textQ(title,14,Constant().darkMode,FontWeight.bold),
       leading: IconButton(
         icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){
@@ -200,12 +203,13 @@ class WidgetHelper{
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white, // status bar color
-      title:textQ(title,16,Colors.grey,FontWeight.bold),
+      title:textQ(title,14,Constant().darkMode,FontWeight.bold),
       elevation: 0,
       leading:Padding(
         padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
         child:  CircleAvatar(
-          backgroundImage:NetworkImage('https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png',scale: 10.0),
+          backgroundColor: Colors.transparent,
+          backgroundImage:AssetImage(Constant().localAssets+"logo.png"),
         ),
       ),
       actions:widget,
@@ -374,7 +378,14 @@ class WidgetHelper{
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
+                child: Image.network(
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bell_font_awesome.svg/1200px-Bell_font_awesome.svg.png',
+                  width: 28,
+                  height: 28,
+                  color:Colors.white,
+                  // colorBlendMode:BlendMode.color,
+                ),
+                // child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
               ),
               Container(
                 decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -419,12 +430,12 @@ class WidgetHelper{
       child: widget,
     );
   }
-  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white,double iconSize=20.0}){
+  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white,double iconSize=20.0,FontWeight fontWeight=FontWeight.bold}){
     return  Row(
       children: [
         Icon(icon,color:color,size: iconSize),
         SizedBox(width:5.0),
-        WidgetHelper().textQ(title,12,color, FontWeight.normal),
+        WidgetHelper().textQ(title,12,color,fontWeight),
       ],
     );
   }

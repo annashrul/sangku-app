@@ -142,7 +142,6 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     super.initState();
     loadData();
     provider=null;
-    print(widget.val);
   }
   @override
   Widget build(BuildContext context) {
@@ -167,7 +166,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
                   color: Color(0xFFEEEEEE),
                 ),
                 child: TextFormField(
-                  style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                  style: TextStyle(letterSpacing:2.0,fontSize:18,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
                   controller: nohpController,
                   decoration: InputDecoration(
                     enabledBorder: UnderlineInputBorder(
@@ -276,6 +275,8 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
       var res=await BaseProvider().postProvider("transaction/prabayar/checkout", data);
       Navigator.pop(context);
       if(res is General){
+        Navigator.pop(context);
+
         General result=res;
         WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
       }
@@ -290,58 +291,60 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
   @override
   Widget build(BuildContext context) {
     print(widget.val);
-    return ClipPath(
-      clipper: WaveClipperOne(flip: true),
-      child: Container(
-        padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
-        decoration: BoxDecoration(
-            color: Constant().secondColor,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-        ),
-        child:Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height:10.0),
-            Center(
-              child: Container(
-                padding: EdgeInsets.only(top:10.0),
-                width: 50,
-                height: 10.0,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius:  BorderRadius.circular(10.0),
-                ),
+    return Container(
+      padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
+      decoration: BoxDecoration(
+          // color: Constant().secondColor,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
+      ),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height:10.0),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
               ),
             ),
-            SizedBox(height: 20.0),
-            Padding(
-              padding: EdgeInsets.only(left:10,bottom: 10),
-              child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor),
-            ),
-            desc(context,"Jenis Layanan",widget.val['provider'],color: Colors.grey[200]),
-            Divider(),
-            desc(context,"Nomor",widget.val['nohp'],color: Colors.grey[200]),
-            Divider(),
-            desc(context,"Harga","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
-            Divider(),
-            if(widget.val['page']=='PULSA ALL OPERATOR')desc(context,"Nominal","Rp ${FunctionHelper().formatter.format(int.parse('${widget.val['note'].split(" ")[1]}'.replaceAll(".","")))} .-",color: Constant().moneyColor),
-            if(widget.val['page']=='PULSA ALL OPERATOR')Divider(),
-            desc(context,"Keterangan",''),
-            desc(context,widget.val['note'],'',colorttl: Colors.grey[200]),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(left:10,bottom: 10),
-              child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor),
-            ),
-            desc(context,"Metode Pembayaran",'Saldo',color: Colors.grey[200]),
-            Divider(),
-            desc(context,"Subtotal","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
-            Divider(color: Colors.grey),
-            desc(context,"Total Tagihan","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
-            SizedBox(height:20.0),
-            FlatButton(
+          ),
+          SizedBox(height: 20.0),
+          Padding(
+            padding: EdgeInsets.only(left:10,bottom: 10),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor),
+          ),
+          desc(context,"Jenis Layanan",widget.val['provider']),
+          Divider(),
+          if(widget.val['page']=='PULSA ALL OPERATOR')desc(context,"Nominal","Rp ${FunctionHelper().formatter.format(int.parse('${widget.val['note'].split(" ")[1]}'.replaceAll(".","")))} .-",color: Constant().moneyColor),
+          if(widget.val['page']=='PULSA ALL OPERATOR')Divider(),
+          desc(context,"Nomor",widget.val['nohp']),
+          Divider(),
+          desc(context,"Harga","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
+          Divider(),
+          // desc(context,"Keterangan",''),
+          // desc(context,widget.val['note'],'',colorttl: Colors.black),
+          // Divider(),
+          Padding(
+            padding: EdgeInsets.only(left:10,bottom: 10),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor),
+          ),
+          desc(context,"Metode Pembayaran",'Saldo',color: Colors.black),
+          // Divider(),
+          // desc(context,"Subtotal","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
+          Divider(color: Colors.grey),
+          desc(context,"Total Tagihan","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
+          SizedBox(height:20.0),
+          Padding(
+            padding: EdgeInsets.only(left:10,right:10),
+            child: FlatButton(
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+
                 padding: EdgeInsets.all(15.0),
                 color: Constant().mainColor,
                 onPressed: (){
@@ -356,22 +359,22 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
                     WidgetHelper().textQ("BAYAR", 14,Colors.white,FontWeight.bold)
                   ],
                 )
-            )
+            ),
+          )
 
-          ],
-        ),
+        ],
       ),
     );
   }
-  Widget desc(BuildContext context,title,desc,{Color color=Colors.white,Color colorttl=Colors.grey}){
+  Widget desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
     return Padding(
       padding: EdgeInsets.only(left:10,right:10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ(title,10,colorttl,FontWeight.normal),
-          WidgetHelper().textQ(desc,10,color,FontWeight.bold)
+          WidgetHelper().textQ(title,12,colorttl,FontWeight.normal),
+          WidgetHelper().textQ(desc,12,color,FontWeight.bold)
         ],
       ),
     );

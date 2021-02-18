@@ -12,7 +12,7 @@ class HeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Constant().secondColor
+        color: Constant().mainColor1
       ),
       child: Center(
         child: Row(

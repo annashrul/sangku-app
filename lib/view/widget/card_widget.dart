@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
@@ -33,6 +34,7 @@ class CardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // padding: EdgeInsets.only(top:10,bottom: 10),
       color: Colors.transparent,
       child: InkWell(
         onTap: this.onTap,
@@ -45,7 +47,7 @@ class CardWidget extends StatelessWidget {
             children: <Widget>[
               (this.prefixBadge != null) ? Container(
                 width: 10.0,
-                height: 40.0,
+                height: 60.0,
                 decoration: BoxDecoration(
                     color: this.prefixBadge,
                     borderRadius: new BorderRadius.circular(10.0)
@@ -66,16 +68,13 @@ class CardWidget extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: Container(
+                  padding: EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      (this.title != null) ? Container(
-                        child:WidgetHelper().textQ(title, 10, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)
-                      ): Container(),
-                      (this.description != null)? Container(
-                        child:WidgetHelper().textQ(description, 10, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)
-                      )
-                          : Container(),
+                      (this.title != null) ? Container(child:WidgetHelper().textQ(title, 12, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)): Container(),
+                      SizedBox(height: 5.0),
+                      (this.description != null)? Container(child:WidgetHelper().textQ(description, 12, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)) : Container(),
                     ],
                   ),
                 ),

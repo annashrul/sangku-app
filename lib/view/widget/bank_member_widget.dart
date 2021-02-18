@@ -66,14 +66,14 @@ class _BankMemberWidgetState extends State<BankMemberWidget> {
           onTap:(){
             widget.callback(val);
           },
-          titleColor: Constant().secondDarkColor,
-          prefixBadge: Theme.of(context).focusColor.withOpacity(0.3),
-          title: '${val.bankName} ( ${val.accNo} )',
-          description: '${val.accName}',
-          descriptionColor: Colors.grey[400],
+          titleColor: Constant().darkMode,
+          prefixBadge:Constant().darkMode,
+          title: '${val.bankName}',
+          description: '${val.accName}  ( ${val.accNo} )',
+          descriptionColor: Constant().darkMode,
           suffixIcon:AntDesign.checkcircleo,
-          suffixIconColor: widget.id==val.id?Colors.grey:Colors.transparent,
-          backgroundColor: Theme.of(context).focusColor.withOpacity(0.3),
+          suffixIconColor: widget.id==val.id?Constant().darkMode:Colors.transparent,
+          backgroundColor: Constant().greyColor,
         );
       },
       separatorBuilder: (_,i){return(Text(''));},

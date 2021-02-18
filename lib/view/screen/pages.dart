@@ -34,6 +34,7 @@ import 'package:sangkuy/view/screen/mlm/history/history_transaction_screen.dart'
 import 'package:sangkuy/view/screen/mlm/network/binary_screen.dart';
 import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
+import 'package:sangkuy/view/screen/redeem/detail_redeem_screen.dart';
 import 'package:sangkuy/view/screen/wallet/form_ewallet_screen.dart';
 import 'package:sangkuy/view/screen/wallet/history_deposit_screen.dart';
 import 'package:sangkuy/view/screen/wallet/history_withdraw_screen.dart';

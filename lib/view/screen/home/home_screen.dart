@@ -136,107 +136,75 @@ class _HomeScreenState extends State<HomeScreen> {
         dataMember: widget.dataMember,
         children: [
           Container(
-            height: 90,
+            // height:50,
+            padding: EdgeInsets.only(left:0),
             child: StaggeredGridView.countBuilder(
-              padding: EdgeInsets.all(0.0),
               shrinkWrap: true,
               primary: false,
-              scrollDirection: Axis.horizontal,
-              crossAxisCount: 2,
-              itemCount:  DataHelper.dataProfile.length,
-              itemBuilder: (BuildContext context, int index) {
+              padding: EdgeInsets.only(top:10),
+              // scrollDirection: Axis.horizontal,
+              crossAxisCount: 3,
+              itemCount: DataHelper.dataProfile.length,
+              itemBuilder: (context,index){
                 IconData icon;
                 String title='';
                 Color color;
                 String value='';
                 if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=widget.dataMember['sponsor'];}
-                if(index==1){icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);value='${widget.dataMember['plafon']}'.split(".")[0];}
-                if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='${widget.dataMember['left_reward_point']} | ${widget.dataMember['right_reward_point']}';}
-                if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
+                // widget.dataMember['plafon']}'.split(".")[0]
+                if(index==1){
+                  icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
+                  value='Rp '+FunctionHelper().formatter.format(int.parse('${widget.dataMember['plafon']}'.split(".")[0]))+' .-';
+                }
+                if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${widget.dataMember['left_reward_point']} | kanan ${widget.dataMember['right_reward_point']}';}
+                // if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
                 return Container(
-                  child: FlatButton(
-                    onPressed: ()async{
-                      await MemberProvider().getDataMember();
-                    },
-                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
-                    padding: EdgeInsets.all(10.0),
-                    color: Color(0xFFEEEEEE),
-                    child: Row(
-                      children: [
-                        Icon(icon,size: 10.0,color: color),
-                        SizedBox(width:5.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            WidgetHelper().textQ(title,8,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
-                            WidgetHelper().textQ(value,8,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ],
-                    ),
+                  padding: EdgeInsets.only(top:10,bottom: 10),
+                  decoration: BoxDecoration(
+                    color:Color(0xFF732044),
+                    // borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Icon(icon,size: 10.0,color: Colors.transparent),
+                      // SizedBox(width:7.5),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          WidgetHelper().textQ(title,10,Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                          WidgetHelper().textQ(value,10,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                        ],
+                      ),
+                      // SizedBox(width:7.5),
+
+                    ],
                   ),
                 );
               },
-              staggeredTileBuilder: (int index) => new StaggeredTile.fit(10),
+              staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
               mainAxisSpacing: 10.0,
-              crossAxisSpacing: 0.0,
+              crossAxisSpacing: 1.0,
             ),
           ),
           ChartWidgetHome1(data: widget.dataMember),
-          section1(context),
           section2(context),
           Divider(thickness: 10.0),
           section6(context),
+          Divider(thickness: 10.0),
           section3(context),
+          Divider(thickness: 10.0),
+
           section4(context)
         ],
-        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,(){},Colors.redAccent)),
+        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,(){},Constant().mainColor2)),
       ),
     );
   }
   
   
-  Widget section1(BuildContext context){
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: StaggeredGridView.countBuilder(
-        shrinkWrap: true,
-        primary: false,
-        crossAxisCount: 2,
-        itemCount:  DataHelper.dataStockist.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-
-            child: FlatButton(
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-              padding: EdgeInsets.only(top:10.0,bottom:10.0,left:10.0),
-              color: Color(0xFFEEEEEE),
-              onPressed: (){
-                WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataStockist[index]['type']));
-              },
-              child: Container(
-                child: Column(
-                  children: [
-                    SvgPicture.asset(
-                        DataHelper.dataStockist[index]['icon'],
-                        height: 30,
-                        width: 30,
-                        color:Constant().secondColor
-                    ),
-                    SizedBox(height:5.0),
-                    WidgetHelper().textQ(DataHelper.dataStockist[index]['title'],12,Constant().secondColor,FontWeight.bold)
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-        mainAxisSpacing: 0.0,
-        crossAxisSpacing: 20.0,
-      ),
-    );
-  }
   Widget section2(BuildContext context){
     return Container(
       padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10.0,top:0.0),
@@ -255,21 +223,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Container(
                   child: FlatButton(
                     onPressed: (){
-                      WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:DataHelper.dataWallet[index]['title'].toUpperCase()));
+                      if(DataHelper.dataWallet[index]['type']=='h'){
+                        return WidgetHelper().myPush(context,HistoryTransactionScreen());
+                      }
+                      if(DataHelper.dataWallet[index]['type']!=''){
+                        return WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataWallet[index]['type']));
+                      }else{
+                        return WidgetHelper().myPush(context,FormEwalletScreen(dataMember: widget.dataMember,title:DataHelper.dataWallet[index]['title'].toUpperCase()));
+                      }
+
                     },
                     shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                     padding: EdgeInsets.all(10.0),
-                    color: Color(0xFFEEEEEE),
+                    // color: Color(0xFFEEEEEE),
                     child: Column(
                       children: [
                         SvgPicture.asset(
                             DataHelper.dataWallet[index]['icon'],
                             height: 30,
                             width: 30,
-                            color:Constant().secondColor
+                            color:Constant().mainColor1
                         ),
                         SizedBox(height:5.0),
-                        WidgetHelper().textQ(DataHelper.dataWallet[index]['title'],12,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.center),
+                        WidgetHelper().textQ(DataHelper.dataWallet[index]['title'],12,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
                       ],
                     ),
                   ),
@@ -277,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
               mainAxisSpacing: 0.0,
-              crossAxisSpacing: 20.0,
+              crossAxisSpacing: 0.0,
             ),
           ),
         ],
@@ -305,8 +281,8 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().textQ("Berita Terbaru",12,Colors.black,FontWeight.bold),
-                WidgetHelper().textQ("kumpulan berita terbaru seputar SanQu",10,Colors.grey[400],FontWeight.normal),
+                WidgetHelper().textQ("Berita Terbaru",12,Constant().darkMode,FontWeight.bold),
+                WidgetHelper().textQ("Kumpulan berita terbaru seputar SangQu",12,Constant().darkMode,FontWeight.normal),
               ],
             ),
             trailing: Icon(Icons.arrow_right),
@@ -343,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().textQ("Poin Anda",12,Constant().secondColor,FontWeight.normal),
+                WidgetHelper().textQ("Poin Anda",12,Constant().darkMode,FontWeight.bold),
                 isLoadingMember?WidgetHelper().baseLoading(context,Container(
                   height: 15.0,
                   width:MediaQuery.of(context).size.width/10,
@@ -353,10 +329,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             trailing: Icon(Icons.arrow_right),
           ),
-          WidgetHelper().textQ("Redeem Poin RO Anda Dengan Hadiah - Hadiah Yang Menarik",12,Colors.grey,FontWeight.normal),
+          WidgetHelper().textQ("Silahkan Redeem Poin RO Anda Dengan Hadiah - Hadiah Dibawah Ini !",12,Constant().darkMode,FontWeight.normal),
           SizedBox(height:5.0),
           Container(
-            height: 300,
+            height: 240,
             child: isLoadingRedeem?loadingSecion6(context):ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: AlwaysScrollableScrollPhysics(),
@@ -367,11 +343,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 int stock = int.parse(listRedeemModel.result.data[index].stock);
                 int points=int.parse(listRedeemModel.result.data[index].harga);
                 Color colorBadge = Constant().moneyColor;
-                String status='${FunctionHelper().formatter.format(points)} POIN';
+                String status='Poin Mencukupi';
                 bool isTrue=true;
                 if(int.parse(widget.dataMember['point_ro'].split(".")[0])<points){
                   colorBadge = Constant().secondColor;
-                  status='Poin Tidak Cukup';
+                  status='Tidak Mencukupi';
                   isTrue=false;
                 }
                 if(stock<1){
@@ -381,22 +357,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 return Container(
                   child: FlatButton(
-                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
                     padding: EdgeInsets.all(0.0),
-                    color: Color(0xFFEEEEEE),
+                    // color: Color(0xFFEEEEEE),
                     onPressed: (){
+
                       if(isTrue){
-                        WidgetHelper().myModal(context, Container(
-                          height: MediaQuery.of(context).size.height/1.2,
-                          child: AddressScreen(idx: idxAddress,callback: (val,idx){
-                            Prefix2.Datum datum = val;
-                            setState(() {
-                              idxAddress=idx;
-                              idAddress=datum.id;
-                            });
-                            postRedeem(listRedeemModel.result.data[index].id);
-                          },),
+                        WidgetHelper().myModal(context,Container(
+                          height: MediaQuery.of(context).size.height/2,
+                          child: DetailRedeem(val: listRedeemModel.result.data[index].toJson()..addAll({'my_poin':int.parse(widget.dataMember['point_ro'].split(".")[0]).toString()})),
                         ));
+                        // WidgetHelper().myModal(context, Container(
+                        //   height: MediaQuery.of(context).size.height/1.2,
+                        //   child: AddressScreen(title:'Redeem Poin',idx: idxAddress,callback: (val,idx){
+                        //     Prefix2.Datum datum = val;
+                        //     setState(() {
+                        //       idxAddress=idx;
+                        //       idAddress=datum.id;
+                        //     });
+                        //     postRedeem(listRedeemModel.result.data[index].id);
+                        //   },),
+                        // ));
                       }
                     },
                     child: Stack(
@@ -408,9 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(0),
-                                    topRight: Radius.circular(0)),
+                                borderRadius: BorderRadius.circular(10.0),
                                 child: Container(
                                   height: 150,
                                   width: double.infinity,
@@ -424,20 +403,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                                padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', 12,Constant().darkMode,FontWeight.bold),
-                                    SizedBox(height: 14),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                                      child: WidgetHelper().textQ('$status', 12,Constant().secondDarkColor,FontWeight.bold,maxLines:3,textAlign: TextAlign.center),
-                                      color: colorBadge,
-                                      width: double.infinity,
-                                    ),
-                                    SizedBox(height: 14),
-                                    WidgetHelper().textQ('${listRedeemModel.result.data[index].deskripsi}', 12,Constant().darkMode,FontWeight.normal,maxLines:3 ),
+                                    WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', 10,Color(0xFF757575),FontWeight.bold),
+                                    SizedBox(height: 5),
+                                    WidgetHelper().textQ(listRedeemModel.result.data[index].title, 12,Colors.black,FontWeight.bold),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      children: [
+                                        Icon(AntDesign.chrome,size: 10,color: Constant().mainColor2,),
+                                        SizedBox(width: 5.0,),
+                                        WidgetHelper().textQ('$status', 10,Constant().mainColor2,FontWeight.bold),
+                                      ],
+                                    )
+
+                                    // Container(
+                                    //   padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                                    //   child: WidgetHelper().textQ('$status', 12,Constant().secondDarkColor,FontWeight.bold,maxLines:3,textAlign: TextAlign.center),
+                                    //   color: colorBadge,
+                                    //   width: double.infinity,
+                                    // ),
+                                    // SizedBox(height: 14),
+                                    // WidgetHelper().textQ('${listRedeemModel.result.data[index].deskripsi}', 12,Constant().darkMode,FontWeight.normal,maxLines:3 ),
                                   ],
                                 ),
                               ),
@@ -449,9 +438,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           right: 10,
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:Constant().mainColor),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color:Constant().mainColor),
                             alignment: AlignmentDirectional.center,
-                            child: WidgetHelper().textQ('${listRedeemModel.result.data[index].title}', 10,Constant().secondDarkColor,FontWeight.bold),
+                            child: WidgetHelper().textQ('${FunctionHelper().formatter.format(points)} POIN', 10,Constant().secondDarkColor,FontWeight.bold),
                           ),
                         )
                       ],
@@ -486,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10.0),
                   width: MediaQuery.of(context).size.width/2,
-                  height: MediaQuery.of(context).size.width/1.8,
+                  height: MediaQuery.of(context).size.width/2.5,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10.0),
@@ -501,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   margin: EdgeInsets.only(bottom: 10.0),
                   width: MediaQuery.of(context).size.width/2,
-                  height: 20.0,
+                  height: 5.0,
                   color: Colors.white,
                 ),
                 Container(

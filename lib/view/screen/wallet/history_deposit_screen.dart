@@ -231,65 +231,7 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
                             }
                           },
                         );
-                        // return FlatButton(
-                        //   color: index%2==0?Color(0xFFEEEEEE):Colors.white,
-                        //   padding: EdgeInsets.only(top:10.0,bottom: 10.0),
-                        //   onPressed: (){
-                        //     if(val.status==0){
-                        //       WidgetHelper().myPush(context,SuccessPembelianScreen(kdTrx: FunctionHelper().decode(val.kdTrx)));
-                        //     }
-                        //   },
-                        //   child: ListTile(
-                        //     title: Column(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         WidgetHelper().textQ(val.kdTrx, 10,Constant().darkMode,FontWeight.normal),
-                        //         SizedBox(height: 5),
-                        //         Row(
-                        //           children: [
-                        //             Icon(AntDesign.creditcard,size: 10),
-                        //             SizedBox(width: 5),
-                        //             WidgetHelper().textQ(val.bankName, 10,Constant().darkMode,FontWeight.normal),
-                        //           ],
-                        //         ),
-                        //         SizedBox(height: 5),
-                        //         Row(
-                        //           children: [
-                        //             Icon(AntDesign.creditcard,size: 10),
-                        //             SizedBox(width: 5),
-                        //             WidgetHelper().textQ(val.accNo, 10,Constant().darkMode,FontWeight.normal),
-                        //           ],
-                        //         ),
-                        //         SizedBox(height: 5),
-                        //         Row(
-                        //           children: [
-                        //             Icon(Entypo.credit,size: 10),
-                        //             SizedBox(width: 5),
-                        //             WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.amount))} .-", 10,Constant().moneyColor,FontWeight.normal),
-                        //           ],
-                        //         ),
-                        //         SizedBox(height: 5),
-                        //         Row(
-                        //           children: [
-                        //             Icon(AntDesign.calendar,size: 10),
-                        //             SizedBox(width: 5),
-                        //             WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(val.createdAt)}", 10,Colors.grey,FontWeight.normal),
-                        //           ],
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     trailing:Container(
-                        //       padding: EdgeInsets.only(top:10.0,bottom: 10),
-                        //       height: 40,
-                        //       child: FlatButton(
-                        //           color: color,
-                        //           onPressed: (){},
-                        //           child: WidgetHelper().textQ(status,10,Colors.white,FontWeight.bold)
-                        //       ),
-                        //     ),
-                        //   ),
-                        // );
+
                       },
                       itemCount: historyDepositModel.result.data.length
                   ),

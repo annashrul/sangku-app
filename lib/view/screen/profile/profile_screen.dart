@@ -11,6 +11,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
+  
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,17 +36,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: EdgeInsets.all(0.0),
                     shrinkWrap: true,
                     primary: false,
-                    crossAxisCount: 4,
+                    crossAxisCount: 3,
                     itemCount:  DataHelper.dataProfile.length,
                     itemBuilder: (BuildContext context, int index) {
                       IconData icon;
                       String title='';
                       Color color;
                       String value='';
-                      if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=widget.dataMember['sponsor'];}
-                      if(index==1){icon=AntDesign.pptfile1;title='PIN';color=Color(0xFFffc107);value=widget.dataMember['pin'];}
-                      if(index==2){icon=AntDesign.leftcircleo;title='PV Kiri';color=Color(0xFF28a745);value=widget.dataMember['left_pv'];}
-                      if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
+                      // if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=widget.dataMember['sponsor'];}
+                      // if(index==1){icon=AntDesign.pptfile1;title='PIN';color=Color(0xFFffc107);value=widget.dataMember['pin'];}
+                      // if(index==2){icon=AntDesign.leftcircleo;title='PV Kiri';color=Color(0xFF28a745);value=widget.dataMember['left_pv'];}
+                      // if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
                       return Container(
                         child: FlatButton(
                           onPressed: ()async{
@@ -52,16 +54,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
                           padding: EdgeInsets.all(10.0),
-                          color: Color(0xFFEEEEEE),
+                          color: Constant().mainColor1,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(icon,size: 10.0,color: color),
-                              SizedBox(width:5.0),
+                              // Icon(icon,size: 10.0,color: color),
+                              // SizedBox(width:5.0),
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  WidgetHelper().textQ(title,9,Constant().secondColor, FontWeight.normal,textAlign: TextAlign.left),
-                                  WidgetHelper().textQ(value,10,Constant().secondColor, FontWeight.bold,textAlign: TextAlign.left),
+                                  WidgetHelper().textQ("Bonus Diterima",9,Constant().mainColor2, FontWeight.normal,textAlign: TextAlign.left),
+                                  WidgetHelper().textQ("Rp 3.370.000",10,Constant().mainColor2, FontWeight.bold,textAlign: TextAlign.left),
                                 ],
                               ),
                             ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
@@ -172,7 +173,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                               textAlign: TextAlign.center,
                               text: TextSpan(
                                 text:widget.deskripsi,
-                                style: TextStyle(fontSize:12,color:Constant().secondColor,fontFamily:Constant().fontStyle,fontWeight:FontWeight.normal),
+                                style: TextStyle(fontSize:12,color:Constant().darkMode,fontFamily:Constant().fontStyle,fontWeight:FontWeight.bold),
                               )
                           )
                           // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
@@ -213,7 +214,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                         physics: ClampingScrollPhysics(),
                         shrinkWrap: true,
                         crossAxisCount: 3,
-                        childAspectRatio: 1.6,
+                        childAspectRatio: 1.3,
                         mainAxisSpacing: 10,
                         padding: EdgeInsets.all(5),
                         children: <Widget>[
@@ -278,7 +279,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
                                   text:widget.deskripsi,
-                                  style: TextStyle(fontSize:12,color:Constant().secondColor,fontFamily:Constant().fontStyle,fontWeight:FontWeight.normal),
+                                  style: TextStyle(fontSize:12,color:Constant().darkMode,fontFamily:Constant().fontStyle,fontWeight:FontWeight.bold),
                                 )
                             )
                             // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
@@ -376,19 +377,20 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       },
       child: Container(
         margin: EdgeInsets.all(10.0),
-        height: 50,
-        width: 50,
+        height: 60,
+        width: 60,
         decoration: BoxDecoration(
+          color: Color(0xFFEEEEEE),
           // borderRadius:  BorderRadius.circular(10.0),
-          boxShadow: [
-            BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
-          ],
+          // boxShadow: [
+          //   BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
+          // ],
           // color: Colors.grey[200],
           shape: BoxShape.circle,
         ),
         child: Center(
           // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:TextStyle(fontFamily:'Poppins',fontWeight:FontWeight.bold,color:Colors.black,fontSize: 16), children: [TextSpan(text:number.toString())])),
-          child:WidgetHelper().textQ(number.toString(), 16,Constant().mainColor,FontWeight.bold),
+          child:WidgetHelper().textQ(number.toString(), 16,Constant().darkMode,FontWeight.bold),
           // child: Text(number.toString(), style: TextStyle(fontFamily:ThaibahFont().fontQ, fontSize:  ScreenUtilQ.getInstance().setSp(40), fontWeight: FontWeight.bold, color: widget.numColor),),
         ),
       ),
@@ -407,17 +409,16 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       },
       child: Container(
         margin: EdgeInsets.all(10.0),
-
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-          // color:  Colors.grey[200],
-          shape: BoxShape.rectangle,
-          borderRadius:  BorderRadius.circular(10.0),
+          color:  Color(0xFFEEEEEE),
+          shape: BoxShape.circle,
+          // borderRadius:  BorderRadius.circular(10.0),
 
         ),
         child: Center(
-          child:Icon(Icons.cancel,color: Colors.redAccent),
+          child:Icon(AntDesign.closecircleo,color: Colors.redAccent),
           // child: Text('Ulangi',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
@@ -446,11 +447,11 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          borderRadius:  BorderRadius.circular(10.0),
+          color:  Color(0xFFEEEEEE),
+          shape: BoxShape.circle,
         ),
         child: Center(
-          child:Icon(Icons.backspace,color:Colors.redAccent),
+          child:Icon(AntDesign.back,color:Colors.redAccent),
         ),
       ),
     );
@@ -501,7 +502,7 @@ class CodePanel extends StatelessWidget {
                 borderRadius:  BorderRadius.circular(10.0),
                 shape: BoxShape.rectangle,
                 border: new Border.all(color: color, width: 1.0),
-                color: Colors.green.shade500,
+                color: Constant().mainColor1,
               ),
             ),
           ),
@@ -510,7 +511,7 @@ class CodePanel extends StatelessWidget {
       } while (circlePice <= codeLength);
     } else {
       if (status == 1) {
-        color = Colors.green.shade500;
+        color = Constant().mainColor1;
       }
       if (status == 2) {
         color = Colors.red.shade500;
@@ -594,7 +595,7 @@ class BezierContainer extends StatelessWidget {
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Constant().mainColor,Constant().mainDarkColor]
+                      colors: [Color(0xFFEEEEEE),Color(0xFFEEEEEE)]
                   )
               ),
             ),

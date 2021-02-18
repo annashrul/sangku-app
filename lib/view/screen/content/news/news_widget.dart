@@ -28,7 +28,7 @@ class _NewsWidgetState extends State<NewsWidget> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black12,
+          color: Color(0xFFEEEEEE),
           borderRadius: BorderRadius.circular(4.0),
         ),
         width: getWidth(context) * 0.78,

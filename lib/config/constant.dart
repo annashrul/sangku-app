@@ -21,19 +21,24 @@ class Constant{
   final String localIcon      = 'assets/icon/';
   final String oneSignalId    = "2f7a9ad1-aec2-4abe-ab9b-2354c51580b2";
   final String fontStyle      = 'Montserrat';
-  final String noImage        = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/No-image-available.png';
+  final String noImage        = 'https://i.pinimg.com/originals/c9/22/68/c92268d92cf2dbf96e3195683d9e14fb.png';
   final String avatar        = 'https://cdn.pixabay.com/photo/2018/08/28/12/41/avatar-3637425_960_720.png';
   final String titleErrToken = 'Sesi anda sudah berakhir';
   final String descErrToken = 'Silahkan login ulang untuk melanjutkan proses ini';
   final String titleMsgSuccessTrx = 'Transaksi Berhasil !';
   final String descMsgSuccessTrx = 'Terimakasih Telah Melakukan Transaksi disini';
-  final Color mainColor       = Color(0xFF03AC0E);
+  final String titleErrTimeout = 'Terjadi Kesalahan !';
+  final String descErrTimeout = 'silahkan cobalagi untuk melanjutkan proses ini';
+  final Color mainColor       = Color(0xFF732044);
   final Color mainDarkColor   = Color(0xFF22B7CE);
   final Color secondColor     = Color(0xFF04526B);
   final Color blueColor       = Color(0xFF138496);
   final Color secondDarkColor = Color(0xFFE7F6F8);
-  final Color darkMode        = Color(0xFF2C2C2C);
+  final Color darkMode        = Color(0xFF212121);
   final Color moneyColor      = Color(0xFFFA591D);
+  final Color greyColor       = Color(0xFFEEEEEE);
+  final Color mainColor1   = Color(0xFF732044);
+  final Color mainColor2  = Color(0xFFffc107);
 
 
 
