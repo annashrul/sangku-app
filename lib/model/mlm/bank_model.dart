@@ -95,7 +95,7 @@ class Datum {
   String logo;
   String accName;
   String accNo;
-  int tfCode;
+  String tfCode;
   DateTime createdAt;
   DateTime updatedAt;
 

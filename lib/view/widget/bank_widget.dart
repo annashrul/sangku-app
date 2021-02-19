@@ -44,7 +44,7 @@ class _BankWidgetState extends State<BankWidget> {
             "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
             "acc_name": "100000",
             "acc_no": "",
-            "tf_code": 0,
+            "tf_code": "0",
             "created_at": "2020-12-22T03:50:55.000Z",
             "updated_at": "2020-12-22T03:50:55.000Z"
           });

@@ -11,6 +11,7 @@ class BankProvider{
     }
     BankModel bankModel;
     var res = await BaseProvider().getProvider(url, bankModelFromJson);
+    print(res);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       return 'error';
     }
@@ -23,7 +24,7 @@ class BankProvider{
         if(result.status=='success'){
           // print(res.result.data);
           // bankModel = BankModel.fromJson(result.toJson());
-          return res.toJson();
+          return result.toJson();
         }
         else{
           return 'failed';

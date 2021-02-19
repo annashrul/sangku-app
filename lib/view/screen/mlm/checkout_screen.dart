@@ -579,7 +579,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           Container(
             child: BankWidget(callback: (val){
               setState(() {
-                idBank=val['id'];
+                idBank=val['id'].toString();
               });
             },id: idBank,isSaldo: true)
           ),
