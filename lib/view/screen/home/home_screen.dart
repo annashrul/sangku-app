@@ -364,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if(isTrue){
                         WidgetHelper().myModal(context,Container(
-                          height: MediaQuery.of(context).size.height/2,
+                          height: MediaQuery.of(context).size.height/1.2,
                           child: DetailRedeem(val: listRedeemModel.result.data[index].toJson()..addAll({'my_poin':int.parse(widget.dataMember['point_ro'].split(".")[0]).toString()})),
                         ));
                         // WidgetHelper().myModal(context, Container(
