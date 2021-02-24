@@ -14,23 +14,37 @@ import 'package:sangkuy/view/widget/detail_scaffold.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:sangkuy/view/widget/loading/member_loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WrapperPageWidget extends StatefulWidget {
-  final dynamic dataMember;
   List<Widget> children;
   Widget action;
+  Function(dynamic data) callback;
 
-  WrapperPageWidget({this.dataMember,this.children,this.action});
+  WrapperPageWidget({this.children,this.action,this.callback});
   @override
   _WrapperPageWidgetState createState() => _WrapperPageWidgetState();
 }
 
 class _WrapperPageWidgetState extends State<WrapperPageWidget> {
+  bool isLoadingMember=false;
+  DataMemberModel dataMemberModel;
+  Future loadMember()async{
+    final res=await MemberProvider().getDataMember();
+    if(this.mounted)
+      setState(() {
+        dataMemberModel=res;
+        isLoadingMember=false;
+      });
+      widget.callback(dataMemberModel.result.toJson());
 
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    isLoadingMember=true;
+    loadMember();
   }
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -76,10 +90,17 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
         children: [
           Row(
             children: <Widget>[
-              CircleImage(
+              isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white
+                ),
+              )):CircleImage(
                 param: 'network',
                 key: Key("profile"),
-                image: widget.dataMember['picture'],
+                image: dataMemberModel.result.picture,
                 size: 50.0,
                 padding: 0.0,
               ),
@@ -90,21 +111,33 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  WidgetHelper().textQ("${widget.dataMember['full_name']}",10,Constant().darkMode,FontWeight.bold),
+                  isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                    width: 100,
+                    height: 5,
+                    color: Colors.white,
+                  )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
                   const SizedBox(
                     height: 2,
                   ),
-                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(widget.dataMember['saldo']))} .-",14,Constant().moneyColor,FontWeight.bold),
+                  isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                    width: 100,
+                    height: 10,
+                    color: Colors.white,
+                  )):WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
                   const SizedBox(
                     height: 4,
                   ),
-                  Row(
+                  isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                    width: 100,
+                    height: 15,
+                    color: Colors.white,
+                  )):Row(
                     children: <Widget>[
-                      Image.network(widget.dataMember['membership_badge'],width: 16,height: 16),
+                      Image.network(dataMemberModel.result.membershipBadge,width: 16,height: 16),
                       const SizedBox(
                         width: 4,
                       ),
-                      WidgetHelper().textQ(widget.dataMember['membership'],10,Constant().darkMode,FontWeight.bold)
+                      WidgetHelper().textQ(dataMemberModel.result.membership,10,Constant().darkMode,FontWeight.bold)
                     ],
                   )
 
@@ -118,7 +151,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  ClipRRect(
+                  isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                    width: 100,
+                    height: 16,
+                    color: Colors.white,
+                  )):ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       color: Colors.black12,
@@ -126,11 +163,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                         padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
                         child: Row(
                           children: <Widget>[
-                            Image.network(widget.dataMember['jenjang_karir_badge'],width: 16,height: 16),
+                            Image.network(dataMemberModel.result.jenjangKarirBadge,width: 16,height: 16),
                             const SizedBox(
                               width: 4,
                             ),
-                            WidgetHelper().textQ(widget.dataMember['jenjang_karir'],10,Constant().darkMode,FontWeight.bold)
+                            WidgetHelper().textQ(dataMemberModel.result.jenjangKarir,10,Constant().darkMode,FontWeight.bold)
                           ],
                         ),
                       ),
@@ -138,7 +175,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
                   ),
                   SizedBox(height:5.0),
 
-                  WidgetHelper().textQ("${widget.dataMember['referral_code']}",10,Constant().darkMode,FontWeight.bold),
+                  isLoadingMember?WidgetHelper().baseLoading(context, Container(
+                    width: 100,
+                    height: 5,
+                    color: Colors.white,
+                  )):WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
                 ],
               )
             ],

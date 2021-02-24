@@ -276,7 +276,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
       body: SafeArea(
         child: RefreshWidget(
           widget: WrapperPageWidget(
-            dataMember: widget.dataMember,
+            // dataMember: widget.dataMember,
             children: [
               if(isLoading)LinearProgressIndicator(),
               Divider(thickness: 10.0),

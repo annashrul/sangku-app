@@ -1,5 +1,7 @@
 part of 'pages.dart';
 
+
+
 class IndexScreen extends StatefulWidget {
   int currentTab = 2;
   IndexScreen({
@@ -14,49 +16,12 @@ class _IndexScreenState extends State<IndexScreen> {
   Widget currentScreen;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final PageStorageBucket bucket = PageStorageBucket();
-  DataMemberModel dataMemberModel;
-  dynamic dataMember;
-  bool isLoadingMember=false,isError=false;
-  // Future rebuildData()async{
-  //   final member = await MemberProvider().getDataMember();
-  //   dataMemberModel=member;
-  //   return dataMemberModel.result.toJson();
-  // }
-  Future loadMember()async{
-    final member = await MemberProvider().getDataMember();
-    if(member=='error'){
-      setState(() {
-        isLoadingMember=false;
-        isError=true;
-      });
-    }
-    else if(member==Constant().errExpToken){
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken, Constant().descErrToken,()async{
-        await FunctionHelper().logout(context);
-      });
-    }
-    else{
-      if(this.mounted)
-        setState(() {
-          dataMemberModel = member;
-          isLoadingMember=false;
-          isError=false;
-        });
-    }
-
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentScreen = WidgetHelper().loadingWidget(context);
-    isLoadingMember=true;
-    WidgetsBinding.instance.addPostFrameCallback((_)async{
-      await loadMember();
-      currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
-      print("BUILD BERES");
-    });
+    currentScreen = HomeScreen();
+
 
   }
 
@@ -67,47 +32,26 @@ class _IndexScreenState extends State<IndexScreen> {
   }
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
         child: Scaffold(
           key: scaffoldKey,
-          body: isError?ErrWidget(callback: (){
-            setState(() {
-              isLoadingMember=true;
-            });
-            loadMember();
-          },):PageStorage(
-            child: RefreshWidget(
-              widget: currentScreen,
-              callback: (){
-                WidgetsBinding.instance.addPostFrameCallback((_)async{
-                  isLoadingMember=true;
-                  await loadMember();
-                  if(widget.currentTab==2){
-                    currentScreen = HomeScreen(dataMember:dataMemberModel.result.toJson());
-                  }
-                  if(widget.currentTab==4){
-                    currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson());
-                  }
-                  print("BUILD BERES");
-                });
-              },
-            ),
+          body: PageStorage(
+            child: currentScreen,
             bucket: bucket,
           ),
-          floatingActionButton: isLoadingMember?Text(''):FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
             child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
             onPressed: () {
               setState(() {
-                currentScreen = HomeScreen(dataMember: dataMemberModel.result.toJson());
+                currentScreen = HomeScreen();
                 widget.currentTab = 2;
               });
             },
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: isLoadingMember?Text(''):BottomAppBar(
+          bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
             notchMargin: 10,
             child: Container(
@@ -124,7 +68,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            // currentScreen = ScreenHome(); // if user taps on this dashboard tab will be active
+                            currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 0;
                           });
                         },
@@ -142,7 +86,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProductScreen(dataMember:dataMemberModel.result.toJson()); // if user taps on this dashboard tab will be active
+                            currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 1;
                           });
                         },
@@ -182,7 +126,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProfileScreen(dataMember:dataMemberModel.result.toJson()); // if user taps on this dashboard tab will be active
+                            currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 4;
                           });
                         },
@@ -207,5 +151,29 @@ class _IndexScreenState extends State<IndexScreen> {
     return (
       WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.of(context).pop(false);},(){SystemNavigator.pop();})
     ) ?? false;
+  }
+
+}
+class NavigationProvider with ChangeNotifier {
+  DataMemberModel dataMemberModel;
+  Future loadMember()async{
+    dataMemberModel = await MemberProvider().getDataMember();
+  }
+
+  String currentNavigation = "index";
+  Widget get getNavigation {
+    if (currentNavigation == "product") {
+      return IndexScreen(currentTab: 1);
+    } else if (currentNavigation == "redeem") {
+      return IndexScreen(currentTab: 0);
+    } else {
+      return CheckingRoutes();
+    }
+
+  }
+
+  void updateNavigation(String navigation) {
+    currentNavigation = navigation;
+    notifyListeners();
   }
 }

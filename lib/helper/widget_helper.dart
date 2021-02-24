@@ -397,7 +397,7 @@ class WidgetHelper{
     );
   }
 
-  myCart(BuildContext context,Function callback,Color color){
+  myCart(BuildContext context,Function callback,Color color,{IconData iconData=AntDesign.shoppingcart}){
     return FlatButton(
         padding: EdgeInsets.all(0.0),
         highlightColor:Colors.black38,
@@ -410,7 +410,7 @@ class WidgetHelper{
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: Icon(AntDesign.shoppingcart, color:Constant().mainColor, size: 28,),
+                child: Icon(iconData, color:Constant().mainColor, size: 28,),
               ),
               Container(
                 decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),

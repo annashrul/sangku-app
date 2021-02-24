@@ -3,15 +3,14 @@ part of '../pages.dart';
 
 
 class ProfileScreen extends StatefulWidget {
-  final dynamic dataMember;
-  ProfileScreen({this.dataMember});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  
+
 
   @override
   void initState() {
@@ -23,7 +22,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context){
     return SafeArea(
       child: WrapperPageWidget(
-        dataMember: widget.dataMember,
         children: [
           Container(
             padding: EdgeInsets.only(left:0.0,right:0.0,bottom:0.0,top:0.0),
@@ -142,30 +140,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         ],
         action: HeaderWidget(title: 'PROFILE',action: WidgetHelper().myNotif(context,(){},Colors.redAccent)),
-      ),
-    );
-  }
-
-
-  Widget section1({IconData iconData=AntDesign.arrowright}){
-    return Expanded(
-      child: FlatButton(
-        highlightColor:Colors.black38,
-        splashColor:Colors.black38,
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        onPressed: () {
-          // Navigator.of(context).pushNamed('/Tabs', arguments: 4);
+        callback: (data){
+          print(data);
         },
-        child: Column(
-          children: <Widget>[
-            Icon(AntDesign.wallet,color: Colors.grey),
-            SizedBox(height: 5.0),
-            WidgetHelper().textQ("Rp 1,000,000 .-",10,Colors.black,FontWeight.normal,letterSpacing: 1.0,textAlign: TextAlign.center)
-          ],
-        ),
       ),
     );
   }
+
+
 
   Widget section2(String title, Function callback,int idx,{IconData iconData=AntDesign.arrowright}){
     return FlatButton(
