@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "531593788798",
+    "project_id": "sangqu-a746a",
+    "storage_bucket": "sangqu-a746a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531593788798:android:024c5c41483dbc492cc72f",
+        "android_client_info": {
+          "package_name": "com.sangQu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "531593788798-3n22jdk29bdt04dmt1t1l7niam74upvi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sangQu",
+            "certificate_hash": "074fdaea7c96afcbd3eb444a27e23bb22b0852e2"
+          }
+        },
+        {
+          "client_id": "531593788798-9rleo8c20qj2b9pvf1vd7c1tp21m7sbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCak5vpyaD-hPw7mYZcy26jBxvl9DZlth8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "531593788798-9rleo8c20qj2b9pvf1vd7c1tp21m7sbp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

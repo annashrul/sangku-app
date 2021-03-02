@@ -2,12 +2,13 @@ part of '../pages.dart';
 
 
 class ProductScreen extends StatefulWidget {
-
   @override
   _ProductScreenState createState() => _ProductScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> with SingleTickerProviderStateMixin  {
+class _ProductScreenState extends State<ProductScreen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   TabController _tabController;
@@ -140,6 +141,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   String lbl='';
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     Map<String, dynamic> row = {
       'Aktivasi':'Aktivasi',
       'Repeat Order':'Repeat Order',

@@ -1,9 +1,11 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/config/database_config.dart';
+import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/table_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/auth/login_model.dart';
@@ -12,11 +14,17 @@ import 'package:sangkuy/model/config_model.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/home_view.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignInScreen extends StatefulWidget {
+  static const String routeName = '/signUp';
+  final String referrarCode;
+  SignInScreen({Key key, this.referrarCode}) : super(key: key);
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -29,6 +37,7 @@ class _SignInScreenState extends State<SignInScreen> {
   DatabaseConfig _db = DatabaseConfig();
   ConfigModel configModel;
   Future loadConfig()async{
+
     var res = await BaseProvider().getProvider("auth/config", configModelFromJson);
     if(res==Constant().errSocket||res==Constant().errTimeout){
       isLoading=false;isError=true;
@@ -152,9 +161,16 @@ class _SignInScreenState extends State<SignInScreen> {
     loadConfig();
     super.initState();
   }
+  final TextEditingController referralCodeController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
+    // Firebase.initializeApp()
+    // FirebaseApp
+    referralCodeController.text = widget.referrarCode ?? '';
+
     return Scaffold(
       // backgroundColor: Constant().mainColor,
       key: _scaffoldKey,
@@ -254,8 +270,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     padding: EdgeInsets.only(top: 20,bottom: 10),
                     child: MaterialButton(
                       onPressed: (){
-                        // WidgetHelper().loadingDialog(context);
                         sendOtp();
+                        // WidgetHelper().myPush(context,HomeView());
+                        // GeneratedRoute.navigateTo(HomeView.routeName);
                       },
                       child: WidgetHelper().textQ("MASUK",14,Colors.grey[200],FontWeight.bold),
                       color: Constant().mainColor,

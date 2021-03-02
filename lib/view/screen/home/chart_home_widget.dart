@@ -11,7 +11,9 @@ class ChartWidgetHome1 extends StatefulWidget {
   _ChartWidgetHome1State createState() => _ChartWidgetHome1State();
 }
 
-class _ChartWidgetHome1State extends State<ChartWidgetHome1> {
+class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   int touchedIndex;
   int kiri=0;
   int kanan=0;
@@ -31,7 +33,7 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> {
   Widget build(BuildContext context) {
     // print(double.parse());
     // print()
-
+    super.build(context);
     return Padding(
       padding: EdgeInsets.all(0),
       child: Container(

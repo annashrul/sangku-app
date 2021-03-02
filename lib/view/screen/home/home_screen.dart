@@ -6,12 +6,16 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
+
   bool isLoadingNews=false,isErrorNews=false,isTokenExpNews=false;
   bool isLoadingRedeem=false,isErrorRedeem=false,isTokenExpRedeem=false;
   bool isLoadingMember=false;
   ContentModel contentModel;
   ListRedeemModel listRedeemModel;
+
   Future loadData()async{
     setState(() {
       isLoadingRedeem=true;
@@ -22,17 +26,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Future loadNews()async{
     var res = await ContentProvider().loadData("page=1");
+    print("RESPONSE NEWS $res");
     if(res=='error' || res=='failed'){
       setState(() {
         isLoadingNews=false;
         isErrorNews=true;
       });
     }
-    else if(res==Constant().errExpToken){
+    else if(res==Constant().errExpToken||res==null){
       setState(() {
-        isLoadingNews=false;
+        isLoadingNews=true;
         isErrorNews=false;
         isTokenExpNews=true;
+      });
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+        await FunctionHelper().logout(context);
       });
     }
     else{
@@ -48,17 +56,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Future loadRedeem()async{
     var res = await ContentProvider().loadRedeem("page=1&limit=5");
     if(res=='error' || res=='failed'){
-      setState(() {
-        isLoadingRedeem=false;
-        isErrorRedeem=true;
-      });
+      if(this.mounted){
+        setState(() {
+          isLoadingRedeem=false;
+          isErrorRedeem=true;
+        });
+      }
     }
     else if(res==Constant().errExpToken){
-      setState(() {
-        isLoadingRedeem=false;
-        isErrorRedeem=false;
-        isTokenExpRedeem=true;
-      });
+      if(this.mounted){
+        setState(() {
+          isLoadingRedeem=false;
+          isErrorRedeem=false;
+          isTokenExpRedeem=true;
+        });
+      }
     }
     else{
       if(this.mounted)
@@ -70,6 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
         });
     }
   }
+
+  String refer='';
+  Future getLink()async{
+    final ref = await DynamicLinksApi().createReferralLink('1234567');
+    setState(() {
+      refer = ref.toString();
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -83,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print("================================================================");
     print(dataMember);
     print("================================================================");
-
+    super.build(context);
     return SafeArea(
       child:  WrapperPageWidget(
         children: [
@@ -177,73 +198,73 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           )),
-          Container(
-            child:Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFdc3545),),
-                      SizedBox(width:1),
-                      WidgetHelper().textQ("pertumbuhan",10,Color(0xFFdc3545),FontWeight.bold),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFffc107),),
-                      SizedBox(width:1),
-                      WidgetHelper().textQ("tabungan",10,Color(0xFFffc107),FontWeight.bold),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,size:10,color: Color(0xFF5d78ff),),
-                      SizedBox(width:1),
-                      WidgetHelper().textQ("balance",10,Color(0xFF5d78ff),FontWeight.bold),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,size:10,color: Constant().mainColor),
-                      SizedBox(width:1),
-                      WidgetHelper().textQ("terpasang",10,Constant().mainColor,FontWeight.bold),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,size:10,color:Colors.green),
-                      SizedBox(width:1),
-                      WidgetHelper().textQ("bonus",10,Colors.green,FontWeight.bold),
-                    ],
-                  ),
-                ),
-
-              ],
-            )
-          ),
-          Container(
-            height: 200,
-            child: BarChartHome(),
-          ),
+          // Container(
+          //   child:Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       Container(
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           children: [
+          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFdc3545),),
+          //             SizedBox(width:1),
+          //             WidgetHelper().textQ("pertumbuhan",10,Color(0xFFdc3545),FontWeight.bold),
+          //           ],
+          //         ),
+          //       ),
+          //       Container(
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           children: [
+          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFffc107),),
+          //             SizedBox(width:1),
+          //             WidgetHelper().textQ("tabungan",10,Color(0xFFffc107),FontWeight.bold),
+          //           ],
+          //         ),
+          //       ),
+          //       Container(
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           children: [
+          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFF5d78ff),),
+          //             SizedBox(width:1),
+          //             WidgetHelper().textQ("balance",10,Color(0xFF5d78ff),FontWeight.bold),
+          //           ],
+          //         ),
+          //       ),
+          //       Container(
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           children: [
+          //             Icon(AntDesign.checkcircleo,size:10,color: Constant().mainColor),
+          //             SizedBox(width:1),
+          //             WidgetHelper().textQ("terpasang",10,Constant().mainColor,FontWeight.bold),
+          //           ],
+          //         ),
+          //       ),
+          //       Container(
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           crossAxisAlignment: CrossAxisAlignment.center,
+          //           children: [
+          //             Icon(AntDesign.checkcircleo,size:10,color:Colors.green),
+          //             SizedBox(width:1),
+          //             WidgetHelper().textQ("bonus",10,Colors.green,FontWeight.bold),
+          //           ],
+          //         ),
+          //       ),
+          //
+          //     ],
+          //   )
+          // ),
+          // Container(
+          //   height: 200,
+          //   child: BarChartHome(),
+          // ),
           SizedBox(height:10),
           section2(context),
           Divider(thickness: 10.0),
@@ -253,7 +274,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Divider(thickness: 10.0),
           section4(context)
         ],
-        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,(){},Constant().mainColor2)),
+        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,()async{
+          final refer = await DynamicLinksApi().createReferralLink('1234567');
+          SocialShare.checkInstalledAppsForShare().then((data) {
+            print(data.toString());
+          });
+        },Constant().mainColor2)),
         callback: (data){
           setState(() {
             dataMember=data;
@@ -288,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if(DataHelper.dataWallet[index]['type']!=''){
                         return WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataWallet[index]['type']));
                       }else{
-                        return WidgetHelper().myPush(context,FormEwalletScreen(dataMember:dataMember,title:DataHelper.dataWallet[index]['title'].toUpperCase()));
+                        return WidgetHelper().myPush(context,FormEwalletScreen(title:DataHelper.dataWallet[index]['title'].toUpperCase()));
                       }
 
                     },

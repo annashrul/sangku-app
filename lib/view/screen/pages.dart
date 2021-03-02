@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/data_helper.dart';
+import 'package:sangkuy/helper/dynamic_link_api.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -53,6 +54,7 @@ import 'package:sangkuy/view/widget/redeem_widget.dart';
 import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sangkuy/model/member/address/address_model.dart' as Prefix2;
+import 'package:social_share/social_share.dart';
 
 
 part 'profile/profile_screen.dart';

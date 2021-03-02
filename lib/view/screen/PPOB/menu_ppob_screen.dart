@@ -16,7 +16,10 @@ class MenuPPOBScreen extends StatefulWidget {
   _MenuPPOBScreenState createState() => _MenuPPOBScreenState();
 }
 
-class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
+class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   MenuPpobModel menuPpobModel;
   bool isLoading=false;
   Future loadData()async{
@@ -40,6 +43,7 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -61,9 +65,9 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> {
         Container(
           // height: 75,
           child: isLoading?loading(context):StaggeredGridView.countBuilder(
+            primary: true,
             shrinkWrap: true,
-            // scrollDirection: menuPpobModel.result.topup.length<4?Axis.vertical:Axis.horizontal,
-            primary: false,
+            physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: menuPpobModel.result.topup.length<4?3:4,
             itemCount:  menuPpobModel.result.topup.length,
             itemBuilder: (BuildContext context, int index) {

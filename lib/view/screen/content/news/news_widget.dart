@@ -15,12 +15,15 @@ class NewsWidget extends StatefulWidget {
   _NewsWidgetState createState() => _NewsWidgetState();
 }
 
-class _NewsWidgetState extends State<NewsWidget> {
+class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return InkWell(
       borderRadius: BorderRadius.circular(4.0),
       onTap: () {

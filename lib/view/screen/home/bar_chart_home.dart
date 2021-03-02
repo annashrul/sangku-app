@@ -31,41 +31,42 @@ class BarChartHome extends StatefulWidget {
 }
 
 class _BarChartHomeState extends State<BarChartHome> {
-  
+  OrdinalSales ordinalSales;
   RekapitulasiModel rekapitulasiModel;
-  List data=[];
+  List<OrdinalSales> data=[];
+  List<OrdinalSales> balanceKanan=[];
+  List<OrdinalSales> balanceKiri=[];
+  List<OrdinalSales> pertumbuhanKanan=[];
+  List<OrdinalSales> pertumbuhanKiri=[];
+  List<OrdinalSales> tabunganKanan=[];
+  List<OrdinalSales> tabunganKiri=[];
   var now = new DateTime.now();
   var formatter = new DateFormat('yyyy-MM-dd');
   Future loadData()async{
     // print(formatter.format(now.subtract(Duration(days: 1))));
     String date='';
-    for(var i=1;i<6;i++){
-      if(i==1){
-        date=formatter.format(now);
-      }else{
-        date=formatter.format(now.subtract(Duration(days: i-1)));
-      }
+    for(var i=1;i<10;i++){
+      // if(i==1){
+      //   date=formatter.format(now);
+      // }else{
+      //   date=formatter.format(now.subtract(Duration(days: 30-i)));
+      // }
+      date=formatter.format(now.subtract(Duration(days: 30-i)));
       print(date);
       var res = await BaseProvider().getProvider('member/rekapitulasi_daily?tgl='+date, rekapitulasiModelFromJson);
       RekapitulasiModel result=res;
-      // setState(() {
-      //   rekapitulasiModel=res;
-      //   data.add({
-      //     "tgl":"$date",
-      //     "balanceKanan":rekapitulasiModel.result.balanceKanan,
-      //     "balanceKiri":rekapitulasiModel.result.balanceKiri,
-      //     "pertumbuhanKanan":rekapitulasiModel.result.pertumbuhanKanan,
-      //     "pertumbuhanKiri":rekapitulasiModel.result.pertumbuhanKiri,
-      //     "tabunganKanan":rekapitulasiModel.result.tabunganKanan,
-      //     "tabunganKiri":rekapitulasiModel.result.tabunganKiri,
-      //     "terpasang":rekapitulasiModel.result.hakBonus,
-      //     "bonus":(rekapitulasiModel.result.hakBonus*rekapitulasiModel.result.nominalBonus),
-      //   });
-      // });
-      print(result.result.toJson());
+      setState(() {
+        rekapitulasiModel=res;
+        balanceKanan.add(OrdinalSales(date,rekapitulasiModel.result.balanceKanan));
+        balanceKiri.add(OrdinalSales(date,rekapitulasiModel.result.balanceKiri));
+        pertumbuhanKanan.add(OrdinalSales(date,rekapitulasiModel.result.pertumbuhanKanan));
+        pertumbuhanKiri.add(OrdinalSales(date,rekapitulasiModel.result.pertumbuhanKiri));
+        tabunganKanan.add(OrdinalSales(date,rekapitulasiModel.result.tabunganKanan));
+        tabunganKiri.add(OrdinalSales(date,rekapitulasiModel.result.tabunganKiri));
+      });
     }
     print("=================== DATA SERVER  =======================");
-
+    print(balanceKanan);
     print("=================== DATA SERVER  =======================");
     // var res=await BaseProvider().getProvider('member/rekapitulasi_daily?tgl='+formatter.format(now.subtract(Duration(days: 1))), rekapitulasiModelFromJson);
     // if(mounted){
@@ -98,70 +99,21 @@ class _BarChartHomeState extends State<BarChartHome> {
 
   /// Create series list with multiple series
   List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final desktopSalesData = [
-      new OrdinalSales("${formatter.format(now)}", 5),
-      new OrdinalSales('${formatter.format(now.subtract(Duration(days: 1)))}', 25),
-      new OrdinalSales('${formatter.format(now.subtract(Duration(days: 2)))}', 100),
-      new OrdinalSales('${formatter.format(now.subtract(Duration(days: 3)))}', 75),
-      new OrdinalSales('${formatter.format(now.subtract(Duration(days: 4)))}', 75),
-    ];
-
-    final tabletSalesData = [
-      new OrdinalSales('2021-02-24', 25),
-      new OrdinalSales('2021-02-23', 50),
-      new OrdinalSales('2021-02-22', 10),
-      new OrdinalSales('2021-02-21', 20),
-      new OrdinalSales('2021-02-20', 20),
-    ];
-
-    final mobileSalesData = [
-      new OrdinalSales('2021-02-24', 10),
-      new OrdinalSales('2021-02-23', 15),
-      new OrdinalSales('2021-02-22', 50),
-      new OrdinalSales('2021-02-21', 45),
-      new OrdinalSales('2021-02-20', 45),
-    ];
-
-    final otherSalesData = [
-      new OrdinalSales('2021-02-24', 20),
-      new OrdinalSales('2021-02-23', 35),
-      new OrdinalSales('2021-02-22', 15),
-      new OrdinalSales('2021-02-21', 10),
-      new OrdinalSales('2021-02-20', 10),
-    ];
-    final mobileSalesData1 = [
-      new OrdinalSales('2021-02-24', 10),
-      new OrdinalSales('2021-02-23', 15),
-      new OrdinalSales('2021-02-22', 50),
-      new OrdinalSales('2021-02-21', 45),
-      new OrdinalSales('2021-02-20', 45),
-    ];
-
     return [
-      new charts.Series<OrdinalSales, String>(
-        seriesColor:charts.ColorUtil.fromDartColor(Color(0xFFdc3545)),
-        id: '',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: desktopSalesData,
-        displayName: 'ACUY'
-      ),
       new charts.Series<OrdinalSales, String>(
         seriesColor:charts.ColorUtil.fromDartColor(Color(0xFFffc107)),
         displayName: 'ACUY',
         id: '',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: tabletSalesData,
-
-
+        data: data,
       ),
       new charts.Series<OrdinalSales, String>(
         seriesColor:charts.ColorUtil.fromDartColor(Color(0xFF5d78ff )),
         id: '',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: mobileSalesData,
+        data: balanceKiri,
         displayName: 'ACUY',
 
       ),
@@ -170,7 +122,7 @@ class _BarChartHomeState extends State<BarChartHome> {
         id: '',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: otherSalesData,
+        data: pertumbuhanKanan,
         displayName: 'ACUY',
 
       ),
@@ -179,9 +131,25 @@ class _BarChartHomeState extends State<BarChartHome> {
         id: '',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: mobileSalesData1,
+        data: pertumbuhanKiri,
         displayName: 'ACUY',
 
+      ),
+      new charts.Series<OrdinalSales, String>(
+        seriesColor:charts.ColorUtil.fromDartColor(Colors.green),
+        id: '',
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: tabunganKanan,
+        displayName: 'ACUY',
+      ),
+      new charts.Series<OrdinalSales, String>(
+        seriesColor:charts.ColorUtil.fromDartColor(Colors.green),
+        id: '',
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: tabunganKiri,
+        displayName: 'ACUY',
       )
     ];
   }

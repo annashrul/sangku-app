@@ -94,8 +94,9 @@ class WidgetHelper{
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
-                  textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
+                  SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.rectangle),
+                  // SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
+                  // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
                 ],
               ),
             )
@@ -110,8 +111,10 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SpinKitCubeGrid(size: 85.0, color: Constant().mainColor),
-          textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
+          SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.rectangle),
+
+          // SpinKitCubeGrid(size: 85.0, color: Constant().mainColor),
+          // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
         ],
       ),
     );
@@ -122,7 +125,8 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Image.network('https://lh3.googleusercontent.com/proxy/27oZlO859yameGqB3FjTaLHzJ2yYh-bATvQuVhVlmYWYiMiQzcNSKBLNAuDP6EL-v7KE7r5tUUteyqNTw_lqB_EqFEwitIqWTzIfW_E')
+          WidgetHelper().textQ(Constant().errNoData, 14, Constant().mainColor, FontWeight.bold)
+          // Image.network('https://lh3.googleusercontent.com/proxy/27oZlO859yameGqB3FjTaLHzJ2yYh-bATvQuVhVlmYWYiMiQzcNSKBLNAuDP6EL-v7KE7r5tUUteyqNTw_lqB_EqFEwitIqWTzIfW_E')
         ],
       ),
     );
@@ -440,13 +444,14 @@ class WidgetHelper{
     );
   }
 
-  myFilter(Function callback,{IconData icon}){
+  myFilter(Function callback,{IconData icon,Color bg, Color iconColor=Colors.grey}){
     return FlatButton(
         padding: EdgeInsets.all(10.0),
         highlightColor:Colors.black38,
         splashColor:Colors.black38,
         onPressed:callback,
-        child: Icon(icon,color: Colors.grey)
+        color: bg,
+        child: Icon(icon,color: iconColor)
     );
   }
 

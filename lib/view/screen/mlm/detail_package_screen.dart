@@ -187,58 +187,21 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     return Scaffold(
       key: _scaffoldKey,
       body: isLoading?WidgetHelper().loadingWidget(context):buildContent(context),
-      bottomNavigationBar: isLoading?Text(''):Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      bottomNavigationBar: isLoading?Text(''):FlatButton(
+        onPressed: (){
+          validate(param);
+        },
         color: Constant().moneyColor,
+        padding: EdgeInsets.all(20.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     FlatButton(
-            //         onPressed: () {
-            //           minQty();
-            //         },
-            //         padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-            //         color: Constant().moneyColor,
-            //         child:Icon(AntDesign.minuscircleo,color: Constant().secondDarkColor,)
-            //       // child:Text("abus")
-            //     ),
-            //     WidgetHelper().textQ("${qty}", 12, Constant().secondDarkColor, FontWeight.bold),
-            //     FlatButton(
-            //         onPressed: () {
-            //           addQty();
-            //         },
-            //         padding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-            //         color: Constant().moneyColor,
-            //         child:Icon(AntDesign.pluscircleo,color: Constant().secondDarkColor,)
-            //       // child:Text("abus")
-            //     ),
-            //   ],
-            // ),
-            FlatButton(
-              onPressed: (){
-                validate(param);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-                decoration: BoxDecoration(
-                    color: Constant().secondColor
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
-                    SizedBox(width:10.0),
-                    WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
-                  ],
-                ),
-              ),
-            ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
+            SizedBox(width:10.0),
+            WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
           ],
         ),
-      )
+      ),
 
     );
   }
@@ -337,8 +300,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                           child: Container(
                             padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0),
                             width: double.infinity,
-                            color: Constant().secondColor,
-                            child:WidgetHelper().textQ("${detailPackageModel.result.deskripsi}",12,Constant().secondDarkColor,FontWeight.normal,maxLines: 100),
+                            color: Color(0xFFEEEEEE),
+                            child:WidgetHelper().textQ("${detailPackageModel.result.deskripsi}",12,Constant().darkMode,FontWeight.normal,maxLines: 100),
                           ),
                         ),
                         Container(

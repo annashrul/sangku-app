@@ -14,6 +14,7 @@ import 'package:sangkuy/model/mlm/get_payment_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/mlm/history/detail_history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/screen/wallet/form_ewallet_screen.dart';
 import 'package:sangkuy/view/widget/camera_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,16 +72,14 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
       }
       else{
         Navigator.pop(context);
-        WidgetHelper().notifDialog(context,"Transaksi Berhasil","Terimakasih telah melakukan transaksi disini", (){
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
           WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-        },(){
-          WidgetHelper().myPush(context, DetailHistoryPembelianScreen(kdTrx: widget.kdTrx));
-        },titleBtn2: "home",titleBtn1: "detail pembelian");
+        });
       }
     }
   }
   Future loadPayment()async{
-    var res=await BaseProvider().getProvider("transaction/get_payment/SU5WL1NMLzIxMDIxNy8wMDM=", getPaymentModelFromJson);
+    var res=await BaseProvider().getProvider("transaction/get_payment/${widget.kdTrx}", getPaymentModelFromJson);
     if(res is GetPaymentModel){
       GetPaymentModel result=res;
       if(this.mounted){
@@ -91,6 +90,46 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
       }
     }
   }
+  Future cancelTransaksi()async{
+    WidgetHelper().loadingDialog(context);
+    var res = await BaseProvider().postProvider("transaction/deposit/${widget.kdTrx}", {"status":"2"});
+    if(res == '${Constant().errTimeout}'|| res=='${Constant().errSocket}'){
+      Navigator.pop(context);
+      WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
+    }
+    else{
+      print(res);
+      if(res is General){
+        General result = res;
+        print(result.status);
+        Navigator.pop(context);
+        if(retry>=3){
+          WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan Hubungi admin", (){
+            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+          },(){
+            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+          },titleBtn1: "kembali",titleBtn2: "home");
+        }
+        else{
+          WidgetHelper().notifDialog(context,"Terjadi Kesalahan","${result.msg}", (){
+            Navigator.pop(context);
+          },(){
+            Navigator.pop(context);
+            cancelTransaksi();
+          },titleBtn1: "kembali",titleBtn2: "Coba lagi");
+        }
+      }
+      else{
+        Navigator.pop(context);
+        WidgetHelper().notifDialog(context,"Transaksi Berhasil","Pengajuan transaksi anda berhasil dibatalkan", (){
+          WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+        },(){
+          WidgetHelper().myPush(context, FormEwalletScreen(title: 'TOP UP'));
+        },titleBtn2: "Top Up",titleBtn1: "Home");
+      }
+    }
+  }
+
   var hari  = DateFormat.d().format( DateTime.now().add(Duration(days: 3)));
   var bulan = DateFormat.M().format( DateTime.now());
   var tahun = DateFormat.y().format( DateTime.now());
@@ -121,7 +160,20 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
             pres.remove('isDetailPembelian');
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           }
-        },<Widget>[]),
+        },<Widget>[
+          if(!isLoading)
+            if(getPaymentModel.result.paymentSlip=='-')
+              WidgetHelper().myFilter((){
+                WidgetHelper().myModal(context, CameraWidget(
+                  callback: (String img)async{
+                    setState(() {
+                      image = img;
+                    });
+                    upload(image);
+                  },
+                ));
+              },icon: AntDesign.upload,bg: Constant().mainColor, iconColor: Colors.white)
+        ]),
         body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
           padding: EdgeInsets.only(top:10,bottom:10),
           child: Container(
@@ -284,19 +336,58 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
         ),
         bottomNavigationBar: FlatButton(
           onPressed: () {
-            WidgetHelper().myModal(context, CameraWidget(
-              callback: (String img)async{
-                setState(() {
-                  image = img;
-                });
-                upload(image);
-              },
-            ));
+            WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan membatalkan transaksi ?",(){
+              Navigator.pop(context);
+            },(){
+              cancelTransaksi();
+            });
           },
-          padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+          padding: EdgeInsets.symmetric(vertical: 20,horizontal: 10),
           color: Constant().moneyColor,
-          child:WidgetHelper().textQ("UPLOAD BUKTI TRANSFER", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
+          child:WidgetHelper().textQ("BATALKAN", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
         ),
+        // bottomNavigationBar: Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Container(
+        //       width: MediaQuery.of(context).size.width/3,
+        //       child: FlatButton(
+        //         onPressed: () {
+        //           WidgetHelper().myModal(context, CameraWidget(
+        //             callback: (String img)async{
+        //               setState(() {
+        //                 image = img;
+        //               });
+        //               upload(image);
+        //             },
+        //           ));
+        //         },
+        //         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 0),
+        //         color: Constant().moneyColor,
+        //         child:WidgetHelper().textQ("upload bukti transfer", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 1.0),
+        //       ),
+        //     ),
+        //     SizedBox(width: 2.0),
+        //     Container(
+        //       width: MediaQuery.of(context).size.width/3,
+        //       child: FlatButton(
+        //         onPressed: () {
+        //           WidgetHelper().myModal(context, CameraWidget(
+        //             callback: (String img)async{
+        //               setState(() {
+        //                 image = img;
+        //               });
+        //               upload(image);
+        //             },
+        //           ));
+        //         },
+        //         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 0),
+        //         color: Constant().moneyColor,
+        //         child:WidgetHelper().textQ("Batalkan", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 1.0),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
       onWillPop:() async{
         WidgetHelper().showFloatingFlushbar(context,"failed","gunakan tombol kembali yang ada pada aplikasi ini.");

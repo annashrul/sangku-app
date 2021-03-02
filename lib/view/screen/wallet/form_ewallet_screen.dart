@@ -29,9 +29,9 @@ import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
 import '../pages.dart';
 
 class FormEwalletScreen extends StatefulWidget {
-  final dynamic dataMember;
+  // final dynamic dataMember;
   final String title;
-  FormEwalletScreen({this.dataMember,this.title});
+  FormEwalletScreen({this.title});
   @override
   _FormEwalletScreenState createState() => _FormEwalletScreenState();
 }
@@ -241,7 +241,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
           print("RESPONSE CHECKOUT ${res['result']}");
           String kdTrx='';
           if(widget.title=='TOP UP'){
-            kdTrx= base64.encode(utf8.encode(res['result']['kd_trx']));
+            kdTrx = base64.encode(utf8.encode(res['result']['kd_trx']));
             WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
             await Future.delayed(Duration(seconds: 2));
             WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
@@ -355,6 +355,9 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
               )
             ],
             action: HeaderWidget(title:widget.title,action: Text('')),
+            callback: (data){
+
+            },
           ),
           callback: (){
             setState(() {

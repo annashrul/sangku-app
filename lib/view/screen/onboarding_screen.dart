@@ -2,6 +2,10 @@
 part of 'pages.dart';
 
 class OnboardingScreen extends StatefulWidget {
+  static const String routeName = '/onbording';
+  final String referrarCode;
+  OnboardingScreen({Key key, this.referrarCode}) : super(key: key);
+
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }

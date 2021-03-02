@@ -103,6 +103,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }
     else if(res==Constant().errNoData){
+      print("NODATA");
       setState(() {
         isLoading=false;
         isError=false;
@@ -174,7 +175,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                 children: [
                   Expanded(
                     flex: 19,
-                    child: isLoading?loading(context,10):!isNodata?ListView.separated(
+                    child: isLoading?loading(context,10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
                         shrinkWrap: true,
                         controller: controller,
                         itemBuilder: (context,index){
@@ -241,7 +242,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                         },
                         separatorBuilder: (context,index){return SizedBox(height:1);},
                         itemCount: pinModel.result.data.length
-                    ):WidgetHelper().noDataWidget(context),
+                    ),
                   ),
                   isLoadmore?Expanded(
                     flex: 2,

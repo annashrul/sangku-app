@@ -63,7 +63,7 @@ class FunctionHelper{
   }
   Future logout(BuildContext context)async{
     final id=await UserHelper().getDataUser("id");
-    await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+    await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"0"});
     WidgetHelper().myPushRemove(context,SignInScreen());
   }
 }

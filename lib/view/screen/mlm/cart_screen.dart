@@ -163,7 +163,7 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: () {
                 WidgetHelper().myPushAndLoad(context,ChaeckoutScreen(), (){loadCart();});
               },
-              padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
+              padding: EdgeInsets.only(left:20),
               color: Constant().moneyColor,
               child:Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

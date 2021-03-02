@@ -26,7 +26,9 @@ class WrapperPageWidget extends StatefulWidget {
   _WrapperPageWidgetState createState() => _WrapperPageWidgetState();
 }
 
-class _WrapperPageWidgetState extends State<WrapperPageWidget> {
+class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKeepAliveClientMixin  {
+  @override
+  bool get wantKeepAlive => true;
   bool isLoadingMember=false;
   DataMemberModel dataMemberModel;
   Future loadMember()async{
@@ -37,7 +39,6 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
         isLoadingMember=false;
       });
       widget.callback(dataMemberModel.result.toJson());
-
   }
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,

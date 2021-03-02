@@ -52,7 +52,7 @@ class Result {
   String bankName;
   String accName;
   String accNo;
-  int tfCode;
+  String tfCode;
   String paymentSlip;
   String logo;
   DateTime limitTf;

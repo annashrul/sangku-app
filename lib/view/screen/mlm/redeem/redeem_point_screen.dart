@@ -30,10 +30,20 @@ class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindin
   bool isLoadingMember=false;
   Future loadMember()async{
     final res=await MemberProvider().getDataMember();
-    setState(() {
-      dataMemberModel=res;
-      isLoadingMember=false;
-    });
+    if(res=='error' || res=='failed'){
+      setState(() {
+        isLoadingRedeem=false;
+        isLoadingMember=false;
+        isErrorRedeem=true;
+      });
+    }
+    else{
+      setState(() {
+        dataMemberModel=res;
+        isLoadingMember=false;
+      });
+    }
+
   }
   Future loadRedeem()async{
     var res = await ContentProvider().loadRedeem("page=1");
@@ -123,6 +133,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindin
               setState(() {
                 isErrorRedeem=false;
                 isLoadingRedeem=true;
+                isLoadingMember=true;
               });
               loadRedeem();
             }):new StaggeredGridView.countBuilder(
