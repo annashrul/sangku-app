@@ -2,6 +2,8 @@ part of '../pages.dart';
 
 
 class ProductScreen extends StatefulWidget {
+  const ProductScreen({Key key}) : super(key: key);
+
   @override
   _ProductScreenState createState() => _ProductScreenState();
 }
@@ -31,12 +33,12 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     if(res=='error'){
       isLoading=false;
       isError=true;
-      setState(() {});
+      if(this.mounted) setState(() {});
     }
     else if(res=='failed'){
       isLoading=false;
       isError=true;
-      setState(() {});
+      if(this.mounted) setState(() {});
     }
     else if(res==Constant().errExpToken){
       isLoading=false;
@@ -45,21 +47,21 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
         await FunctionHelper().logout(context);
       },titleBtn1: "Login");
-      setState(() {});
+      if(this.mounted) setState(() {});
     }
     else if(res==Constant().errNoData){
       isLoading=false;
       isError=false;
       isErrToken=false;
       total = 0;
-      setState(() {});
+      if(this.mounted) setState(() {});
     }
     else if(res is General){
       isLoading=false;
       isError=false;
       isErrToken=false;
       total = 0;
-      setState(() {});
+      if(this.mounted) setState(() {});
     }
     else{
       if(this.mounted){
@@ -139,6 +141,8 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     super.dispose();
   }
   String lbl='';
+  final PageStorageBucket bucket = PageStorageBucket();
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -146,8 +150,11 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
       'Aktivasi':'Aktivasi',
       'Repeat Order':'Repeat Order',
     };
+    print("####################### $_tabIndex #######################");
     return DefaultTabController(
+        key: widget.key,
         length: 2,
+        initialIndex: 0,
         child: Scaffold(
           primary: true,
           key:_scaffoldKey,
@@ -167,32 +174,41 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
           ]),
           body: Padding(
             padding: EdgeInsets.only(top:0,left:5,right:5),
-            child: TabBarView(
-                controller: _tabController,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  Scrollbar(
-                    child: PackageWidget(tipe:'1',callback: (id,qty,tipe){
-                      print(tipe);
-                      if(tipe==''){
-                        loadCart();
-                      }
-                      else{
-                        postCart(id, qty,tipe);
-                      }
-                    }),
-                  ),
-                  Scrollbar(
-                    child: PackageWidget(tipe:'ro',callback: (id,qty,tipe){
-                      if(tipe==''){
-                        loadCart();
-                      }
-                      else{
-                        postCart(id, qty,tipe);
-                      }
-                    },),
-                  ),
-                ]
+            child: PageStorage(
+              bucket: bucket,
+
+              child: TabBarView(
+                // dragStartBehavior: DragStartBehavior,
+                  controller: _tabController,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    Scrollbar(
+                      child: PackageWidget(
+                          key: PageStorageKey('pageHome'),
+                          tipe:'1',
+                          callback: (id,qty,tipe){
+                            print(tipe);
+                            if(tipe==''){
+                              loadCart();
+                            }
+                            else{
+                              postCart(id, qty,tipe);
+                            }
+                          }
+                      ),
+                    ),
+                    Scrollbar(
+                      child: PackageWidget(key: PageStorageKey('pageHome'),tipe:'ro',callback: (id,qty,tipe){
+                        if(tipe==''){
+                          loadCart();
+                        }
+                        else{
+                          postCart(id, qty,tipe);
+                        }
+                      },),
+                    ),
+                  ]
+              ),
             ),
           ),
         )

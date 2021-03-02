@@ -12,40 +12,134 @@ class IndexScreen extends StatefulWidget {
   _IndexScreenState createState() => _IndexScreenState();
 }
 
-class _IndexScreenState extends State<IndexScreen> {
+class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Widget currentScreen;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final PageStorageBucket bucket = PageStorageBucket();
+  int currentPage = 2;
+  GlobalKey bottomNavigationKey = GlobalKey();
+  PageController controller = PageController();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentScreen = HomeScreen();
+    currentScreen = HomeScreen(key: PageStorageKey('pageHome'),);
+    // _pageController = PageController();
 
 
   }
-
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    controller.dispose();
+    // _pageController.dispose();
+
   }
+
+
+  // @override
+  // Widget build(context) {
+  //   super.build(context);
+  //   return Scaffold(
+  //     extendBody: true,
+  //     body: PageView(
+  //       onPageChanged: (int page){
+  //         print(page);
+  //       },
+  //       controller: controller,
+  //       children: [
+  //         currentScreen
+  //       ],
+  //     ),
+  //     bottomNavigationBar: FluidNavBar(
+  //       icons: [
+  //         FluidNavBarIcon(
+  //             icon: AntDesign.gift,
+  //             backgroundColor:Constant().mainColor,
+  //             extras: {"label": "redeem"}),
+  //         FluidNavBarIcon(
+  //             icon: AntDesign.shoppingcart,
+  //             backgroundColor:Constant().mainColor,
+  //             extras: {"label": "produk"}),
+  //         FluidNavBarIcon(
+  //             icon:AntDesign.home,
+  //             backgroundColor:Constant().mainColor,
+  //             extras: {"label": "home"}),
+  //         FluidNavBarIcon(
+  //             icon: AntDesign.addusergroup,
+  //             backgroundColor:Constant().mainColor,
+  //             extras: {"label": "binary"}),
+  //         FluidNavBarIcon(
+  //             icon: AntDesign.user,
+  //             backgroundColor:Constant().mainColor,
+  //             extras: {"label": "profil"}),
+  //       ],
+  //       onChange: _handleNavigationChange,
+  //       style: FluidNavBarStyle(
+  //         barBackgroundColor: Constant().mainColor,
+  //           iconSelectedForegroundColor:Colors.white,
+  //           iconUnselectedForegroundColor: Colors.white
+  //       ),
+  //       scaleFactor: 1.0,
+  //       defaultIndex: 2,
+  //       itemBuilder: (icon, item) => Semantics(
+  //         label: icon.extras["label"],
+  //         child: item,
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // void _handleNavigationChange(int index) {
+  //   switch (index) {
+  //     case 0:
+  //       currentScreen = RedeemPointScreen();
+  //       break;
+  //     case 1:
+  //       currentScreen = ProductScreen();
+  //       break;
+  //     case 2:
+  //       currentScreen = HomeScreen();
+  //       break;
+  //     case 3:
+  //       currentScreen = BinaryScreen();
+  //       break;
+  //     case 4:
+  //       currentScreen = ProfileScreen();
+  //       break;
+  //   }
+  //   currentScreen = AnimatedSwitcher(
+  //     switchInCurve: Curves.easeOut,
+  //     switchOutCurve: Curves.easeIn,
+  //     duration: Duration(milliseconds: 500),
+  //     child: currentScreen,
+  //   );
+  //   if(this.mounted)setState(() {});
+  // }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return WillPopScope(
         child: Scaffold(
           key: scaffoldKey,
           body: PageStorage(
+            // child: _getPage(currentPage),
             child: currentScreen,
             bucket: bucket,
           ),
+
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
             child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
             onPressed: () {
               setState(() {
-                currentScreen = HomeScreen();
+                currentScreen = HomeScreen(key: PageStorageKey('pageHome'));
                 widget.currentTab = 2;
               });
             },
@@ -68,7 +162,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = RedeemPointScreen(key: PageStorageKey('pageRedeemPoint')); // if user taps on this dashboard tab will be active
                             widget.currentTab = 0;
                           });
                         },
@@ -86,7 +180,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = ProductScreen(key: PageStorageKey('pageProduct')); // if user taps on this dashboard tab will be active
                             widget.currentTab = 1;
                           });
                         },
@@ -109,7 +203,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = BinaryScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = BinaryScreen(key: PageStorageKey('pageBinary')); // if user taps on this dashboard tab will be active
                             widget.currentTab = 3;
                           });
                         },
@@ -126,7 +220,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
+                            currentScreen = ProfileScreen(key: PageStorageKey('pageProfile')); // if user taps on this dashboard tab will be active
                             widget.currentTab = 4;
                           });
                         },
@@ -146,6 +240,7 @@ class _IndexScreenState extends State<IndexScreen> {
         ),
         onWillPop: _onWillPop
     );
+
   }
   Future<bool> _onWillPop() async {
     return (
@@ -154,6 +249,8 @@ class _IndexScreenState extends State<IndexScreen> {
   }
 
 }
+
+
 class NavigationProvider with ChangeNotifier {
   DataMemberModel dataMemberModel;
   Future loadMember()async{

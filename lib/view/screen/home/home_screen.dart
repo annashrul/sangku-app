@@ -2,6 +2,8 @@ part of '../pages.dart';
 
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -17,10 +19,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   ListRedeemModel listRedeemModel;
 
   Future loadData()async{
-    setState(() {
-      isLoadingRedeem=true;
-      isLoadingNews=true;
-    });
+    isLoadingRedeem=true;
+    isLoadingNews=true;
+    if(this.mounted) setState(() {});
     loadRedeem();
     loadNews();
   }
@@ -28,58 +29,50 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     var res = await ContentProvider().loadData("page=1");
     print("RESPONSE NEWS $res");
     if(res=='error' || res=='failed'){
-      setState(() {
-        isLoadingNews=false;
-        isErrorNews=true;
-      });
+      isLoadingNews=false;
+      isErrorNews=true;
+      if(this.mounted) setState(() {});
     }
     else if(res==Constant().errExpToken||res==null){
-      setState(() {
-        isLoadingNews=true;
-        isErrorNews=false;
-        isTokenExpNews=true;
-      });
+      isLoadingNews=true;
+      isErrorNews=false;
+      isTokenExpNews=true;
+      if(this.mounted) setState(() {});
+
       WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
         await FunctionHelper().logout(context);
       });
     }
     else{
-      if(this.mounted)
-        setState(() {
-          contentModel = res;
-          isLoadingNews=false;
-          isErrorNews=false;
-          isTokenExpNews=false;
-        });
+      contentModel = res;
+      isLoadingNews=false;
+      isErrorNews=false;
+      isTokenExpNews=false;
+      if(this.mounted) setState(() {});
+
     }
   }
   Future loadRedeem()async{
     var res = await ContentProvider().loadRedeem("page=1&limit=5");
     if(res=='error' || res=='failed'){
-      if(this.mounted){
-        setState(() {
-          isLoadingRedeem=false;
-          isErrorRedeem=true;
-        });
-      }
+      isLoadingRedeem=false;
+      isErrorRedeem=true;
+      if(this.mounted)setState(() {});
+
     }
     else if(res==Constant().errExpToken){
-      if(this.mounted){
-        setState(() {
-          isLoadingRedeem=false;
-          isErrorRedeem=false;
-          isTokenExpRedeem=true;
-        });
-      }
+      isLoadingRedeem=false;
+      isErrorRedeem=false;
+      isTokenExpRedeem=true;
+      if(this.mounted)setState(() {});
+
     }
     else{
-      if(this.mounted)
-        setState(() {
-          listRedeemModel = res;
-          isLoadingRedeem=false;
-          isErrorRedeem=false;
-          isTokenExpRedeem=false;
-        });
+      listRedeemModel = res;
+      isLoadingRedeem=false;
+      isErrorRedeem=false;
+      isTokenExpRedeem=false;
+      if(this.mounted) setState(() {});
     }
   }
 
@@ -90,6 +83,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       refer = ref.toString();
     });
   }
+
+
 
   @override
   void initState() {

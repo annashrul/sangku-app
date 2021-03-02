@@ -3,6 +3,7 @@ part of '../pages.dart';
 
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key key}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();

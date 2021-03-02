@@ -16,13 +16,19 @@ import 'package:sangkuy/view/screen/redeem/detail_redeem_screen.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/loading/redeem_loading.dart';
 import 'package:sangkuy/view/widget/redeem_widget.dart';
+import 'package:need_resume/need_resume.dart';
 
 class RedeemPointScreen extends StatefulWidget {
+  const RedeemPointScreen({Key key}) : super(key: key);
+
   @override
   _RedeemPointScreenState createState() => _RedeemPointScreenState();
 }
 
-class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindingObserver{
+class _RedeemPointScreenState extends ResumableState<RedeemPointScreen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin{
+  @override
+  bool get wantKeepAlive => true;
+
   ListRedeemModel listRedeemModel;
   int perpage=10,total=0;
   bool isLoadingRedeem=true,isErrorRedeem=false,isTokenExpRedeem=false;
@@ -31,47 +37,42 @@ class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindin
   Future loadMember()async{
     final res=await MemberProvider().getDataMember();
     if(res=='error' || res=='failed'){
-      setState(() {
-        isLoadingRedeem=false;
-        isLoadingMember=false;
-        isErrorRedeem=true;
-      });
+      isLoadingRedeem=false;
+      isLoadingMember=false;
+      isErrorRedeem=true;
+      if(this.mounted) setState(() {});
+
     }
     else{
-      setState(() {
-        dataMemberModel=res;
-        isLoadingMember=false;
-      });
+      dataMemberModel=res;
+      isLoadingMember=false;
+      if(this.mounted) setState(() {});
     }
 
   }
   Future loadRedeem()async{
     var res = await ContentProvider().loadRedeem("page=1");
     if(res=='error' || res=='failed'){
-      setState(() {
-        isLoadingRedeem=false;
-        isErrorRedeem=true;
-      });
+      isLoadingRedeem=false;
+      isErrorRedeem=true;
+      if(this.mounted) setState(() {});
     }
     else if(res==Constant().errExpToken){
-      setState(() {
         isLoadingRedeem=false;
         isErrorRedeem=false;
         isTokenExpRedeem=true;
-      });
+      if(this.mounted) setState(() {});
+
       WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
         await FunctionHelper().logout(context);
       });
     }
     else{
-      if(this.mounted)
-        setState(() {
-          listRedeemModel = res;
-          isLoadingRedeem=false;
-          isErrorRedeem=false;
-          isTokenExpRedeem=false;
-        });
-
+      listRedeemModel = res;
+      isLoadingRedeem=false;
+      isErrorRedeem=false;
+      isTokenExpRedeem=false;
+      if(this.mounted) setState(() {});
     }
   }
 
@@ -79,6 +80,8 @@ class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindin
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    isLoadingMember=false;
+    isLoadingRedeem=false;
 
     // animationController.dispose() instead of your controller.dispose
   }
@@ -91,11 +94,36 @@ class _RedeemPointScreenState extends State<RedeemPointScreen>with WidgetsBindin
     loadRedeem();
     loadMember();
   }
+  @override
+  void onReady() {
+    // Implement your code inside here
 
+    print('############################ HomeScreen is ready! ############################');
+  }
+
+  @override
+  void onResume() {
+
+    switch (resume.source) {
+      case 'another_screen':
+        print('Data from AnotherScreen: ${resume.data}');
+        break;
+    }
+    // Implement your code inside here
+
+    print('############################ HomeScreen is resumed! ${resume.source} ############################');
+  }
+
+  @override
+  void onPause() {
+    // Implement your code inside here
+
+    print('############################ HomeScreen is paused! ############################');
+  }
 
   @override
   Widget build(BuildContext context) {
-
+    super.build(context);
     print('loading');
     return Scaffold(
         appBar: WidgetHelper().appBarNoButton(context,"Redeem Point",<Widget>[

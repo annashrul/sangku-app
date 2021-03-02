@@ -434,12 +434,12 @@ class WidgetHelper{
       child: widget,
     );
   }
-  titleNoButton(BuildContext context,IconData icon,String title,{Color color=Colors.white,double iconSize=20.0,FontWeight fontWeight=FontWeight.bold}){
+  titleNoButton(BuildContext context,IconData icon,String title,{double fontSize=12.0,String img='',Color color=Colors.white,double iconSize=20.0,FontWeight fontWeight=FontWeight.bold}){
     return  Row(
       children: [
-        Icon(icon,color:color,size: iconSize),
+        img==''?Icon(icon,color:color,size: iconSize):Image.network(img,height: 30,fit: BoxFit.contain),
         SizedBox(width:5.0),
-        WidgetHelper().textQ(title,12,color,fontWeight),
+        WidgetHelper().textQ(title,fontSize,color,fontWeight),
       ],
     );
   }

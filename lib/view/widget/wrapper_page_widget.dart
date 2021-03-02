@@ -33,12 +33,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
   DataMemberModel dataMemberModel;
   Future loadMember()async{
     final res=await MemberProvider().getDataMember();
-    if(this.mounted)
-      setState(() {
-        dataMemberModel=res;
-        isLoadingMember=false;
-      });
-      widget.callback(dataMemberModel.result.toJson());
+    dataMemberModel=res;
+    isLoadingMember=false;
+    widget.callback(dataMemberModel.result.toJson());
+
+    if(this.mounted) setState(() {});
   }
   @override
   void initState() {

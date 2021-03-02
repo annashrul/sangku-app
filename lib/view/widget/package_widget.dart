@@ -17,12 +17,17 @@ import 'error_widget.dart';
 class PackageWidget extends StatefulWidget {
   final String tipe;
   final Function(String id,int qty,String tipe) callback;
-  PackageWidget({this.tipe,this.callback});
+  // const ProductScreen({Key key}) : super(key: key);
+
+  const PackageWidget({Key key,this.tipe,this.callback}) : super(key: key);
   @override
   _PackageWidgetState createState() => _PackageWidgetState();
 }
 
-class _PackageWidgetState extends State<PackageWidget> with SingleTickerProviderStateMixin {
+class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveClientMixin{
+  @override
+  bool get wantKeepAlive => true;
+
   int perpage=10;
   int total=0;
   ScrollController controller;
@@ -105,6 +110,7 @@ class _PackageWidgetState extends State<PackageWidget> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return isLoading?PackageLoading():isError?ErrWidget(callback:(){setState(() {
       isLoading=true;
     });loadData();}):isErrToken?Text(''):packageModel.result.data.length>0?RefreshWidget(

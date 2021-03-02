@@ -19,13 +19,65 @@ class MenuPPOBScreen extends StatefulWidget {
 class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
+  List<Widget> child = [];
+  List title = ['TOPUP','TAGIHAN','LAIN'];
   MenuPpobModel menuPpobModel;
   bool isLoading=false;
   Future loadData()async{
     var res=await BaseProvider().getProvider('transaction/produk/kategori', menuPpobModelFromJson);
     if(res is MenuPpobModel){
       MenuPpobModel result=res;
+      var mergeArray = result.result.toJson();
+      title.forEach((element) {
+        child.add(StaggeredGridView.countBuilder(
+          primary: true,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: mergeArray[element].length<4?3:4,
+          itemCount:  mergeArray[element].length,
+          itemBuilder: (BuildContext context, int index) {
+            var val=mergeArray[element][index];
+            var checkImg = val['logo'].split(".");
+            print(val);
+            return FlatButton(
+                padding: EdgeInsets.all(10.0),
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                color: Color(0xFFEEEEEE),
+                onPressed: (){
+                  print(val['kategori']);
+                  // print(mergeArray[element][index]);
+                  if(val['kategori']==0){
+                    WidgetHelper().myPush(context,PrabayarScreen(val:val));
+                  }else{
+                    WidgetHelper().myPush(context,PascabayarScreen(val:val));
+                  }
+                },
+                child: Column(
+                  children: [
+                    checkImg[2]=='svg'?SvgPicture.network(
+                      val['logo'],
+                      fit:BoxFit.contain,
+                      height: 30.0,
+                      placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
+                    ):CachedNetworkImage(
+                      imageUrl:val['logo'],
+                      width: double.infinity ,
+                      height: 30.0,
+                      fit:BoxFit.contain,
+                      placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+                      errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+                    ),
+                    SizedBox(height:5.0),
+                    WidgetHelper().textQ(val['title'].toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                  ],
+                )
+            );
+          },
+          staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 5.0,
+        ));
+      });
       if(this.mounted){
         setState(() {
           menuPpobModel = result;
@@ -49,7 +101,6 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         ListTile(
-          // onTap: (){WidgetHelper().myPush(context,NewsScreen());},
           contentPadding: EdgeInsets.only(left:0.0,right:0.0),
           leading: Icon(AntDesign.wallet,size: 30.0,color:Constant().mainColor),
           title: Column(
@@ -62,138 +113,142 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
           ),
           trailing: Icon(Icons.arrow_right),
         ),
+
         Container(
-          // height: 75,
-          child: isLoading?loading(context):StaggeredGridView.countBuilder(
-            primary: true,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: menuPpobModel.result.topup.length<4?3:4,
-            itemCount:  menuPpobModel.result.topup.length,
-            itemBuilder: (BuildContext context, int index) {
-              var val=menuPpobModel.result.topup[index];
-              var toArray = val.logo.split(".");
-              return FlatButton(
-                  padding: EdgeInsets.all(10.0),
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                  color: Color(0xFFEEEEEE),
-                  onPressed: (){
-                    WidgetHelper().myPush(context,PrabayarScreen(val:val.toJson()));
-                  },
-                  child: Column(
-                    children: [
-                      toArray[2]=='svg'?SvgPicture.network(
-                        val.logo,
-                        fit:BoxFit.contain,
-                        height: 30.0,
-                        placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
-                      ):CachedNetworkImage(
-                        imageUrl:val.logo,
-                        width: double.infinity ,
-                        height: 30.0,
-                        fit:BoxFit.contain,
-                        placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                        errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                      ),
-                      SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
-                    ],
-                  )
-              );
-            },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 5.0,
+          child: isLoading?loading(context):Column(
+            children: child,
           ),
         ),
 
-        Container(
-          // height: 100,
-          child: isLoading?loading(context):StaggeredGridView.countBuilder(
-            shrinkWrap: true,
-            // scrollDirection: Axis.horizontal,
-            primary: false,
-            crossAxisCount: menuPpobModel.result.tagihan.length<4?3:4,
-            itemCount:  menuPpobModel.result.tagihan.length,
-            itemBuilder: (BuildContext context, int index) {
-              var val=menuPpobModel.result.tagihan[index];
-              var toArray = val.logo.split(".");
-              return FlatButton(
-                  padding: EdgeInsets.all(10.0),
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                  color: Color(0xFFEEEEEE),
-                  onPressed: (){
-                    WidgetHelper().myPush(context,PascabayarScreen(val:val.toJson()));
 
-                  },
-                  child: Column(
-                    children: [
-                      toArray[2]=='svg'?SvgPicture.network(
-                        val.logo,
-                        fit:BoxFit.contain,
-                        height: 30.0,
-                        placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
-                      ):CachedNetworkImage(
-                        imageUrl:val.logo,
-                        width: double.infinity ,
-                        height: 30.0,
-                        fit:BoxFit.contain,
-                        placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                        errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                      ),
-                      SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
-                    ],
-                  )
-              );
-            },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 5.0,
-          ),
-        ),
-        Container(
-          // height: 100,
-          child: isLoading?loading(context):StaggeredGridView.countBuilder(
-            shrinkWrap: true,
-            // scrollDirection: Axis.horizontal,
-            primary: false,
-            crossAxisCount: menuPpobModel.result.lain.length<4?3:4,
-            itemCount:  menuPpobModel.result.lain.length,
-            itemBuilder: (BuildContext context, int index) {
-              var val=menuPpobModel.result.lain[index];
-              var toArray = val.logo.split(".");
-              return FlatButton(
-                padding: EdgeInsets.all(10.0),
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                color: Color(0xFFEEEEEE),
-                onPressed: (){},
-                child: Column(
-                    children: [
-                      toArray[2]=='svg'?SvgPicture.network(
-                        val.logo,
-                        fit:BoxFit.contain,
-                        height: 30.0,
-                        placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
-                      ):CachedNetworkImage(
-                        imageUrl:val.logo,
-                        width: double.infinity ,
-                        height: 30.0,
-                        fit:BoxFit.contain,
-                        placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                        errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                      ),
-                      SizedBox(height:5.0),
-                      WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
-                    ],
-                  )
-              );
-            },
-            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 5.0,
-          ),
-        ),
+        // Container(
+        //   child: isLoading?loading(context):StaggeredGridView.countBuilder(
+        //     primary: true,
+        //     shrinkWrap: true,
+        //     physics: const NeverScrollableScrollPhysics(),
+        //     crossAxisCount: menuPpobModel.result.topup.length<4?3:4,
+        //     itemCount:  menuPpobModel.result.topup.length,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       var val=menuPpobModel.result.topup[index];
+        //       var toArray = val.logo.split(".");
+        //       return FlatButton(
+        //           padding: EdgeInsets.all(10.0),
+        //           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+        //           color: Color(0xFFEEEEEE),
+        //           onPressed: (){
+        //             WidgetHelper().myPush(context,PrabayarScreen(val:val.toJson()));
+        //           },
+        //           child: Column(
+        //             children: [
+        //               toArray[2]=='svg'?SvgPicture.network(
+        //                 val.logo,
+        //                 fit:BoxFit.contain,
+        //                 height: 30.0,
+        //                 placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
+        //               ):CachedNetworkImage(
+        //                 imageUrl:val.logo,
+        //                 width: double.infinity ,
+        //                 height: 30.0,
+        //                 fit:BoxFit.contain,
+        //                 placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //                 errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //               ),
+        //               SizedBox(height:5.0),
+        //               WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+        //             ],
+        //           )
+        //       );
+        //     },
+        //     staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        //     mainAxisSpacing: 10.0,
+        //     crossAxisSpacing: 5.0,
+        //   ),
+        // ),
+        //
+        // Container(
+        //   child: isLoading?loading(context):StaggeredGridView.countBuilder(
+        //     shrinkWrap: true,
+        //     primary: false,
+        //     crossAxisCount: menuPpobModel.result.tagihan.length<4?3:4,
+        //     itemCount:  menuPpobModel.result.tagihan.length,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       var val=menuPpobModel.result.tagihan[index];
+        //       var toArray = val.logo.split(".");
+        //       return FlatButton(
+        //           padding: EdgeInsets.all(10.0),
+        //           shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+        //           color: Color(0xFFEEEEEE),
+        //           onPressed: (){
+        //             WidgetHelper().myPush(context,PascabayarScreen(val:val.toJson()));
+        //
+        //           },
+        //           child: Column(
+        //             children: [
+        //               toArray[2]=='svg'?SvgPicture.network(
+        //                 val.logo,
+        //                 fit:BoxFit.contain,
+        //                 height: 30.0,
+        //                 placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
+        //               ):CachedNetworkImage(
+        //                 imageUrl:val.logo,
+        //                 width: double.infinity ,
+        //                 height: 30.0,
+        //                 fit:BoxFit.contain,
+        //                 placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //                 errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //               ),
+        //               SizedBox(height:5.0),
+        //               WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+        //             ],
+        //           )
+        //       );
+        //     },
+        //     staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        //     mainAxisSpacing: 10.0,
+        //     crossAxisSpacing: 5.0,
+        //   ),
+        // ),
+        // Container(
+        //   // height: 100,
+        //   child: isLoading?loading(context):StaggeredGridView.countBuilder(
+        //     shrinkWrap: true,
+        //     primary: false,
+        //     crossAxisCount: menuPpobModel.result.lain.length<4?3:4,
+        //     itemCount:  menuPpobModel.result.lain.length,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       var val=menuPpobModel.result.lain[index];
+        //       var toArray = val.logo.split(".");
+        //       return FlatButton(
+        //         padding: EdgeInsets.all(10.0),
+        //         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+        //         color: Color(0xFFEEEEEE),
+        //         onPressed: (){},
+        //         child: Column(
+        //             children: [
+        //               toArray[2]=='svg'?SvgPicture.network(
+        //                 val.logo,
+        //                 fit:BoxFit.contain,
+        //                 height: 30.0,
+        //                 placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
+        //               ):CachedNetworkImage(
+        //                 imageUrl:val.logo,
+        //                 width: double.infinity ,
+        //                 height: 30.0,
+        //                 fit:BoxFit.contain,
+        //                 placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //                 errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+        //               ),
+        //               SizedBox(height:5.0),
+        //               WidgetHelper().textQ(val.title.toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+        //             ],
+        //           )
+        //       );
+        //     },
+        //     staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        //     mainAxisSpacing: 10.0,
+        //     crossAxisSpacing: 5.0,
+        //   ),
+        // ),
 
       ],
     );

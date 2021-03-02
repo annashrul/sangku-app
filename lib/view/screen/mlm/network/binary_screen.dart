@@ -9,6 +9,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
 class BinaryScreen extends StatefulWidget {
+  const BinaryScreen({Key key}) : super(key: key);
+
   @override
   _BinaryScreenState createState() => _BinaryScreenState();
 }
