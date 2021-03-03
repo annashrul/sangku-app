@@ -186,14 +186,52 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
         btnBottom=Container(
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           color: Constant().moneyColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              btn(context,(){checkResi();},"Lacak Resi",Constant().secondColor,icon: AntDesign.eyeo),
-              btn(context,(){doneTrx();},"Selesai",Constant().mainColor,icon: AntDesign.checkcircleo)
-            ],
+          child: FlatButton(
+              onPressed: () {
+              },
+              padding: EdgeInsets.only(left:0),
+              color: Constant().moneyColor,
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    onTap: ()=>checkResi(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: Constant().secondColor
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
+                          SizedBox(width:10.0),
+                          WidgetHelper().textQ("Lacak Resi", 14, Constant().secondDarkColor, FontWeight.normal),
+                        ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: ()=>doneTrx(),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: Constant().secondColor
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
+                          SizedBox(width:10.0),
+                          WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              )
+            // child:Text("abus")
           ),
         );
+
       }
     }
 
@@ -214,8 +252,41 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
             ),
         ):Text('')
       ]),
-      body: RefreshWidget(
-        widget: isLoading?DetailHistoryPembelianLoading():buildContent(context),
+      body: buildContent(context),
+      bottomNavigationBar:isLoading?Text(''):btnBottom,
+    );
+  }
+  Widget buildContent(BuildContext context){
+    return  isLoading?DetailHistoryPembelianLoading():Container(
+      padding:EdgeInsets.only(top: 10.0, bottom: 0.0, left: 0.0, right: 0.0),
+      child: RefreshWidget(
+        widget: ListView(
+          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          primary: true,
+          shrinkWrap: true,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left:10,right:10),
+              child: buildDetailPembelian(context),
+            ),
+            Container(
+              child: Divider(color: Colors.grey[200]),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left:10,right:10),
+              child: buildItem(context),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left:10,right:10),
+              child: buildPengiriman(context),
+            ),
+            SizedBox(height:10),
+            Padding(
+              padding: EdgeInsets.only(left:10,right:10),
+              child: buildInfoPembayaran(context),
+            ),
+          ],
+        ),
         callback: (){
           setState(() {
             isLoading=true;
@@ -223,227 +294,128 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
           loadData();
         },
       ),
-      bottomNavigationBar:isLoading?Text(''):btnBottom,
+    );
+
+  }
+
+  Widget buildDetailPembelian(BuildContext context){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        buildDesc(context, 'Tanggal Pembelian',""),
+        SizedBox(height:5.0),
+        buildDesc(context, "${FunctionHelper().formateDate(detailHistoryPembelianModel.result.createdAt, '')} ","",titleFontWeight: FontWeight.bold),
+        Divider(),
+        buildDesc(context, 'Status','',widget: WidgetHelper().myStatus(context,detailHistoryPembelianModel.result.status)),
+        Divider(),
+        buildDesc(context, 'No.Invoice',detailHistoryPembelianModel.result.kdTrx),
+
+      ],
     );
   }
-  Widget buildContent(BuildContext context){
-    return  SingleChildScrollView(
-      primary: true,
-      scrollDirection: Axis.vertical,
-      child: Container(
-        padding:EdgeInsets.only(top: 20.0, bottom: 0.0, left: 15.0, right: 15.0),
-        child: Column(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Status",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().myStatus(context,detailHistoryPembelianModel.result.status),
-                        ],
-                      ),
-                      Divider(),
-                      SizedBox(height: 0.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Tanggal Pembelian",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(detailHistoryPembelianModel.result.createdAt)} ${DateFormat.Hms().format(detailHistoryPembelianModel.result.createdAt)}",10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("No.Invoice",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryPembelianModel.result.kdTrx}",10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Divider(color: Colors.grey[200]),
-                ),
-                Container(
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.shoppingcart,color: Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("Ringkasan Belanja",12.0,Constant().mainColor,FontWeight.bold),
-                  ),
-                ),
-                Wrap(
-                  spacing: 0,
-                  runSpacing: 0,
-                  children: [
-                    buildItem(context),
-                  ],
-                ),
 
-                Container(
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.form,color: Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("Detail Pengiriman",12.0,Constant().mainColor,FontWeight.bold),
-                  ),
-                ),
+  Widget buildItem(BuildContext context){
+    return Column(
+      children: [
+        WidgetHelper().titleNoButton(context, AntDesign.shoppingcart, 'Ringkasan Belanja',color:  Constant().mainColor),
+        ListView.builder(
+          padding: EdgeInsets.all(0.0),
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: detailHistoryPembelianModel.result.detail.length,
+          itemBuilder: (context,key){
+            var valDet=detailHistoryPembelianModel.result.detail;
+            return ListTile(
+              contentPadding: EdgeInsets.all(0.0),
+              leading: WidgetHelper().baseImage(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain),
+              title: WidgetHelper().textQ(valDet[key].paket,12,Constant().darkMode,FontWeight.bold),
+              subtitle: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WidgetHelper().textQ("${valDet[key].qty} Item",12,Constant().darkMode,FontWeight.normal),
+                  SizedBox(width: 20.0),
+                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",12,Constant().moneyColor,FontWeight.normal),
+                ],
+              ),
+              trailing: IconButton(icon: Icon(Icons.arrow_drop_down), onPressed: (){
+                WidgetHelper().myModal(context, Container(
+                  height: MediaQuery.of(context).size.height/1.2,
+                  child: ModalPinPackage(detailHistoryPembelianModel: detailHistoryPembelianModel,idx: key,title: valDet[key].paket),
+                ));
+              }),
+            );
+          },
+        ),
+      ],
+    );
+  }
 
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Nama Toko",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${Constant().siteName}",10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Layanan Pengiriman",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryPembelianModel.result.layananPengiriman}",10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("No.Resi",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryPembelianModel.result.layananPengiriman.split("|")[0]=='COD'?'-':detailHistoryPembelianModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryPembelianModel.result.resi}",10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      detailHistoryPembelianModel.result.resi=="-"?Container():GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(new ClipboardData(text: detailHistoryPembelianModel.result.resi));
-                        },
-                        child:Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            WidgetHelper().textQ("",10.0,Constant().secondColor,FontWeight.bold),
-                            WidgetHelper().textQ("Salin No.Resi",10.0,Constant().secondColor,FontWeight.bold),
-                          ],
-                        ),
-                      ) ,
-
-                      Divider(),
-                      WidgetHelper().textQ(detailHistoryPembelianModel.result.mainAddress.toLowerCase(),10.0,Constant().darkMode,FontWeight.normal),
-                    ],
-                  ),
-                ),
-
-                Container(
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("Informasi Pembayaran",12.0,Constant().mainColor,FontWeight.bold),
-                  ),
-                ),
-
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Metode Pembayaran",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ(detailHistoryPembelianModel.result.metodePembayaran,10.0,Constant().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      Divider(),
-                      SizedBox(height: 0.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Total Belanja",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.subtotal))} .-",10.0,Constant().moneyColor,FontWeight.bold),
-                        ],
-                      ),
-                      SizedBox(height: 5.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Total Ongkos Kirim",10.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",10.0,Constant().moneyColor,FontWeight.bold),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding:EdgeInsets.only(top: 0.0, bottom: 10.0),
-                  child: Divider(),
-                ),
-                Container(
-                  padding:EdgeInsets.only(top: 0.0, bottom: 10.0),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("Total Pembayaran",12.0,Constant().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.grandTotal))} .-",10.0,Constant().moneyColor,FontWeight.bold),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
+  Widget buildPengiriman(BuildContext context){
+    return Column(
+      children: [
+        WidgetHelper().titleNoButton(context, AntDesign.form, 'Detail Pengiriman',color:  Constant().mainColor),
+        SizedBox(height:10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildDesc(context, 'Nama Toko', '${Constant().siteName}'),
+            Divider(),
+            buildDesc(context, 'Layanan Pengiriman',detailHistoryPembelianModel.result.layananPengiriman),
+            Divider(),
+            buildDesc(context, 'No.Resi',"${detailHistoryPembelianModel.result.layananPengiriman.split("|")[0]=='COD'?'-':detailHistoryPembelianModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryPembelianModel.result.resi}"),
+            detailHistoryPembelianModel.result.resi=="-"?Container():GestureDetector(
+              onTap: () {
+                Clipboard.setData(new ClipboardData(text: detailHistoryPembelianModel.result.resi));
+                WidgetHelper().showFloatingFlushbar(context,"success","No.Resi berhasil disalin");
+              },
+              child:buildDesc(context, '',"Salin No.Resi",descColor: Constant().greenColor),
+            ) ,
+            Divider(),
+            buildDesc(context,detailHistoryPembelianModel.result.mainAddress.toLowerCase(),'',titleFontWeight: FontWeight.bold),
+            // WidgetHelper().textQ(detailHistoryPembelianModel.result.mainAddress.toLowerCase(),10.0,Constant().darkMode,FontWeight.normal),
           ],
         ),
-      ),
+      ],
     );
+  }
 
-  }
-  Widget buildItem(BuildContext context){
-    var width = MediaQuery.of(context).size.width;
-    return Container(
-      padding: const EdgeInsets.only(left: 0,right:0,top:0,bottom:0),
-      width:  width / 1,
-      child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: detailHistoryPembelianModel.result.detail.length,
-        itemBuilder: (context,key){
-          var valDet=detailHistoryPembelianModel.result.detail;
-          return Padding(
-            padding: EdgeInsets.only(left:0,right:0,top:0),
-            child: Container(
-              color: key%2==0?Color(0xFFEEEEEE):Colors.white70,
-              child: ListTile(
-                contentPadding: EdgeInsets.all(0.0),
-                leading: Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain),
-                title: WidgetHelper().textQ(valDet[key].paket,10,Colors.black87,FontWeight.normal),
-                subtitle: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WidgetHelper().textQ("${valDet[key].qty} Item",10,Colors.grey,FontWeight.normal),
-                      SizedBox(width: 20.0),
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",10,Constant().moneyColor,FontWeight.normal),
-                  ],
-                ),
-                trailing: IconButton(icon: Icon(Icons.arrow_drop_down), onPressed: (){
-                  WidgetHelper().myModal(context, Container(
-                    height: MediaQuery.of(context).size.height/1.2,
-                    child: ModalPinPackage(detailHistoryPembelianModel: detailHistoryPembelianModel,idx: key,title: valDet[key].paket),
-                  ));
-                }),
-              ),
-            ),
-          );
-        },
-      ),
-      // color: Colors.white,
+  Widget buildInfoPembayaran(BuildContext context){
+    return Column(
+      children: [
+        WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Informasi Pembayaran',color:  Constant().mainColor),
+        SizedBox(height:10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildDesc(context, 'Metode Pembayaran',detailHistoryPembelianModel.result.metodePembayaran),
+            Divider(),
+            buildDesc(context, 'Total Belanja',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",descColor: Constant().moneyColor),
+            Divider(),
+            buildDesc(context, 'Total Ongkos Kirim',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",descColor: Constant().moneyColor),
+            Divider(),
+            buildDesc(context, 'Total Pembayaran',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.grandTotal))} .-",descColor: Constant().moneyColor),
+
+          ],
+        ),
+      ],
     );
   }
+
+  Widget buildDesc(BuildContext context,String title, String desc,{FontWeight titleFontWeight=FontWeight.normal,Color titleColor=Colors.black,Color descColor=Colors.black,Widget widget}){
+    print(widget);
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Flexible(
+            child: WidgetHelper().textQ(title,12.0,titleColor,titleFontWeight,maxLines: 3),
+          ),
+          widget==null?WidgetHelper().textQ(desc,12.0,descColor,FontWeight.bold):widget,
+        ],
+      ),
+    );
+  }
+
 }
 
 

@@ -233,7 +233,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
         ),
         FlatButton(
             padding: EdgeInsets.all(15.0),
-            color: Constant().mainColor,
+            color: Constant().moneyColor,
             onPressed: (){
               postRedeem();
               // handleSubmit();

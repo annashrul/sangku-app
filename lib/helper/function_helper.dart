@@ -16,6 +16,12 @@ class FunctionHelper{
   final formatter = new NumberFormat("#,###");
   DatabaseConfig db = DatabaseConfig();
   static var dataNominal=["100000","200000","300000","400000","500000","1000000"];
+  percentToRp(var disc,var price){
+    double diskon =  (disc/100)*price;
+    var exp = diskon.toString().split('.');
+    print("############################### VOUCHER ${int.parse(exp[0])} ####################################");
+    return int.parse(exp[0]);
+  }
 
   // static var arrStatus=[
   //   "Menunggu Pembayaran",

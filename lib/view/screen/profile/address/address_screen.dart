@@ -34,7 +34,9 @@ class AddressScreen extends StatefulWidget {
   _AddressScreenState createState() => _AddressScreenState();
 }
 
-class _AddressScreenState extends State<AddressScreen> {
+class _AddressScreenState extends State<AddressScreen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   ScrollController controller;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   AddressModel listAddressModel;
@@ -152,35 +154,10 @@ class _AddressScreenState extends State<AddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       key: scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,widget.title==null?"Daftar Alamat":widget.title,(){Navigator.pop(context);},<Widget>[
-        if(widget.title==null)Container(
-          color: Colors.transparent,
-          padding: EdgeInsets.only(right: 0.0,top:5),
-          child: Stack(
-            alignment: AlignmentDirectional.topEnd,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: FlatButton(
-                    onPressed: (){
-                      WidgetHelper().myModal(context, ModalForm(total:total,id:"",callback:(String par){
-                        if(par=='berhasil'){
-                          loadData();
-                          WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-                        }
-                        else{
-                          WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-                        }
-                      },));
-                    },
-                    child:Icon(AntDesign.addfile)
-                ),
-              ),
-            ],
-          ),
-        )
       ],brightness: Brightness.light),
       body: isLoading?AddressLoading():isError?ErrWidget(callback: (){loadData();}):isErrToken?Text(''):!isNodata?RefreshWidget(
         widget: Column(
@@ -199,6 +176,29 @@ class _AddressScreenState extends State<AddressScreen> {
           loadData();
         },
       ):WidgetHelper().noDataWidget(context),
+      bottomNavigationBar: widget.title==null?FlatButton(
+        padding: EdgeInsets.all(15.0),
+        color: Constant().moneyColor,
+          onPressed: (){
+            WidgetHelper().myModal(context, ModalForm(total:total,id:"",callback:(String par){
+              if(par=='berhasil'){
+                loadData();
+                WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+              }
+              else{
+                WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+              }
+            },));
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(AntDesign.addfile,color: Colors.white,),
+              SizedBox(width:10),
+              WidgetHelper().textQ("TAMBAH ALAMAT", 14, Colors.white,FontWeight.bold)
+            ],
+          )
+      ):Text(''),
     );
   }
   Widget buildContent(){
@@ -214,86 +214,92 @@ class _AddressScreenState extends State<AddressScreen> {
               widget.callback(val,index);
             }
 
-          }, ClipPath(
-            clipper: WaveClipperOne(flip: true),
-            child: Container(
-              padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0,right:15.0),
-              width: double.infinity,
-              color: widget.idx==index?Constant().darkMode:Constant().secondColor,
-              child:Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Entypo.location,size: 20,color:Constant().mainColor),
-                            SizedBox(width:5.0),
-                            WidgetHelper().textQ(val.title,12,Constant().mainColor, FontWeight.bold),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            FlatButton(
-                              onPressed: (){
-                                WidgetHelper().myModal(context, ModalForm(total:listAddressModel.result.data.length,id:"${val.id}",callback:(String par){
-                                  if(par=='berhasil'){
-                                    loadData();
-                                    WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-                                  }
-                                  else{
-                                    WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
-                                  }
-                                },));
-                              },
-                              child: Icon(AntDesign.edit,color:Constant().secondDarkColor),
-                              color: Constant().moneyColor,
-                              padding: EdgeInsets.all(0.0),
-                            ),
-                            SizedBox(width: 10.0),
-                            FlatButton(
-                              color: Constant().moneyColor,
-                              onPressed: (){
-                                WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
-                                  Navigator.pop(context);
-                                  await deleteAddress(val.id);
-                                });
-                              },
-                              child: Icon(AntDesign.delete,color:Constant().secondDarkColor),
-                              padding: EdgeInsets.all(0.0),
-                            ),
-                          ],
-                        ),
+          }, Container(
+            padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0,right:15.0),
+            width: double.infinity,
+            color: widget.idx==index?Color(0xFFEEEEEE):Colors.transparent,
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Entypo.location,size: 20,color:Constant().darkMode),
+                          SizedBox(width:5.0),
+                          WidgetHelper().textQ(val.title,12,Constant().darkMode, FontWeight.bold),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: (){
+                          WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
+                            Navigator.pop(context);
+                            await deleteAddress(val.id);
+                          });
+                        },
+                        child:Icon(AntDesign.delete,color:Constant().moneyColor),
+                      )
+                      // FlatButton(
+                      //   color: Constant().moneyColor,
+                      //   onPressed: (){
+                      //     WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
+                      //       Navigator.pop(context);
+                      //       await deleteAddress(val.id);
+                      //     });
+                      //   },
+                      //   child: Icon(AntDesign.delete,color:Constant().secondDarkColor),
+                      //   padding: EdgeInsets.all(0.0),
+                      // ),
 
-                      ],
-                    ),
+                    ],
                   ),
-                  Divider(color: Colors.black38),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",10,Constant().secondDarkColor, FontWeight.normal),
-                        SizedBox(height:5.0),
-                        WidgetHelper().textQ("${val.mainAddress}",10,Constant().secondDarkColor, FontWeight.normal),
-                      ],
-                    ),
+                ),
+                Divider(color: Colors.grey[200]),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",12,Constant().darkMode, FontWeight.bold),
+                      SizedBox(height:5.0),
+                      WidgetHelper().textQ("${val.mainAddress}",12,Constant().darkMode, FontWeight.bold),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height:10),
+                InkWell(
+                  onTap: (){
+                    WidgetHelper().myModal(context, ModalForm(total:listAddressModel.result.data.length,id:"${val.id}",callback:(String par){
+                      if(par=='berhasil'){
+                        loadData();
+                        WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+                      }
+                      else{
+                        WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
+                      }
+                    },));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10.0),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Constant().mainColor),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))
+                    ),
+                    child: WidgetHelper().textQ("Ubah Alamat",14,Constant().mainColor,FontWeight.bold,textAlign: TextAlign.center),
+                  ),
+                )
+              ],
             ),
           ));
         },
         separatorBuilder: (context,index){
-          return SizedBox(height:0.0);
+          return Divider();
         },
         itemCount: listAddressModel.result.data.length
     );

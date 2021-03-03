@@ -182,7 +182,7 @@ class _PinScreenState extends State<PinScreen> {
         key: _scaffoldKey,
         bottomNavigationBar:FlatButton(
             padding: EdgeInsets.all(20.0),
-            color: Constant().mainColor,
+            color: Constant().moneyColor,
             onPressed: ()async{
               
             },

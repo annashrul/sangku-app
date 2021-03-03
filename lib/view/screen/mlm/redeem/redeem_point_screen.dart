@@ -16,7 +16,6 @@ import 'package:sangkuy/view/screen/redeem/detail_redeem_screen.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/loading/redeem_loading.dart';
 import 'package:sangkuy/view/widget/redeem_widget.dart';
-import 'package:need_resume/need_resume.dart';
 
 class RedeemPointScreen extends StatefulWidget {
   const RedeemPointScreen({Key key}) : super(key: key);
@@ -25,7 +24,7 @@ class RedeemPointScreen extends StatefulWidget {
   _RedeemPointScreenState createState() => _RedeemPointScreenState();
 }
 
-class _RedeemPointScreenState extends ResumableState<RedeemPointScreen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin{
+class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTickerProviderStateMixin,AutomaticKeepAliveClientMixin{
   @override
   bool get wantKeepAlive => true;
 
@@ -101,25 +100,6 @@ class _RedeemPointScreenState extends ResumableState<RedeemPointScreen> with Sin
     print('############################ HomeScreen is ready! ############################');
   }
 
-  @override
-  void onResume() {
-
-    switch (resume.source) {
-      case 'another_screen':
-        print('Data from AnotherScreen: ${resume.data}');
-        break;
-    }
-    // Implement your code inside here
-
-    print('############################ HomeScreen is resumed! ${resume.source} ############################');
-  }
-
-  @override
-  void onPause() {
-    // Implement your code inside here
-
-    print('############################ HomeScreen is paused! ############################');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +127,7 @@ class _RedeemPointScreenState extends ResumableState<RedeemPointScreen> with Sin
                         height: 10,
                         width: 100,
                         color: Colors.white,
-                      )): WidgetHelper().textQ("Poin anda : 19",10,Constant().moneyColor,FontWeight.normal)
+                      )): WidgetHelper().textQ("Poin anda : ${dataMemberModel.result.pointRo}",10,Constant().moneyColor,FontWeight.normal)
                     ),
 
                   ],

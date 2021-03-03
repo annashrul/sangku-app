@@ -53,6 +53,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
   }
   Future loadProduct(String where)async{
     // nohp=$nohp&kategori=${widget.val['code']}
+    print(where);
     var res=await BaseProvider().getProvider("transaction/produk/list?$where",productPpobPraModelFromJson);
     if(res is ProductPpobPraModel){
       ProductPpobPraModel result=res;
@@ -122,8 +123,13 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     });
     await loadCategory();
     await loadUser();
-    if(!this.checkParam()){
-      await handleChange(nohpController.text);
+    if(checkParam()==false){
+      print('handle cnahe');
+      setState(() {
+        isLoadingProduct=true;
+      });
+      loadProduct('nohp=${nohpController.text}&kategori=${widget.val['code']}');
+      // await handleChange(nohpController.text);
     }
     setState(() {
       isLoading=false;
@@ -158,11 +164,21 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     }
 
   }
+  Widget child;
 
   checkParam(){
-    if(title!='VOUCHER GAME' || title!='E-MONEY'||title!='VOUCHER WIFI.ID'||title=='E-TOLL'){
+    // this.checkParam()?buildContent2(context):buildContent1(context)
+    if(title=='VOUCHER GAME' || title=='E-MONEY'||title=='VOUCHER WIFI.ID'||title=='E-TOLL'){
+      setState(() {
+        child=buildContent2(context);
+      });
+      print('true');
       return true;
     }else{
+      setState(() {
+        child=buildContent1(context);
+      });
+      print('false');
       return false;
     }
   }
@@ -177,6 +193,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     // TODO: implement initState
     super.initState();
     title=widget.val['title'];
+
     loadData();
     checkParam();
 
@@ -184,11 +201,10 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
   }
   @override
   Widget build(BuildContext context) {
-    Widget child=this.checkParam()?buildContent2(context):buildContent1(context);
     return Scaffold(
         key: _scaffoldKey,
         appBar: WidgetHelper().appBarWithButton(context,title,(){Navigator.pop(context);},<Widget>[]),
-        body: child,
+        body: title=='VOUCHER GAME' || title=='E-MONEY'||title=='VOUCHER WIFI.ID'||title=='E-TOLL'?buildContent2(context):buildContent1(context),
     );
   }
 
@@ -456,7 +472,7 @@ class _ModalProductState extends State<ModalProduct> {
                   shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
 
                   padding: EdgeInsets.all(15.0),
-                  color: Constant().mainColor,
+                  color: Constant().moneyColor,
                   onPressed: (){
                     var val = widget.productPpobPraModel.result.data[idx].toJson();
                     WidgetHelper().myModal(context,ModalDetailPrabayar(val:val..addAll({"nohp":widget.val['nohp'],"page":widget.val['title']})));
@@ -577,7 +593,7 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
 
                 padding: EdgeInsets.all(15.0),
-                color: Constant().mainColor,
+                color: Constant().moneyColor,
                 onPressed: (){
                   handleSubmit();
                 },

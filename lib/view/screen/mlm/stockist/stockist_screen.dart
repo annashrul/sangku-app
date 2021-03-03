@@ -144,6 +144,29 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
     isLoading=true;
     loadData();
   }
+  Future handleSubmit(dynamic val)async{
+    WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
+      final data={
+        "pin_member":pin.toString(),
+        "pin_aktivasi":val['kode']
+      };
+      WidgetHelper().loadingDialog(context);
+      var res=await BaseProvider().postProvider('pin/aktivasi/ro', data);
+      print(res);
+      Navigator.pop(context);
+      if(res is General){
+        General result=res;
+        WidgetHelper().showFloatingFlushbar(context, "failed",result.msg);
+      }
+      else{
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        });
+      }
+
+
+    }));
+  }
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -188,7 +211,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                               child: Card(
                                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                                 elevation: 0.0,
-                                color: Color(0xFFEEEEEE),
+                                color: Colors.transparent,
                                 child: Row(
                                   children: <Widget>[
                                     Expanded(
@@ -198,7 +221,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Container(child:WidgetHelper().textQ(pinModel.result.data[index].kode, 12, Colors.black, FontWeight.bold)),
+                                            Container(child:WidgetHelper().textQ(pinModel.result.data[index].kode, 14, Colors.black, FontWeight.bold)),
                                             SizedBox(height:10.0),
                                             Container(
                                                 child:Row(
@@ -209,7 +232,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                                                       width: 10,
                                                     ),
                                                     SizedBox(width:10.0),
-                                                    WidgetHelper().textQ(pinModel.result.data[index].status, 12, Colors.grey, FontWeight.normal)
+                                                    WidgetHelper().textQ(pinModel.result.data[index].status, 12, Constant().darkMode, FontWeight.normal)
                                                   ],
                                                 )
                                             ),
@@ -219,18 +242,45 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                                     ),
                                     Row(
                                       children: [
-                                        FlatButton(
-                                          color: Constant().blueColor,
-                                          padding: EdgeInsets.all(0.0),
-                                          child:  WidgetHelper().textQ("Transfer", 10, Constant().secondDarkColor,FontWeight.bold),
-                                          onPressed: (){WidgetHelper().myModal(context,TransferPin(val: pinModel.result.data[index].toJson()));},
+                                        InkWell(
+                                          child: Container(
+                                            padding: EdgeInsets.all(10.0),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color:Constant().mainColor),
+                                                borderRadius: BorderRadius.all(Radius.circular(10.0))
+                                            ),
+                                            margin: EdgeInsets.only(right: 10.0),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(0.0),
+                                              child: WidgetHelper().textQ("Transfer", 10, Constant().mainColor,FontWeight.bold),
+                                            ),
+
+                                          ),
+                                          onTap: (){WidgetHelper().myModal(context,TransferPin(val: pinModel.result.data[index].toJson()));},
                                         ),
-                                        if(widget.type=='ro')SizedBox(width:5.0),
-                                        if(widget.type=='ro')FlatButton(
-                                          color: Constant().secondColor,
-                                          padding: EdgeInsets.all(0.0),
-                                          child:  WidgetHelper().textQ("Aktivasi", 10, Constant().secondDarkColor,FontWeight.bold),
-                                          onPressed: (){WidgetHelper().myModal(context,AktivasiRO(val:  pinModel.result.data[index].toJson(),));},
+                                        if(widget.type=='ro')SizedBox(width:0.0),
+                                        if(widget.type=='ro')InkWell(
+                                          child: Container(
+                                            padding: EdgeInsets.all(10.0),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color:Constant().mainColor),
+                                                borderRadius: BorderRadius.all(Radius.circular(10.0))
+                                            ),
+                                            margin: EdgeInsets.only(right: 10.0),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(0.0),
+                                              child: WidgetHelper().textQ("Aktivasi", 10, Constant().mainColor,FontWeight.bold),
+                                            ),
+
+                                          ),
+                                          onTap: (){
+                                            WidgetHelper().notifDialog(context,"Aktivasi Pin RO","Aktivasi Pin RO dengan kode ${pinModel.result.data[index].kode}", (){
+                                              Navigator.pop(context);
+                                            }, (){
+                                              handleSubmit(pinModel.result.data[index].toJson());
+                                            }, titleBtn1: "Batal",titleBtn2: "Oke, Aktivasi");
+                                            // WidgetHelper().myModal(context,AktivasiRO(val:  pinModel.result.data[index].toJson(),));
+                                          },
                                         ),
                                       ],
                                     )
@@ -240,7 +290,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                             ),
                           );
                         },
-                        separatorBuilder: (context,index){return SizedBox(height:1);},
+                        separatorBuilder: (context,index){return Divider();},
                         itemCount: pinModel.result.data.length
                     ),
                   ),
@@ -407,47 +457,40 @@ class _AktivasiROState extends State<AktivasiRO> {
             }),
             title: WidgetHelper().textQ("AKTIVASI PIN RO",12,Colors.grey,FontWeight.bold),
           ),
-          ClipPath(
-            clipper: WaveClipperOne(flip: true),
+          Expanded(
+            flex:15,
             child: Container(
-              width: double.infinity,
-              color: Constant().secondColor,
-              padding: EdgeInsets.only(bottom:50.0,top:0.0,left:10.0,right:10.0),
-              child: Column(
-                children: [
-                  Container(
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
-                      title: WidgetHelper().textQ("${widget.val['kode']}",12,Constant().secondDarkColor,FontWeight.bold),
-                      subtitle: WidgetHelper().textQ("${widget.val['full_name']}",12,Colors.grey,FontWeight.bold),
-                      trailing:WidgetHelper().textQ("${widget.val['status']}",10,Constant().mainColor,FontWeight.bold),
-                    ),
-                  ),
-
-                  SizedBox(height: 50.0),
-                  Container(
-                    color: Constant().moneyColor,
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    child:  FlatButton(
-                        padding: EdgeInsets.all(15.0),
-                        onPressed: (){
-                          handleSubmit();
-                          // checkingAccount();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(AntDesign.checkcircleo,color: Colors.white),
-                            SizedBox(width: 10.0),
-                            WidgetHelper().textQ("AKTIVASI", 14,Colors.white,FontWeight.bold)
-                          ],
-                        )
-                    ),
-                  )
-                ],
+              child: ListTile(
+                contentPadding: EdgeInsets.only(left:10.0,right:10.0),
+                title: WidgetHelper().textQ("${widget.val['kode']}",12,Constant().darkMode,FontWeight.bold),
+                subtitle: WidgetHelper().textQ("${widget.val['full_name']}",12,Colors.grey,FontWeight.bold),
+                trailing:WidgetHelper().textQ("${widget.val['status']}",10,Constant().mainColor,FontWeight.bold),
               ),
             ),
+          ),
+          SizedBox(height: 50.0),
+          Expanded(
+              flex:5,
+              child:Container(
+                color: Constant().moneyColor,
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                child:  FlatButton(
+                    padding: EdgeInsets.all(15.0),
+                    onPressed: (){
+                      handleSubmit();
+                      // checkingAccount();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(AntDesign.checkcircleo,color: Colors.white),
+                        SizedBox(width: 10.0),
+                        WidgetHelper().textQ("AKTIVASI", 14,Colors.white,FontWeight.bold)
+                      ],
+                    )
+                ),
+              )
           )
         ]
 
@@ -766,6 +809,7 @@ class _TransferPinState extends State<TransferPin> {
   String msg='';
   bool isNext=false;
   Future checkingAccount()async{
+
     if(penerimaController.text==''){
       setState(() {
         msg='Penerima tidak boleh kosong';
@@ -776,7 +820,7 @@ class _TransferPinState extends State<TransferPin> {
       WidgetHelper().loadingDialog(context);
       var checkingMember=await BaseProvider().getProvider('member/data/${penerimaController.text}', availableMemberModelFromJson);
       Navigator.pop(context);
-      print(checkingMember);
+
       if(checkingMember is General){
         General result=checkingMember;
         setState(() {
@@ -784,7 +828,9 @@ class _TransferPinState extends State<TransferPin> {
         });
       }
       else{
-         setState(() {
+        penerimaFocus.unfocus();
+        WidgetHelper().showFloatingFlushbar(context,"success","Akun terdaftar sebagai member kami");
+        setState(() {
            msg='';
            availableMemberModel = checkingMember;
          });
@@ -838,6 +884,7 @@ class _TransferPinState extends State<TransferPin> {
     // TODO: implement initState
     super.initState();
     print(widget.val);
+    penerimaFocus.requestFocus();
   }
 
   @override
@@ -879,136 +926,109 @@ class _TransferPinState extends State<TransferPin> {
             }),
             title: WidgetHelper().textQ("${!isNext?'TRANSFER PIN':'PERINCIAN TRANSFER PIN'}",12,Colors.grey,FontWeight.bold),
           ),
-          ClipPath(
-            clipper: WaveClipperOne(flip: true),
-            child: Container(
-              width: double.infinity,
-              color: Constant().secondColor,
-              padding: EdgeInsets.only(bottom:50.0,top:0.0,left:10.0,right:10.0),
-              child: !isNext?Column(
-                children: [
-                  Container(
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(0.0),
-                      title: WidgetHelper().textQ("${widget.val['kode']}",12,Constant().secondDarkColor,FontWeight.bold),
-                      subtitle: WidgetHelper().textQ("${widget.val['full_name']}",12,Colors.grey,FontWeight.bold),
-                      trailing:WidgetHelper().textQ("${widget.val['status']}",10,Constant().mainColor,FontWeight.bold),
-                    ),
+          Container(
+            padding: EdgeInsets.all(10.0),
+            child:Column(
+              children: [
+                Container(
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(0.0),
+                    title: WidgetHelper().textQ("${widget.val['kode']}",12,Constant().darkMode,FontWeight.bold),
+                    subtitle: WidgetHelper().textQ("${widget.val['full_name']}",12,Colors.grey,FontWeight.bold),
+                    trailing:WidgetHelper().textQ("${widget.val['status']}",10,Constant().mainColor,FontWeight.bold),
                   ),
-                  WidgetHelper().titleNoButton(context,AntDesign.user,"ID Penerima",color: Colors.grey[200]),
-                  SizedBox(height: 10.0),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(0),
-                      color: Theme.of(context).focusColor.withOpacity(0.3),
-                    ),
-                    child: TextFormField(
-                      style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.normal,fontFamily: Constant().fontStyle,color:Constant().secondDarkColor),
-                      controller: penerimaController,
-                      maxLines: 1,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1)),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        hintStyle: TextStyle(color:Constant().secondDarkColor, fontSize:12,fontFamily:Constant().fontStyle),
+                ),
+                Divider(),
+                WidgetHelper().titleNoButton(context,AntDesign.user,"ID Penerima",color:Constant().darkMode),
+                SizedBox(height: 10.0),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(0),
+                    color: Color(0xFFEEEEEE),
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                    controller: penerimaController,
+                    maxLines: 1,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
                       ),
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      focusNode: penerimaFocus,
-                      // textCapitalization: TextCapitalization.sentences,
-                      textCapitalization: TextCapitalization.characters,
-
-                    ),
-                  ),
-                  WidgetHelper().textQ('ID Penerima bisa dilihat melalui profil penerima yang akan di transfer',10.0,Colors.grey[200],FontWeight.normal),
-                  SizedBox(height: 50.0),
-                  Container(
-                    color: Constant().moneyColor,
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    child:  FlatButton(
-                        padding: EdgeInsets.all(15.0),
-                        onPressed: (){
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon:InkWell(
+                        onTap: (){
+                          penerimaFocus.unfocus();
                           checkingAccount();
                         },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(AntDesign.checkcircleo,color: Colors.white),
-                            SizedBox(width: 10.0),
-                            WidgetHelper().textQ("PERIKSA AKUN", 14,Colors.white,FontWeight.bold)
-                          ],
-                        )
+                        child: Container(
+                          color: Constant().mainColor,
+                          child: Icon(AntDesign.checkcircleo,color:Colors.white),
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),
                     ),
-                  )
-                ],
-              ):Column(
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.checkcircleo,color:Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("penerima",12,Colors.grey,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(availableMemberModel.result.fullName,12,Colors.white,FontWeight.normal),
-                  ),
-                  Divider(),
-                  ListTile(
-                    contentPadding: EdgeInsets.all(0.0),
-                    leading: Icon(AntDesign.checkcircleo,color:Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("Pemilik Saat Ini",12,Colors.grey,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(widget.val['full_name'],12,Colors.white,FontWeight.normal),
-                  ),
-                  Divider(),
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    focusNode: penerimaFocus,
+                    // textCapitalization: TextCapitalization.sentences,
+                    textCapitalization: TextCapitalization.characters,
 
-                  ListTile(
-                    contentPadding: EdgeInsets.only(right:10.0),
-                    leading: Icon(AntDesign.checkcircleo,color:Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("PIN",12,Colors.grey,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(widget.val['kode'],12,Colors.white,FontWeight.normal),
                   ),
-                  Divider(),
-                  ListTile(
-                    contentPadding: EdgeInsets.only(right:10.0),
-                    leading: Icon(AntDesign.checkcircleo,color:Constant().mainColor,size: 20.0),
-                    title: WidgetHelper().textQ("Status",12,Colors.grey,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(widget.val['status'],12,Colors.white,FontWeight.normal),
+                ),
+                SizedBox(height: 10.0),
+                if(isNext)ListTile(
+                  contentPadding: EdgeInsets.all(0.0),
+                  leading: CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(availableMemberModel.result.picture)
                   ),
-                  SizedBox(height: 30.0),
-                  Container(
-                    color: Constant().moneyColor,
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    child:  FlatButton(
-                        padding: EdgeInsets.all(15.0),
-                        onPressed: (){
-                          handleSubmit();
-                          // checkingAccount();
-                          // WidgetHelper().myModal(context, ModalReaktivasiPin());
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(AntDesign.checkcircleo,color: Colors.white),
-                            SizedBox(width: 10.0),
-                            WidgetHelper().textQ("TRANSFER", 14,Colors.white,FontWeight.bold)
-                          ],
-                        )
-                    ),
-                  )
-                ],
-              ),
+                  title:WidgetHelper().textQ(availableMemberModel.result.fullName, 12,Constant().darkMode,FontWeight.bold),
+                  subtitle:WidgetHelper().textQ(availableMemberModel.result.referralCode, 12,Constant().darkMode,FontWeight.bold),
+                  trailing: Column(
+                    children: [
+                      CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(availableMemberModel.result.badge)
+                      ),
+
+                    ],
+                  ),
+                ),
+                SizedBox(height: 50.0),
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  color: Constant().moneyColor,
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                  child:  FlatButton(
+                      padding: EdgeInsets.all(15.0),
+                      onPressed: (){
+                        // checkingAccount();
+                        handleSubmit();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(AntDesign.checkcircleo,color: Colors.white),
+                          SizedBox(width: 10.0),
+                          WidgetHelper().textQ("TRANSFER PIN", 14,Colors.white,FontWeight.bold)
+                        ],
+                      )
+                  ),
+                )
+              ],
             ),
           )
-
         ],
       ),
     );
   }
+
 }
 
 class StatusStockistModal extends StatefulWidget {

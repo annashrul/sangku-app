@@ -140,14 +140,25 @@ class _CartScreenState extends State<CartScreen> {
         });
         loadCart();
       }):!isNodata?RefreshWidget(
-        widget: ListView.separated(
-            padding: EdgeInsets.all(0.0),
-            itemCount: cartModel.result.length,
-            itemBuilder: (context,index){
-              var val=cartModel.result[index];
-              return buildContent(context, index,val.id,val.idPaket,val.foto,val.title,val.harga,val.berat,val.qty);
-            },
-            separatorBuilder: (context,index){return Divider();},
+        widget: SingleChildScrollView(
+          child: Column(
+            children: [
+              ListView.separated(
+                primary: true,
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                padding: EdgeInsets.all(0.0),
+                itemCount: cartModel.result.length,
+                itemBuilder: (context,index){
+                  var val=cartModel.result[index];
+                  print("tipe ${val.type}");
+                  return buildContent(context, index,val.id,val.idPaket,val.foto,val.title,val.harga,val.berat,val.qty);
+                },
+                separatorBuilder: (context,index){return Divider();},
+              ),
+
+            ],
+          ),
         ),
         callback: (){
           setState(() {
@@ -217,14 +228,7 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    CachedNetworkImage(
-                      height: 50,
-                      width: 50,
-                      imageUrl: image,
-                      fit:BoxFit.contain,
-                      placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                      errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                    ),
+                    WidgetHelper().baseImage(image,height: 50, width: 50),
                     SizedBox(width: 10.0),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

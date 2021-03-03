@@ -92,9 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
               ],
             ),
-            child: ListView(
-              shrinkWrap: true,
-              primary: false,
+            child: Column(
               children: <Widget>[
                 ListTile(
                   contentPadding: EdgeInsets.only(left:10,right:20),
@@ -118,9 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(3, 0), blurRadius: 0)
               ],
             ),
-            child: ListView(
-              shrinkWrap: true,
-              primary: false,
+            child: Column(
               children: <Widget>[
                 ListTile(
                   contentPadding: EdgeInsets.only(left:10,right:20),

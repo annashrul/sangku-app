@@ -64,8 +64,9 @@ dependencies:
   get_it: ^5.0.3
   url_launcher:
   social_share: ^2.0.5
-  fluid_bottom_nav_bar: ^1.2.0
-  need_resume: ^1.0.5+1
+#  fluid_bottom_nav_bar: ^1.2.0
+#  need_resume: ^1.0.5+1
+  syncfusion_flutter_datagrid: ^18.4.46-beta
 #  fancy_bottom_navigation: ^0.3.2
 #  motion_tab_bar: ^0.1.5
 #  flutter_snake_navigationbar:
@@ -91,6 +92,6 @@ flutter:
     - assets/img/
     - assets/icon/
   fonts:
-    - family: Montserrat
+    - family: Roboto-Light
       fonts:
-        - asset: assets/fonts/Montserrat.ttf
+        - asset: assets/fonts/Roboto-Light.ttf

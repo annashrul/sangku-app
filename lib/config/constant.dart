@@ -15,12 +15,12 @@ class Constant{
   final String errTimeout     = 'TimeoutException';
   final String errSocket      = 'SocketException';
   final String errExpToken    = 'TokenExpiredError';
-  final String errNoData    = 'nodata';
+  final String errNoData    = 'No Data.';
   final String msgConnection  = 'Terjadi Kesalahan Jaringan';
   final String localAssets    = 'assets/img/';
   final String localIcon      = 'assets/icon/';
   final String oneSignalId    = "2f7a9ad1-aec2-4abe-ab9b-2354c51580b2";
-  final String fontStyle      = 'Montserrat';
+  final String fontStyle      = 'Roboto-Light';
   final String noImage        = 'https://i.pinimg.com/originals/c9/22/68/c92268d92cf2dbf96e3195683d9e14fb.png';
   final String avatar        = 'https://cdn.pixabay.com/photo/2018/08/28/12/41/avatar-3637425_960_720.png';
   final String titleErrToken = 'Sesi anda sudah berakhir';
@@ -37,8 +37,9 @@ class Constant{
   final Color darkMode        = Color(0xFF212121);
   final Color moneyColor      = Color(0xFFFA591D);
   final Color greyColor       = Color(0xFFEEEEEE);
-  final Color mainColor1   = Color(0xFF732044);
-  final Color mainColor2  = Color(0xFFffc107);
+  final Color mainColor1      = Color(0xFF732044);
+  final Color mainColor2      = Color(0xFFffc107);
+  final Color greenColor      = Color(0xFF42b549);
 
 
 

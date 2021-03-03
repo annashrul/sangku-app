@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -145,7 +146,7 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                             }
                             if(val.status==1){
                               status='Transaksi Berhasil';
-                              color=Constant().mainColor;
+                              color=Constant().greenColor;
                             }
                             if(val.status==2){
                               status='Transaksi Gagal/Dibatalkan';
@@ -153,7 +154,7 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                             }
                             return FlatButton(
                               padding: EdgeInsets.all(0.0),
-                                color: index%2==0?Theme.of(context).focusColor.withOpacity(0.1):Color(0xFFEEEEEE),
+                                color: index%2==0?Colors.transparent:Color(0xFFEEEEEE),
                                 onPressed: (){
                                   WidgetHelper().myModal(context,ModalDetailHistoryPPOB(kdTrx:base64.encode(utf8.encode(val.kdTrx))));
                                 },
@@ -162,13 +163,13 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(left:10,right:10,top:10,bottom: 5),
+                                      padding: EdgeInsets.only(left:10,right:10,top:10,bottom: 0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,''),10,Colors.black87,FontWeight.normal),
-                                          WidgetHelper().textQ(status,10,color,FontWeight.bold),
+                                          WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,''),10,Constant().darkMode,FontWeight.normal),
+                                          WidgetHelper().textQ("(${val.kdTrx})",10,Constant().mainColor,FontWeight.bold),
 
                                         ],
                                       ),
@@ -177,11 +178,11 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                                       padding: EdgeInsets.only(left: 0,right:0,top:0,bottom:0),
                                       child: ListTile(
                                         contentPadding: EdgeInsets.only(left: 10,right:0,top:0,bottom:0),
-                                        leading: Image.network(val.tipe==0?val.logo:val.icon,width: 50,height:50,fit: BoxFit.contain),
-                                        title: WidgetHelper().textQ(val.produk,10,Constant().secondDarkColor,FontWeight.bold),
-                                        subtitle: WidgetHelper().textQ('No. ${val.target}',10,Colors.grey[200],FontWeight.normal),
+                                        leading:WidgetHelper().baseImage(val.tipe==0?val.logo:val.icon,width: 50,height:50),
+                                        title: WidgetHelper().textQ(val.produk,10,Constant().darkMode,FontWeight.bold),
+                                        subtitle: WidgetHelper().textQ('No. ${val.target}',10,Constant().darkMode,FontWeight.normal),
                                       ),
-                                      color: Constant().secondColor,
+                                      // color: Constant().secondColor,
                                     ),
 
                                     Padding(
@@ -193,7 +194,7 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               WidgetHelper().textQ(val.kategori,10,Colors.black87,FontWeight.normal),
-                                              WidgetHelper().textQ("(${val.kdTrx})",10,Constant().mainColor,FontWeight.normal),
+                                              WidgetHelper().textQ(status,10,color,FontWeight.bold),
                                             ],
                                           ),
                                           Column(
@@ -316,102 +317,99 @@ class _ModalDetailHistoryPPOBState extends State<ModalDetailHistoryPPOB> {
             leading: IconButton(icon: Icon(AntDesign.back), onPressed:(){Navigator.pop(context);}),
             title: WidgetHelper().textQ('Detail Transaksi #${detailHistoryPpobModel.result.kdTrx}',12,Colors.grey,FontWeight.bold),
           ),
-          ClipPath(
-              clipper: WaveClipperOne(flip: true),
-              child: Container(
-                width: double.infinity,
-                color: Constant().secondColor,
-                padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
-                child: Column(
+          Container(
+            width: double.infinity,
+            // color: Constant().secondColor,
+            padding: EdgeInsets.only(bottom:0.0,top:0.0,left:0.0,right:0.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height:10),
+                desc(context,'Invoice',detailHistoryPpobModel.result.kdTrx),
+                Divider(),
+                desc(context,'Status',status,color: color),
+                Divider(),
+                desc(context,'Kategori',detailHistoryPpobModel.result.kategori),
+                ListTile(
+                  contentPadding: EdgeInsets.only(left: 10.0),
+                  leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor),
+                  title: WidgetHelper().textQ("DETAIL PEMBELIAN", 12,Constant().mainColor,FontWeight.bold),
+                ),
+                Divider(color: Colors.grey),
+                ListTile(
+                  contentPadding: EdgeInsets.only(left: 10.0),
+                  leading: Image.network(val.tipe==0?val.logo:val.icon),
+                  title: WidgetHelper().textQ(val.produk,12,Constant().darkMode,FontWeight.bold),
+                  subtitle: WidgetHelper().textQ(detailHistoryPpobModel.result.target,12,Constant().darkMode,FontWeight.bold),
+                ),
+                Divider(),
+                Padding(
+                  padding: EdgeInsets.only(left:10),
+                  child: WidgetHelper().textQ('Serial Number',12,Constant().darkMode,FontWeight.normal),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left:10),
+                  child: WidgetHelper().textQ(detailHistoryPpobModel.result.token!=null?detailHistoryPpobModel.result.token:'-',12,Constant().darkMode,FontWeight.bold),
+                ),
+                Divider(),
+                desc(context,'Total Pembayaran','Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPpobModel.result.harga))} .-',color: Constant().moneyColor),
+                if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))ListTile(
+                  contentPadding: EdgeInsets.only(left:10.0),
+                  leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor),
+                  title: WidgetHelper().textQ("DETAIL TAGIHAN", 12,Constant().mainColor,FontWeight.bold),
+                ),
+                if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))Divider(color: Colors.grey),
+                if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height:10),
-                    desc(context,'Invoice',detailHistoryPpobModel.result.kdTrx),
+                    desc(context,'Nomor Pelanggan',detailHistoryPpobModel.result.tagihan.noPelanggan),
                     Divider(),
-                    desc(context,'Status',status,color: color),
+                    desc(context,'Nama Pelanggan',detailHistoryPpobModel.result.tagihan.namaPalanggan),
                     Divider(),
-                    desc(context,'Kategori',detailHistoryPpobModel.result.kategori),
-                    ListTile(
-                      contentPadding: EdgeInsets.only(left: 10.0),
-                      leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor),
-                      title: WidgetHelper().textQ("DETAIL PEMBELIAN", 12,Constant().mainColor,FontWeight.bold),
-                    ),
-                    Divider(color: Colors.grey),
-                    ListTile(
-                      contentPadding: EdgeInsets.only(left: 10.0),
-                      leading: Image.network(val.tipe==0?val.logo:val.icon),
-                      title: WidgetHelper().textQ(val.produk,12,Constant().secondDarkColor,FontWeight.bold),
-                      subtitle: WidgetHelper().textQ(detailHistoryPpobModel.result.target,12,Constant().secondDarkColor,FontWeight.bold),
-                    ),
+                    desc(context,'Jumlah Tagihan','Rp ${FunctionHelper().formatter.format(detailHistoryPpobModel.result.tagihan.totalBayar)} .-',color: Constant().moneyColor),
                     Divider(),
-                    Padding(
-                      padding: EdgeInsets.only(left:10),
-                      child: WidgetHelper().textQ('Serial Number',12,Colors.grey,FontWeight.normal),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left:10),
-                      child: WidgetHelper().textQ(detailHistoryPpobModel.result.token!=null?detailHistoryPpobModel.result.token:'-',12,Constant().secondDarkColor,FontWeight.bold),
-                    ),
+                    desc(context,'Jumlah Tagihan','Rp ${FunctionHelper().formatter.format(detailHistoryPpobModel.result.tagihan.totalBayar)} .-',color: Constant().moneyColor),
                     Divider(),
-                    desc(context,'Total Pembayaran','Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPpobModel.result.harga))} .-',color: Constant().moneyColor),
-                    if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))ListTile(
-                      contentPadding: EdgeInsets.only(left:10.0),
-                      leading: Icon(AntDesign.infocirlceo,color: Constant().mainColor),
-                      title: WidgetHelper().textQ("DETAIL TAGIHAN", 12,Constant().mainColor,FontWeight.bold),
-                    ),
-                    if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))Divider(color: Colors.grey),
-                    if(!detailHistoryPpobModel.result.tagihan.toJson().containsValue(null))Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        desc(context,'Nomor Pelanggan',detailHistoryPpobModel.result.tagihan.noPelanggan),
-                        Divider(),
-                        desc(context,'Nama Pelanggan',detailHistoryPpobModel.result.tagihan.namaPalanggan),
-                        Divider(),
-                        desc(context,'Jumlah Tagihan','Rp ${FunctionHelper().formatter.format(detailHistoryPpobModel.result.tagihan.totalBayar)} .-',color: Constant().moneyColor),
-                        Divider(),
-                        desc(context,'Jumlah Tagihan','Rp ${FunctionHelper().formatter.format(detailHistoryPpobModel.result.tagihan.totalBayar)} .-',color: Constant().moneyColor),
-                        Divider(),
-                        desc(context,'Periode',detailHistoryPpobModel.result.tagihan.periode),
+                    desc(context,'Periode',detailHistoryPpobModel.result.tagihan.periode),
 
-                      ],
-                    ),
-                    SizedBox(height:20.0),
-                    FlatButton(
-                        padding: EdgeInsets.all(15.0),
-                        color: Constant().mainColor,
-                        onPressed: (){
-                          // handleSubmit();
-                          // checkingAccount();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(AntDesign.checkcircleo,color: Colors.white),
-                            SizedBox(width: 10.0),
-                            WidgetHelper().textQ("BELI LAGI", 14,Colors.white,FontWeight.bold)
-                          ],
-                        )
-                    )
                   ],
                 ),
-              ),
-          )
+                SizedBox(height:20.0),
+                FlatButton(
+                    padding: EdgeInsets.all(15.0),
+                    color: Constant().moneyColor,
+                    onPressed: (){
+                      // handleSubmit();
+                      // checkingAccount();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(AntDesign.checkcircleo,color: Colors.white),
+                        SizedBox(width: 10.0),
+                        WidgetHelper().textQ("BELI LAGI", 14,Colors.white,FontWeight.bold)
+                      ],
+                    )
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget desc(BuildContext context,title,desc,{Color color=Colors.white}){
+  Widget desc(BuildContext context,title,desc,{Color color=Colors.black}){
     return Padding(
       padding: EdgeInsets.only(left:10,right:10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ(title,12,Colors.grey,FontWeight.normal),
+          WidgetHelper().textQ(title,12,Constant().darkMode,FontWeight.normal),
           WidgetHelper().textQ(desc,12,color,FontWeight.bold)
 
         ],
