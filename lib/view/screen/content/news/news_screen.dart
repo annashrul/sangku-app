@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -103,9 +102,7 @@ class _NewsScreenState extends State<NewsScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                            child:Html(data: desc,style: {
-                              "p": Style(fontSize: FontSize(12.0),color: Constant().darkMode)
-                            },),
+                            child:Html(data: desc,defaultTextStyle: TextStyle(fontSize: 12.0,color: Constant().secondDarkColor)),
                             // child: WidgetHelper().textQ(contentModel.result.data[index].caption, 12,Constant().darkMode,FontWeight.normal,maxLines:3 ),
                           ),
                         ],

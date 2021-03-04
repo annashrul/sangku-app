@@ -172,7 +172,7 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                     upload(image);
                   },
                 ));
-              },icon: AntDesign.upload,bg: Constant().mainColor, iconColor: Colors.white)
+              },icon: AntDesign.upload, iconColor:Constant().mainColor)
         ]),
         body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
           padding: EdgeInsets.only(top:10,bottom:10),
@@ -267,7 +267,8 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                       Clipboard.setData(new ClipboardData(text:getPaymentModel.result.accNo));
                       WidgetHelper().showFloatingFlushbar(context,'success',"No. Rekening berhasil disalin");
                     },
-                    leading: Image.network(getPaymentModel.result.logo,width: 70,height: 50,),
+                    leading: WidgetHelper().baseImage(getPaymentModel.result.logo,width: 70,height: 50),
+                    // leading: Image.network(getPaymentModel.result.logo,width: 70,height: 50,),
                     title: WidgetHelper().textQ(getPaymentModel.result.accName,12,Constant().secondDarkColor,FontWeight.bold),
                     subtitle:Row(
                       children: [

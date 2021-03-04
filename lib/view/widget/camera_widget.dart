@@ -108,9 +108,10 @@ class _CameraWidgetState extends State<CameraWidget> {
                     widget.callback(base64Image);
                   }
                 },
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                padding: EdgeInsets.all(15.0),
+                // padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 color: Constant().moneyColor,
-                shape: StadiumBorder(),
+                // shape: StadiumBorder(),
                 child:WidgetHelper().textQ("UPLOAD", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
               ),
             ),

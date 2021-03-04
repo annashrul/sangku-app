@@ -64,6 +64,9 @@ dependencies:
   get_it: ^5.0.3
   url_launcher:
   social_share: ^2.0.5
+  webview_flutter: ^0.3.17
+#  flutter_webview_plugin: ^0.3.11
+#  webview_flutter: ^2.0.0
 #  fluid_bottom_nav_bar: ^1.2.0
 #  need_resume: ^1.0.5+1
   syncfusion_flutter_datagrid: ^18.4.46-beta

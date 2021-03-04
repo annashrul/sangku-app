@@ -105,7 +105,6 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
   void _scrollListener() {
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        print('fetch data');
         if(perpage<total){
           setState((){
             perpage+=10;
@@ -146,48 +145,17 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
             children: [
               Expanded(
                 flex: 1,
-                child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
-                  setState(() {
-                    filterStatus = val['kode'];
-                    isLoading=true;
-                  });
-                  loadData();
-                },filterStatus),
+                child: Padding(
+                  padding: EdgeInsets.only(left:10),
+                  child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
+                    setState(() {
+                      filterStatus = val['kode'];
+                      isLoading=true;
+                    });
+                    loadData();
+                  },filterStatus),
+                ),
               ),
-              // Expanded(
-              //     flex: 1,
-              //     child: ListView.builder(
-              //       // shrinkWrap: true,
-              //
-              //       scrollDirection: Axis.horizontal,
-              //       itemCount: DataHelper.filterHistoryDeposit.length,
-              //       itemBuilder: (context,index){
-              //         return  WidgetHelper().myPress((){
-              //           setState(() {
-              //             filterStatus = DataHelper.filterHistoryDeposit[index]['kode'];
-              //             isLoading=true;
-              //           });
-              //           loadData();
-              //         },
-              //             Container(
-              //               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-              //               decoration: BoxDecoration(
-              //                 color: filterStatus==DataHelper.filterHistoryDeposit[index]['kode']?Constant().mainColor:Constant().secondColor,
-              //                 // border: Border.all(width:1.0,color: filterStatus==index?Constant().mainColor:Colors.grey[200]),
-              //                 borderRadius: BorderRadius.circular(10.0),
-              //               ),
-              //               child: Row(
-              //                 mainAxisAlignment: MainAxisAlignment.center,
-              //                 crossAxisAlignment: CrossAxisAlignment.center,
-              //                 children: [
-              //                   WidgetHelper().textQ("${DataHelper.filterHistoryDeposit[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
-              //                 ],
-              //               ),
-              //             )
-              //         );
-              //       },
-              //     )
-              // ),
               Expanded(
                   flex: 19,
                   child: RefreshWidget(

@@ -14,6 +14,7 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
 import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
 
+
 class HistoryDepositScreen extends StatefulWidget {
   @override
   _HistoryDepositScreenState createState() => _HistoryDepositScreenState();
@@ -105,7 +106,6 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
   void _scrollListener() {
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        print('fetch data');
         if(perpage<total){
           setState((){
             perpage+=10;
@@ -144,52 +144,19 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Expanded(
-              //     flex: 1,
-              //     child: ListView.builder(
-              //       padding: EdgeInsets.only(top:10),
-              //       scrollDirection: Axis.horizontal,
-              //       itemCount: DataHelper.filterHistoryDeposit.length,
-              //       itemBuilder: (context,index){
-              //         return  Container(
-              //           padding: EdgeInsets.only(right:5),
-              //           child: WidgetHelper().myPress((){
-              //             setState(() {
-              //               filterStatus = DataHelper.filterHistoryDeposit[index]['kode'];
-              //               isLoading=true;
-              //             });
-              //             loadData();
-              //           },
-              //               Container(
-              //                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-              //                 decoration: BoxDecoration(
-              //                   color: filterStatus==DataHelper.filterHistoryDeposit[index]['kode']?Constant().mainColor:Constant().secondColor,
-              //                   // border: Border.all(width:1.0,color: filterStatus==index?Constant().mainColor:Colors.grey[200]),
-              //                   borderRadius: BorderRadius.circular(4.0),
-              //                 ),
-              //                 child: Row(
-              //                   mainAxisAlignment: MainAxisAlignment.center,
-              //                   crossAxisAlignment: CrossAxisAlignment.center,
-              //                   children: [
-              //                     WidgetHelper().textQ("${DataHelper.filterHistoryDeposit[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
-              //                   ],
-              //                 ),
-              //               )
-              //           ),
-              //         );
-              //       },
-              //     )
-              // ),
               Expanded(
                 flex: 1,
-                child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
-                  setState(() {
-                    filterStatus = val['kode'];
-                    kode = val['kode'];
-                    isLoading=true;
-                  });
-                  loadData();
-                },filterStatus),
+                child:Padding(
+                  padding: EdgeInsets.only(left:10),
+                  child:  WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
+                    setState(() {
+                      filterStatus = val['kode'];
+                      kode = val['kode'];
+                      isLoading=true;
+                    });
+                    loadData();
+                  },filterStatus),
+                ),
               ),
               Expanded(
                 flex: 19,
@@ -268,7 +235,6 @@ class WidgetHistoryEwallet extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    print(this.data);
     return FlatButton(
       color: color,
       padding: EdgeInsets.only(top:10.0,bottom: 10.0),
@@ -280,37 +246,13 @@ class WidgetHistoryEwallet extends StatelessWidget {
           children: [
             WidgetHelper().textQ(data['kdTrx'], 10,Constant().mainColor,FontWeight.bold),
             SizedBox(height: 5),
-            Row(
-              children: [
-                Icon(AntDesign.creditcard,size: 10),
-                SizedBox(width: 5),
-                WidgetHelper().textQ(data['bankName'], 10,Constant().darkMode,FontWeight.bold),
-              ],
-            ),
+            buildItem(context, AntDesign.creditcard, data['bankName']),
             SizedBox(height: 5),
-            Row(
-              children: [
-                Icon(AntDesign.creditcard,size: 10),
-                SizedBox(width: 5),
-                WidgetHelper().textQ(data['accNo'], 10,Constant().darkMode,FontWeight.bold),
-              ],
-            ),
+            buildItem(context, AntDesign.creditcard, data['accNo']),
             SizedBox(height: 5),
-            Row(
-              children: [
-                Icon(Entypo.credit,size: 10),
-                SizedBox(width: 5),
-                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(data['amount']))} .-", 10,Constant().moneyColor,FontWeight.bold),
-              ],
-            ),
+            buildItem(context, Entypo.credit,"Rp ${FunctionHelper().formatter.format(int.parse(data['amount']))} .-",color: Constant().moneyColor),
             SizedBox(height: 5),
-            Row(
-              children: [
-                Icon(AntDesign.calendar,size: 10),
-                SizedBox(width: 5),
-                WidgetHelper().textQ(FunctionHelper().formateDate(data['createdAt'], 'ymd'), 10,Colors.grey,FontWeight.bold),
-              ],
-            ),
+            buildItem(context, AntDesign.calendar,FunctionHelper().formateDate(data['createdAt'], 'ymd'),color: Constant().darkMode),
           ],
         ),
         trailing:Container(
@@ -325,4 +267,15 @@ class WidgetHistoryEwallet extends StatelessWidget {
       ),
     );
   }
+  Widget buildItem(BuildContext context,IconData iconData,String title,{Color color=Colors.black}){
+    return Row(
+      children: [
+        Icon(iconData,size: 10),
+        SizedBox(width: 5),
+        WidgetHelper().textQ(title, 10,color,FontWeight.bold),
+      ],
+    );
+  }
+
+
 }

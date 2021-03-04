@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -93,9 +92,7 @@ class _DetailNewsScreenState extends State<DetailNewsScreen> with SingleTickerPr
                             padding: EdgeInsets.only(bottom:50.0,top:10.0,left:0.0),
                             width: double.infinity,
                             color: Color(0xFFEEEEEE),
-                            child:Html(data: val.caption,style: {
-                              "p": Style(fontSize: FontSize(14.0),color: Constant().darkMode)
-                            },),
+                            child:Html(data: val.caption,defaultTextStyle: TextStyle(fontSize: 14.0,color: Constant().secondDarkColor)),
                           ),
                         ),
                       ],
@@ -145,9 +142,8 @@ class _DetailNewsScreenState extends State<DetailNewsScreen> with SingleTickerPr
                             padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0),
                             width: double.infinity,
                             color: Constant().secondColor,
-                            child:Html(data: val.caption,style: {
-                            "p": Style(fontSize: FontSize(12.0),color: Constant().secondDarkColor)
-                          },),
+                            // child:Html(data: val.caption,style: {"p": Style(fontSize: FontSize(12.0),color: Constant().secondDarkColor)},),
+                            child:Html(data: val.caption,defaultTextStyle: TextStyle(fontSize: 12.0,color: Constant().secondDarkColor)),
                           ),
                         ),
                       ],
