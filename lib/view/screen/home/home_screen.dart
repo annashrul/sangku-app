@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     loadNews();
   }
   Future loadNews()async{
-    var res = await ContentProvider().loadData("page=1");
+    var res = await ContentProvider().loadData("page=1&perpage=5");
     print("RESPONSE NEWS $res");
     if(res=='error' || res=='failed'){
       isLoadingNews=false;
@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
   }
   Future loadRedeem()async{
-    var res = await ContentProvider().loadRedeem("page=1&limit=5");
+    var res = await ContentProvider().loadRedeem("page=1&perpage=5");
     if(res=='error' || res=='failed'){
       isLoadingRedeem=false;
       isErrorRedeem=true;
@@ -101,184 +101,123 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     print("================================================================");
     super.build(context);
     return SafeArea(
-      child:  WrapperPageWidget(
-        children: [
-          Container(
-            // height:50,
-            padding: EdgeInsets.only(left:0),
-            child: StaggeredGridView.countBuilder(
-              shrinkWrap: true,
-              primary: false,
-              padding: EdgeInsets.only(top:10),
-              // scrollDirection: Axis.horizontal,
-              crossAxisCount: 3,
-              itemCount: DataHelper.dataProfile.length,
-              itemBuilder: (context,index){
-                IconData icon;
-                String title='';
-                Color color;
-                String value='';
-                if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
-                // if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value='10';}
-                // widget.dataMember['plafon']}'.split(".")[0]
-                if(index==1&&dataMember!=null){
-                  icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
-                  value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
-                  // value='Rp '+FunctionHelper().formatter.format(int.parse('10000'));
-                }
-                if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
-                // if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri  | kanan ';}
-                // if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
-                return dataMember==null?WidgetHelper().baseLoading(context,Container(
-                  color: Colors.white,
-                  height: 50,
-                  width: double.infinity,
-                )):Container(
-                  padding: EdgeInsets.only(top:10,bottom: 10),
-                  decoration: BoxDecoration(
-                    color:Color(0xFF732044),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          WidgetHelper().textQ(title,10,Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
-                          WidgetHelper().textQ(value,10,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
-                        ],
-                      ),
-                      // SizedBox(width:7.5),
-                    ],
-                  ),
-                );
-              },
-              staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-              mainAxisSpacing: 10.0,
-              crossAxisSpacing: 1.0,
+      child:  RefreshWidget(
+        widget:WrapperPageWidget(
+          children: [
+            Container(
+              // height:50,
+              padding: EdgeInsets.only(left:0),
+              child: StaggeredGridView.countBuilder(
+                shrinkWrap: true,
+                primary: false,
+                padding: EdgeInsets.only(top:10),
+                // scrollDirection: Axis.horizontal,
+                crossAxisCount: 3,
+                itemCount: DataHelper.dataProfile.length,
+                itemBuilder: (context,index){
+                  IconData icon;
+                  String title='';
+                  Color color;
+                  String value='';
+                  if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
+                  // if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value='10';}
+                  // widget.dataMember['plafon']}'.split(".")[0]
+                  if(index==1&&dataMember!=null){
+                    icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
+                    value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
+                    // value='Rp '+FunctionHelper().formatter.format(int.parse('10000'));
+                  }
+                  if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
+                  // if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri  | kanan ';}
+                  // if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
+                  return dataMember==null?WidgetHelper().baseLoading(context,Container(
+                    color: Colors.white,
+                    height: 50,
+                    width: double.infinity,
+                  )):Container(
+                    padding: EdgeInsets.only(top:10,bottom: 10),
+                    decoration: BoxDecoration(
+                      color:Color(0xFF732044),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            WidgetHelper().textQ(title,10,Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(value,10,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                          ],
+                        ),
+                        // SizedBox(width:7.5),
+                      ],
+                    ),
+                  );
+                },
+                staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 1.0,
+              ),
             ),
-          ),
-          dataMember!=null?ChartWidgetHome1(data:dataMember):WidgetHelper().baseLoading(context,Container(
-            padding: EdgeInsets.only(left:20.0),
-            child: Row(
-              children: [
-                Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left:20.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 10,
-                        width: 100,
+            dataMember!=null?ChartWidgetHome1(data:dataMember):WidgetHelper().baseLoading(context,Container(
+              padding: EdgeInsets.only(left:20.0),
+              child: Row(
+                children: [
+                  Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
                         color: Colors.white
-                      ),
-                      SizedBox(height:10),
-                      Container(
-                          height: 10,
-                          width: 100,
-                          color: Colors.white
-                      )
-                    ],
+                    ),
                   ),
-                )
-              ],
-            ),
-          )),
-          // Container(
-          //   child:Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       Container(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFdc3545),),
-          //             SizedBox(width:1),
-          //             WidgetHelper().textQ("pertumbuhan",10,Color(0xFFdc3545),FontWeight.bold),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFFffc107),),
-          //             SizedBox(width:1),
-          //             WidgetHelper().textQ("tabungan",10,Color(0xFFffc107),FontWeight.bold),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Icon(AntDesign.checkcircleo,size:10,color: Color(0xFF5d78ff),),
-          //             SizedBox(width:1),
-          //             WidgetHelper().textQ("balance",10,Color(0xFF5d78ff),FontWeight.bold),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Icon(AntDesign.checkcircleo,size:10,color: Constant().mainColor),
-          //             SizedBox(width:1),
-          //             WidgetHelper().textQ("terpasang",10,Constant().mainColor,FontWeight.bold),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Icon(AntDesign.checkcircleo,size:10,color:Colors.green),
-          //             SizedBox(width:1),
-          //             WidgetHelper().textQ("bonus",10,Colors.green,FontWeight.bold),
-          //           ],
-          //         ),
-          //       ),
-          //
-          //     ],
-          //   )
-          // ),
-          // Container(
-          //   height: 200,
-          //   child: BarChartHome(),
-          // ),
-          SizedBox(height:10),
-          section2(context),
-          Divider(thickness: 10.0),
-          section6(context),
-          Divider(thickness: 10.0),
-          section3(context),
-          Divider(thickness: 10.0),
-          section4(context)
-        ],
-        action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,()async{
-          final refer = await DynamicLinksApi().createReferralLink('1234567');
-          SocialShare.checkInstalledAppsForShare().then((data) {
-            print(data.toString());
-          });
-        },Constant().mainColor2)),
-        callback: (data){
-          setState(() {
-            dataMember=data;
-          });
+                  Container(
+                    margin: EdgeInsets.only(left:20.0),
+                    child: Column(
+                      children: [
+                        Container(
+                            height: 10,
+                            width: 100,
+                            color: Colors.white
+                        ),
+                        SizedBox(height:10),
+                        Container(
+                            height: 10,
+                            width: 100,
+                            color: Colors.white
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )),
+            SizedBox(height:10),
+            section2(context),
+            Divider(thickness: 10.0),
+            section6(context),
+            Divider(thickness: 10.0),
+            section3(context),
+            Divider(thickness: 10.0),
+            section4(context)
+          ],
+          action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,()async{
+            final refer = await DynamicLinksApi().createReferralLink('1234567');
+            SocialShare.checkInstalledAppsForShare().then((data) {
+              print(data.toString());
+            });
+          },Constant().mainColor2)),
+          callback: (data){
+            setState(() {
+              dataMember=data;
+            });
+          },
+        ),
+        callback: (){
+          setState(() {});
+          loadData();
         },
       ),
     );
@@ -392,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ListTile(
-            onTap: (){},
+            onTap: (){WidgetHelper().myPush(context,IndexScreen(currentTab: 0));},
             contentPadding: EdgeInsets.only(left:0.0,right:0.0),
             leading: Icon(AntDesign.chrome,size: 30.0,color:Constant().mainColor),
             title: Column(

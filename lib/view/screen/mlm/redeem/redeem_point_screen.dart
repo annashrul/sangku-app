@@ -137,25 +137,39 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
         ]),
         body: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child:isLoadingRedeem||isLoadingMember?RedeemVerticalLoading():isErrorRedeem?ErrWidget(callback: (){
+            child:isLoadingRedeem||isLoadingMember?
+            RedeemVerticalLoading():
+            isErrorRedeem?
+            ErrWidget(callback: (){
               setState(() {
                 isErrorRedeem=false;
                 isLoadingRedeem=true;
                 isLoadingMember=true;
               });
               loadRedeem();
-            }):new StaggeredGridView.countBuilder(
-              primary: false,
-              physics: AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
-              crossAxisCount: 4,
-              itemCount: listRedeemModel.result.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return RedeemWidget(data:listRedeemModel.result.data[index].toJson()..addAll({'point_ro':dataMemberModel.result.pointRo}));
+            }):
+            RefreshWidget(
+              widget: new StaggeredGridView.countBuilder(
+                // primary: false,
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                // shrinkWrap: true,
+                crossAxisCount: 4,
+                itemCount: listRedeemModel.result.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return RedeemWidget(data:listRedeemModel.result.data[index].toJson()..addAll({'point_ro':dataMemberModel.result.pointRo}));
+                },
+                staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
+                mainAxisSpacing: 15.0,
+                crossAxisSpacing: 10.0,
+              ),
+              callback: (){
+                setState(() {
+                  isLoadingRedeem=true;
+                  isLoadingMember=true;
+                });
+                loadRedeem();
+                loadMember();
               },
-              staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-              mainAxisSpacing: 15.0,
-              crossAxisSpacing: 10.0,
             )
         )
     );

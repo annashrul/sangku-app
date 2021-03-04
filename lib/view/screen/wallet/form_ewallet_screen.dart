@@ -379,7 +379,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
               }
             },
             padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().mainColor,
+            color: Constant().moneyColor,
             child:Container(
               padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
               child: Row(

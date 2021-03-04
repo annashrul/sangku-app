@@ -62,6 +62,8 @@ class RedeemHorizontalLoading extends StatelessWidget {
 
 
 class RedeemVerticalLoading extends StatelessWidget {
+  int total=10;
+  RedeemVerticalLoading({this.total});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,7 @@ class RedeemVerticalLoading extends StatelessWidget {
       physics: AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 4,
-      itemCount: 10,
+      itemCount: total,
       itemBuilder: (BuildContext context, int index) {
         return Shimmer.fromColors(
           baseColor: Colors.grey[300],

@@ -10,6 +10,7 @@ import 'package:sangkuy/provider/content_provider.dart';
 import 'package:sangkuy/view/screen/content/news/detail_news_screen.dart';
 import 'package:sangkuy/view/screen/content/news/news_widget.dart';
 import 'package:sangkuy/view/widget/loading/package_loading.dart';
+import 'package:sangkuy/view/widget/loading/redeem_loading.dart';
 
 class NewsScreen extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context,"Berita", (){Navigator.pop(context);},<Widget>[]),
-      body: isLoading?AddressLoading(tot: 10):Container(
+      body: isLoading?RedeemVerticalLoading():Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child:RefreshWidget(
             widget: new StaggeredGridView.countBuilder(
@@ -102,7 +103,13 @@ class _NewsScreenState extends State<NewsScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                            child:Html(data: desc,defaultTextStyle: TextStyle(fontSize: 12.0,color: Constant().secondDarkColor)),
+                            child:Html(
+                                data: desc,
+                                defaultTextStyle: TextStyle(fontSize: 12.0,color: Constant().darkMode),
+                              onLinkTap: (String url){
+                                  print(url);
+                              },
+                            ),
                             // child: WidgetHelper().textQ(contentModel.result.data[index].caption, 12,Constant().darkMode,FontWeight.normal,maxLines:3 ),
                           ),
                         ],
@@ -130,7 +137,12 @@ class _NewsScreenState extends State<NewsScreen> {
               mainAxisSpacing: 15.0,
               crossAxisSpacing: 15.0,
             ),
-            callback: (){},
+            callback: (){
+              setState(() {
+                isLoading=true;
+              });
+              loadNews();
+            },
           )
       ),
     );

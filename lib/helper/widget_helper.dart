@@ -189,12 +189,12 @@ class WidgetHelper{
   }
 
 
-  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{Brightness brightness=Brightness.light}){
+  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{double sizeTitle=14.0,Brightness brightness=Brightness.light}){
     return  AppBar(
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,14,Constant().darkMode,FontWeight.bold),
+      title:textQ(title,sizeTitle,Constant().darkMode,FontWeight.bold),
       leading: IconButton(
         icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){

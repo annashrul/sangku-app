@@ -28,6 +28,18 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
     // TODO: implement initState
     super.initState();
     currentScreen = HomeScreen(key: PageStorageKey('pageHome'),);
+    if(widget.currentTab==0){
+      currentScreen = RedeemPointScreen(key: PageStorageKey('pageRedeemPoint')); // if user taps on this dashboard tab will be active
+    }
+    else if(widget.currentTab==1){
+      currentScreen = ProductScreen(key: PageStorageKey('pageProduct')); // if user taps on this dashboard tab will be active
+    }
+    else if(widget.currentTab==3){
+      currentScreen = BinaryScreen(key: PageStorageKey('pageBinary')); // if user taps on this dashboard tab will be active
+    }
+    else if(widget.currentTab==4){
+      currentScreen = ProfileScreen(key: PageStorageKey('pageProfile')); // if user taps on this dashboard tab will be active
+    }
     // _pageController = PageController();
 
 
