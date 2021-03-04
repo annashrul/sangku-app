@@ -68,7 +68,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
       key: _scaffoldKey,
       bottomNavigationBar:!timeUpFlag?Container(
         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        color: Constant().mainColor,
+        color: Constant().moneyColor,
         child: FlatButton(
             padding: EdgeInsets.all(20.0),
             onPressed: ()async{

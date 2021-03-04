@@ -205,101 +205,88 @@ class _AddressScreenState extends State<AddressScreen> with SingleTickerProvider
     return ListView.separated(
         itemBuilder: (context,index){
           final val=listAddressModel.result.data[index];
-          return WidgetHelper().myPress((){
-            if(widget.idx!=null){
-              setState(() {
-                widget.idx=index;
-              });
-              print(widget.idx);
-              widget.callback(val,index);
-            }
-
-          }, Container(
-            padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0,right:15.0),
-            width: double.infinity,
-            color: widget.idx==index?Color(0xFFEEEEEE):Colors.transparent,
-            child:Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Entypo.location,size: 20,color:Constant().darkMode),
-                          SizedBox(width:5.0),
-                          WidgetHelper().textQ(val.title,12,Constant().darkMode, FontWeight.bold),
-                        ],
-                      ),
-                      InkWell(
-                        onTap: (){
-                          WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
-                            Navigator.pop(context);
-                            await deleteAddress(val.id);
-                          });
-                        },
-                        child:Icon(AntDesign.delete,color:Constant().moneyColor),
-                      )
-                      // FlatButton(
-                      //   color: Constant().moneyColor,
-                      //   onPressed: (){
-                      //     WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
-                      //       Navigator.pop(context);
-                      //       await deleteAddress(val.id);
-                      //     });
-                      //   },
-                      //   child: Icon(AntDesign.delete,color:Constant().secondDarkColor),
-                      //   padding: EdgeInsets.all(0.0),
-                      // ),
-
-                    ],
-                  ),
-                ),
-                Divider(color: Colors.grey[200]),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",12,Constant().darkMode, FontWeight.bold),
-                      SizedBox(height:5.0),
-                      WidgetHelper().textQ("${val.mainAddress}",12,Constant().darkMode, FontWeight.bold),
-                    ],
-                  ),
-                ),
-                SizedBox(height:10),
-                InkWell(
-                  onTap: (){
-                    WidgetHelper().myModal(context, ModalForm(total:listAddressModel.result.data.length,id:"${val.id}",callback:(String par){
-                      if(par=='berhasil'){
-                        loadData();
-                        WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-                      }
-                      else{
-                        WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
-                      }
-                    },));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10.0),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Constant().mainColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0))
+          return FlatButton(
+              onPressed: (){
+                if(widget.idx!=null){
+                  setState(() {
+                    widget.idx=index;
+                  });
+                  print(widget.idx);
+                  widget.callback(val,index);
+                }
+              },
+              padding:EdgeInsets.only(bottom:10.0,top:10.0,left:15.0,right:15.0),
+              color:  widget.idx==index?Color(0xFFEEEEEE):Colors.transparent,
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Entypo.location,size: 20,color:Constant().darkMode),
+                            SizedBox(width:5.0),
+                            WidgetHelper().textQ(val.title,12,Constant().darkMode, FontWeight.bold),
+                          ],
+                        ),
+                        InkWell(
+                          onTap: (){
+                            WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
+                              Navigator.pop(context);
+                              await deleteAddress(val.id);
+                            });
+                          },
+                          child:Icon(AntDesign.delete,color:Constant().moneyColor),
+                        )
+                      ],
                     ),
-                    child: WidgetHelper().textQ("Ubah Alamat",14,Constant().mainColor,FontWeight.bold,textAlign: TextAlign.center),
                   ),
-                )
-              ],
-            ),
-          ));
+                  SizedBox(height:5.0),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",12,Constant().darkMode, FontWeight.bold),
+                        SizedBox(height:5.0),
+                        WidgetHelper().textQ("${val.mainAddress}",12,Constant().darkMode, FontWeight.bold),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:10),
+                  InkWell(
+                    onTap: (){
+                      WidgetHelper().myModal(context, ModalForm(total:listAddressModel.result.data.length,id:"${val.id}",callback:(String par){
+                        if(par=='berhasil'){
+                          loadData();
+                          WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+                        }
+                        else{
+                          WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
+                        }
+                      },));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10.0),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Constant().mainColor),
+                          borderRadius: BorderRadius.all(Radius.circular(10.0))
+                      ),
+                      child: WidgetHelper().textQ("Ubah Alamat",14,Constant().mainColor,FontWeight.bold,textAlign: TextAlign.center),
+                    ),
+                  )
+                ],
+              )
+          );
         },
         separatorBuilder: (context,index){
-          return Divider();
+          return Divider(thickness: 5);
         },
         itemCount: listAddressModel.result.data.length
     );

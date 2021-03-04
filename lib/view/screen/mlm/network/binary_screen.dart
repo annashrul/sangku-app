@@ -1,19 +1,11 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
-
-// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
-// import 'package:graphview/GraphView.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:flutter/material.dart';
-import 'package:sangkuy/view/screen/pages.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BinaryScreen extends StatefulWidget {
@@ -24,6 +16,7 @@ class BinaryScreen extends StatefulWidget {
 }
 
 class _BinaryScreenState extends State<BinaryScreen> {
+
   String url='';
   bool isLoading=true;
   Future getUrl()async{
@@ -55,9 +48,8 @@ class _BinaryScreenState extends State<BinaryScreen> {
     );
   }
 
-
-
 }
+
 
 class WikipediaExplorer extends StatefulWidget {
   final String url;

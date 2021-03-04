@@ -53,6 +53,10 @@ class FunctionHelper{
     final pickedFile = await picker.getImage(source: imageSource);
     return File(pickedFile.path);
   }
+  fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
 
   decode(val){
     return base64.encode(utf8.encode(val));

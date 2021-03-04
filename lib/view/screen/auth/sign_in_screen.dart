@@ -221,7 +221,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             autofocus: false,
                             decoration: InputDecoration(
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1)),
+                                borderSide: BorderSide.none,
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide.none,

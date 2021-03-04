@@ -54,15 +54,15 @@ class PackageLoading extends StatelessWidget {
 }
 
 class AddressLoading extends StatelessWidget {
-  final int tot=5;
-  AddressLoading({tot});
+  int tot=5;
+  AddressLoading({this.tot});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: EdgeInsets.only(top:10.0),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount:this.tot,
+      itemCount:tot,
       itemBuilder: (context,index){
         return Shimmer.fromColors(
           baseColor: Colors.grey[300],
