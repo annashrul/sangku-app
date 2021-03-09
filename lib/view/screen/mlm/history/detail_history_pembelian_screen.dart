@@ -389,7 +389,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
           children: <Widget>[
             buildDesc(context, 'Metode Pembayaran',detailHistoryPembelianModel.result.metodePembayaran),
             Divider(),
-            buildDesc(context, 'Total Belanja',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",descColor: Constant().moneyColor),
+            buildDesc(context, 'Total Belanja',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.subtotal))} .-",descColor: Constant().moneyColor),
             Divider(),
             buildDesc(context, 'Total Ongkos Kirim',"Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryPembelianModel.result.ongkir))} .-",descColor: Constant().moneyColor),
             Divider(),

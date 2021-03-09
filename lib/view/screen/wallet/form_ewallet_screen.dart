@@ -13,6 +13,7 @@ import 'package:sangkuy/model/member/available_member_model.dart';
 import 'package:sangkuy/model/member/bank_member_model.dart';
 import 'package:sangkuy/model/wallet/config_wallet_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/provider/member_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/success_pembelian_screen.dart';
 import 'package:sangkuy/view/widget/bank_member_widget.dart';
@@ -84,6 +85,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
           if(widget.title=='TOP UP'){
             saldo=int.parse(result.result.dpMin);
             if(result.result.trxDp!='-'){
+              print("###################### TOPUP PENDING = ${result.result.trxDp} ##########################");
               setState(() {
                 kdTrx=result.result.trxDp;
                 isPending=true;
@@ -94,11 +96,13 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             }
           }
           if(widget.title=='TRANSFER'){
+            print("###################### TRANSFER ##########################");
             saldo=int.parse(result.result.tfMin);
             setState(() {});
           }
           if(widget.title=='PENARIKAN'){
             saldo=int.parse(result.result.wdMin);
+            print("###################### PENARIKAN ##########################");
             setState(() {});
             if(!isHaveKtp){
               setState(() {
@@ -106,6 +110,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                 title='Informasi';
                 desc = 'Untuk melakukan penarikan, kami harus memastikan bahwa anda bukan robot. Maka dari itu silahkan unggah foto identitas anda seperti KTP/SIM/KITAS dsb.';
               });
+              print("###################### BELUM PUNYA KTP = ${result.result.isHaveKtp} ##########################");
               return showNotif(context);
             }
             if(result.result.trxWd!='0'){
@@ -114,6 +119,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                 title='Transaksi Pending';
                 desc = 'Maaf, terdapat transaksi anda yang masih pending';
               });
+              print("###################### WD PENDING = ${result.result.trxWd} ##########################");
               return showNotif(context);
             }
           }
@@ -263,6 +269,20 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
     }
 
   }
+  Future handleUpdate(BuildContext context)async{
+    WidgetHelper().loadingDialog(context);
+    var res= await MemberProvider().updateMember({"id_card":image}, context);
+    Navigator.pop(context);
+    if(res=='success'){
+      // loadConfig();
+      WidgetHelper().notifOneBtnDialog(context,"Berhasil","Permintaan anda akan segera kami proses", (){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      });
+      // WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+    }else{
+      WidgetHelper().showFloatingFlushbar(context,"failed", res);
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -354,7 +374,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                 ),
               )
             ],
-            action: HeaderWidget(title:widget.title,action: Text('')),
+            title: widget.title,
             callback: (data){
 
             },
@@ -459,27 +479,30 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
 
   void showNotif(BuildContext context){
     WidgetHelper().notifOneBtnDialog(context,title,desc, (){
-      if(!isHaveKtp){
-        WidgetHelper().myModal(context,CameraWidget(callback: (img){
+      if(widget.title=='TOP UP'){
+        Navigator.pop(context);
+        WidgetHelper().myPushAndLoad(context,SuccessPembelianScreen(kdTrx: FunctionHelper().decode(kdTrx),),(){
           setState(() {
-            image=img;
+            isLoading=true;
           });
-        }));
+          loadConfig();
+        });
       }
-      else{
-        if(widget.title=='TOP UP'){
-          Navigator.pop(context);
-          WidgetHelper().myPushAndLoad(context,SuccessPembelianScreen(kdTrx: FunctionHelper().decode(kdTrx),),(){
+      if(widget.title=='PENARIKAN'){
+        if(!isHaveKtp){
+          WidgetHelper().myModal(context,CameraWidget(callback: (img){
             setState(() {
-              isLoading=true;
+              image=img;
             });
-            loadConfig();
-          });
-        }
-        else{
+            handleUpdate(context);
+          }));
+        }else{
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         }
       }
+      print(isHaveKtp);
+
+
     });
   }
 }

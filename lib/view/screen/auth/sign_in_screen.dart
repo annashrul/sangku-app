@@ -143,7 +143,7 @@ class _SignInScreenState extends State<SignInScreen> {
           "exit_app":"0",
         };
         final users = await _db.readData(UserTable.SELECT);
-        if(users.length>1){
+        if(users.length>0){
           await _db.deleteAll(UserTable.TABLE_NAME);
           await _db.insert(UserTable.TABLE_NAME, dataUserToLocal);
         }else{

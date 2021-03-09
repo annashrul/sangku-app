@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/mlm/bank_model.dart';
 import 'package:sangkuy/provider/bank_provider.dart';
@@ -21,6 +22,8 @@ class _BankWidgetState extends State<BankWidget> {
   List bank=[];
   bool  isLoadingBank=false,isError=false;
   Future loadBank()async{
+    
+    final saldo = await FunctionHelper().isSaldo();
     var res=await BankProvider().getBank("page=1");
     if(res=='error'){
       isLoadingBank=false;
@@ -42,7 +45,7 @@ class _BankWidgetState extends State<BankWidget> {
             "id": "-",
             "bank_name": "SALDO UTAMA",
             "logo": "http://ptnetindo.com:6694/images/bank/BCA.png",
-            "acc_name": "100000",
+            "acc_name": "$saldo",
             "acc_no": "",
             "tf_code": "0",
             "created_at": "2020-12-22T03:50:55.000Z",

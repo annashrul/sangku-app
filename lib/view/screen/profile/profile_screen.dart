@@ -10,19 +10,33 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
-
+  
+  ScrollController controller;
+  SiteModel siteModel;
+  bool isLoading=true;
+  Future loadSite()async{
+    var res = await BaseProvider().getProvider('site/landing',siteModelFromJson);
+    if(res is SiteModel){
+      SiteModel result=res;
+      siteModel=result;
+      isLoading=false;
+      if(this.mounted){
+        setState(() {});
+      }
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    loadSite();
   }
   @override
   Widget build(BuildContext context){
     return SafeArea(
       child: WrapperPageWidget(
+        controller: controller,
         children: [
           Container(
             padding: EdgeInsets.only(left:0.0,right:0.0,bottom:0.0,top:0.0),
@@ -124,10 +138,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: WidgetHelper().textQ("Pengaturan Umum",12,Colors.black,FontWeight.bold),
                 ),
                 section2("Data Diri",(){},0,iconData: AntDesign.user),
-                section2("Keamanan",(){},1,iconData: AntDesign.lock),
-                section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},0,iconData: Entypo.location),
-                section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},1,iconData: Entypo.location),
-                section2("Kebijakan & Keamanan",(){},0,iconData: AntDesign.infocirlceo),
+                // section2("Keamanan",(){},1,iconData: AntDesign.lock),
+                section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},1,iconData: Entypo.location),
+                section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},0,iconData:AntDesign.bank),
+                section2("Privacy Policy",(){
+                  if(!isLoading){
+                    WidgetHelper().myPush(context,InfoScreen(siteModel:siteModel,title: 'Privacy Policy',));
+                  }
+                },1,iconData: AntDesign.infocirlceo),
+                section2("Terms and Conditions",(){
+                  if(!isLoading){
+                    WidgetHelper().myPush(context,InfoScreen(siteModel:siteModel,title: 'Terms and Conditions',));
+                  }
+                },0,iconData: AntDesign.infocirlceo),
                 section2("Keluar",()async{
                   WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.pop(context);}, ()async{
                     await FunctionHelper().logout(context);
@@ -135,9 +158,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },1,iconData: AntDesign.logout),
               ],
             ),
-          )
+          ),
+          if(!isLoading)section3(context)
         ],
-        action: HeaderWidget(title: 'PROFILE',action: WidgetHelper().myNotif(context,(){},Colors.redAccent)),
+        title: 'Profile',
         callback: (data){
           print(data);
         },
@@ -163,6 +187,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
         dense: true,
         title: WidgetHelper().textQ("$title",10,Colors.black,FontWeight.normal,letterSpacing: 2.0),
         trailing: Icon(iconData,color: Colors.grey),
+      ),
+    );
+  }
+  
+  Widget section3(BuildContext context){
+    return Container(
+      padding: EdgeInsets.only(left:0),
+      margin: EdgeInsets.only(bottom: 100),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              btnSocmed(context,"Twitter",AntDesign.twitter,siteModel.result.socialMedia.tw,color: Color(0xFF00acee)),
+              btnSocmed(context,"Facebook",AntDesign.facebook_square,siteModel.result.socialMedia.fb,color: Color(0xFF3b5998)),
+              btnSocmed(context,"Instagram",AntDesign.instagram,siteModel.result.socialMedia.ig,gradient: LinearGradient(
+                colors: [
+                  Color(0xff8a3ab9),
+                  Color(0xfffbad50),
+                  Color(0xffcd486b ),
+                  Color(0xff4c68d7),
+                ],
+              )),
+              btnSocmed(context,"Youtube",AntDesign.youtube,siteModel.result.socialMedia.yt,color: Color(0xFFFF0000)),
+            ],
+          ),
+          SizedBox(height: 20.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: getWidth(context)/3,
+                child: Divider(),
+              ),
+              WidgetHelper().textQ("Versi ${Constant().versionCode}", 14, Constant().mainColor,FontWeight.bold),
+              Container(
+                width: getWidth(context)/3,
+                child: Divider(),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget btnSocmed(BuildContext context,title,IconData iconData, String url,{Color color,Gradient gradient}){
+    return Container(
+      decoration: BoxDecoration(
+        color:  color,
+        gradient: gradient
+      ),
+      child: FlatButton(
+        onPressed: ()async{
+          // _launchURL(url);
+              // await launch(_url) : throw 'Could not launch $_url';
+          WidgetHelper().myPush(context,WebViewWidget(val: {"title":title,"url":url},));
+        },
+        // color: Color(0xFFFF0000),
+        child: Icon(iconData,color: Colors.white),
       ),
     );
   }

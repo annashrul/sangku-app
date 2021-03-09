@@ -66,12 +66,22 @@ class FunctionHelper{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.remove("packageType");
   }
+  Future removeSaldo()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.remove("saldo");
+  }
   Future isPackage()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final packageType=prefs.getString("packageType");
     return packageType;
   }
+  Future isSaldo()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final saldo=prefs.getString("saldo");
+    return saldo;
+  }
   Future logout(BuildContext context)async{
+
     final id=await UserHelper().getDataUser("id");
     await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"0"});
     WidgetHelper().myPushRemove(context,SignInScreen());

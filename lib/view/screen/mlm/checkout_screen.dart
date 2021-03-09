@@ -218,6 +218,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }else{
       await FunctionHelper().removePackage();
+      await FunctionHelper().removeSaldo();
       if(idBank=='-'){
         WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
       }else{

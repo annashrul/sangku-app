@@ -158,6 +158,17 @@ class _AddressScreenState extends State<AddressScreen> with SingleTickerProvider
     return Scaffold(
       key: scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,widget.title==null?"Daftar Alamat":widget.title,(){Navigator.pop(context);},<Widget>[
+        IconButton(icon: Icon(AntDesign.pluscircleo), onPressed: (){
+          WidgetHelper().myModal(context, ModalForm(total:total,id:"",callback:(String par){
+            if(par=='berhasil'){
+              loadData();
+              WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+            }
+            else{
+              WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+            }
+          },));
+        })
       ],brightness: Brightness.light),
       body: isLoading?AddressLoading():isError?ErrWidget(callback: (){loadData();}):isErrToken?Text(''):!isNodata?RefreshWidget(
         widget: Column(
@@ -176,29 +187,6 @@ class _AddressScreenState extends State<AddressScreen> with SingleTickerProvider
           loadData();
         },
       ):WidgetHelper().noDataWidget(context),
-      bottomNavigationBar: widget.title==null?FlatButton(
-        padding: EdgeInsets.all(15.0),
-        color: Constant().moneyColor,
-          onPressed: (){
-            WidgetHelper().myModal(context, ModalForm(total:total,id:"",callback:(String par){
-              if(par=='berhasil'){
-                loadData();
-                WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-              }
-              else{
-                WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-              }
-            },));
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(AntDesign.addfile,color: Colors.white,),
-              SizedBox(width:10),
-              WidgetHelper().textQ("TAMBAH ALAMAT", 14, Colors.white,FontWeight.bold)
-            ],
-          )
-      ):Text(''),
     );
   }
   Widget buildContent(){
@@ -417,29 +405,31 @@ class _ModalFormState extends State<ModalForm> {
       if(res is DetailAddressModel){
         DetailAddressModel result=res;
         String mainAdd=result.result.mainAddress;
-        print(mainAdd);
-        print(mainAdd.split(","));
-        print(result.toJson());
-        setState(() {
-          detailAddressModel = DetailAddressModel.fromJson(result.toJson());
-          isLoading=false;
-          isError=false;
-          titleController.text = result.result.title;
-          receiverController.text = result.result.penerima;
-          telpController.text=result.result.noHp;
-          prov = result.result.kdProv;
-          provName=mainAdd.split(",")[6].toLowerCase();
-          city=result.result.kdKota;
-          cityName=mainAdd.split(",")[5].toLowerCase();
-          district=result.result.kdKec;
-          districtName=mainAdd.split(",")[4].toLowerCase();
-          mainAddressController.text = "${mainAdd.split(",")[0]},${mainAdd.split(",")[1]},${mainAdd.split(",")[2]},${mainAdd.split(",")[3]},${mainAdd.split(",")[4]},${mainAdd.split(",")[5]},${mainAdd.split(",")[6]},${mainAdd.split(",")[7]}".toLowerCase();
+        detailAddressModel = DetailAddressModel.fromJson(result.toJson());
+        isLoading=false;
+        isError=false;
+        titleController.text = result.result.title;
+        receiverController.text = result.result.penerima;
+        telpController.text=result.result.noHp;
+        prov = result.result.kdProv;
+        print("########################## ${mainAdd.split(",").length}");
+        if(mainAdd.split(",").length>3){
           namaJalan=mainAdd.split(",")[0];
           rt=mainAdd.split(",")[1];
           rw=mainAdd.split(",")[2];
           keluarahan=mainAdd.split(",")[3];
+          districtName=mainAdd.split(",")[4].toLowerCase();
+          cityName=mainAdd.split(",")[5].toLowerCase();
+          provName=mainAdd.split(",")[6].toLowerCase();
           kodePos=mainAdd.split(",")[7];
-        });
+          mainAddressController.text = "${mainAdd.split(",")[0]},${mainAdd.split(",")[1]},${mainAdd.split(",")[2]},${mainAdd.split(",")[3]},${mainAdd.split(",")[4]},${mainAdd.split(",")[5]},${mainAdd.split(",")[6]},${mainAdd.split(",")[7]}".toLowerCase();
+        }
+
+
+        city=result.result.kdKota;
+        district=result.result.kdKec;
+
+        setState(() {});
       }
     }
   }

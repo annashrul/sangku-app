@@ -323,7 +323,7 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                             style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
                             children: <TextSpan>[
                               TextSpan(text: FunctionHelper().formateDate(getPaymentModel.result.limitTf,""),style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
-                              TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman riwayat topup',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
                             ]
                         ),
                       ),

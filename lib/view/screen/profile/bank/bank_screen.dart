@@ -70,7 +70,13 @@ class _BankScreenState extends State<BankScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context,"Bank",(){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithButton(context,"Bank",(){Navigator.pop(context);},<Widget>[
+        IconButton(icon: Icon(AntDesign.pluscircleo), onPressed: (){
+          WidgetHelper().myModal(context,ModalFormBank(val:null,callback: (param){
+            loadData();
+          }));
+        })
+      ]),
       body: isLoading?AddressLoading(tot: 5,):isError?ErrWidget(callback: (){loadData();}):RefreshWidget(
         widget: Column(
           children: [
@@ -168,24 +174,6 @@ class _BankScreenState extends State<BankScreen> {
           setState(() {});
           loadData();
         },
-      ),
-      bottomNavigationBar: FlatButton(
-          padding: EdgeInsets.all(15.0),
-          color: Constant().moneyColor,
-          onPressed: (){
-            WidgetHelper().myModal(context,ModalFormBank(val:null,callback: (param){
-              loadData();
-            }));
-
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(AntDesign.addfile,color: Colors.white,),
-              SizedBox(width:10),
-              WidgetHelper().textQ("TAMBAH BANK", 14, Colors.white,FontWeight.bold)
-            ],
-          )
       ),
     );
   }

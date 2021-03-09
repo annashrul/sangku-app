@@ -170,7 +170,7 @@ class _WebViewWidgetState extends State<WebViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, widget.val['title'], ()=>Navigator.pop(context),<Widget>[],sizeTitle: 10),
+      appBar: WidgetHelper().appBarWithButton(context, widget.val['title'], ()=>Navigator.pop(context),<Widget>[]),
       body:IndexedStack(
         index: _stackToView,
         children: [

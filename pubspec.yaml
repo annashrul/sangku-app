@@ -62,11 +62,13 @@ dependencies:
   firebase_dynamic_links: ^0.7.0+1
   get_it: ^5.0.3
   url_launcher:
-  social_share: ^2.0.5
+#  social_share: ^2.0.5
   webview_flutter: ^0.3.17
 #  youtube_player_iframe:
-  photo_view:
+#  photo_view:
   youtube_player_flutter: ^7.0.0+7
+#  android_intent:
+
 #  local_auth: ^0.6.2+1
 #  flutter_webview_plugin: ^0.3.11
 #  webview_flutter: ^2.0.0

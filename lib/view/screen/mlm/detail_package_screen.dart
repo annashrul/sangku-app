@@ -12,6 +12,7 @@ import 'file:///E:/NETINDO/mobile/sangkuy/lib/model/mlm/package/detail_package_m
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/mlm/cart_screen.dart';
+import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -166,6 +167,17 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
         _tabIndex = _tabController.index;
       });
     }
+  }
+  String _platformVersion = 'Unknown';
+
+  Future<void> initPlatformState() async {
+    String platformVersion;
+
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
   }
   @override
   void dispose() {
@@ -330,7 +342,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                                   WidgetHelper().textQ("Berat",12,Constant().darkMode,FontWeight.normal),
                                   WidgetHelper().textQ("${detailPackageModel.result.berat}",12,Colors.grey,FontWeight.normal),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         )
@@ -408,5 +420,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
       ),
     );
   }
+
+
+
 
 }

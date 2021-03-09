@@ -89,7 +89,7 @@ class BaseProvider{
       }
     }
   }
-  Future putProvider(url,Map<String, Object> data) async {
+  Future putProvider(url,Map<String, Object> data,{BuildContext context}) async {
     try {
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -112,13 +112,24 @@ class BaseProvider{
         return General.fromJson(jsonDecode(request.body));
       }
     } on TimeoutException catch (_) {
-      return Constant().errTimeout;
+      print("=================== TimeoutException $url = $TimeoutException ============================");
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errTimeout;
+      }
+
     } on SocketException catch (_) {
-      return Constant().errSocket;
+      print("=================== SocketException $url = $SocketException ============================");
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errSocket;
+      }
     }
   }
 
-  Future deleteProvider(url,param) async {
+  Future deleteProvider(url,param,{BuildContext context}) async {
     try {
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -140,9 +151,18 @@ class BaseProvider{
         return General.fromJson(jsonDecode(request.body));
       }
     } on TimeoutException catch (_) {
-      return Constant().errTimeout;
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errTimeout;
+      }
     } on SocketException catch (_) {
-      return Constant().errSocket;
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errSocket;
+      }
+
     }
 
   }

@@ -45,14 +45,14 @@ class Result {
     this.isHaveKtp,
   });
 
-  String wdCharge;
-  String tfCharge;
-  String dpMin;
-  String wdMin;
-  String tfMin;
-  String saldo;
-  String trxWd;
-  String trxDp;
+  var wdCharge;
+  var tfCharge;
+  var dpMin;
+  var wdMin;
+  var tfMin;
+  var saldo;
+  var trxWd;
+  var trxDp;
   bool isHaveKtp;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(

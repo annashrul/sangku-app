@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final listRedeemModel = listRedeemModelFromJson(jsonString);
+//     final notifModel = notifModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ListRedeemModel listRedeemModelFromJson(String str) => ListRedeemModel.fromJson(json.decode(str));
+NotifModel notifModelFromJson(String str) => NotifModel.fromJson(json.decode(str));
 
-String listRedeemModelToJson(ListRedeemModel data) => json.encode(data.toJson());
+String notifModelToJson(NotifModel data) => json.encode(data.toJson());
 
-class ListRedeemModel {
-  ListRedeemModel({
+class NotifModel {
+  NotifModel({
     this.result,
     this.msg,
     this.status,
@@ -19,7 +19,7 @@ class ListRedeemModel {
   String msg;
   String status;
 
-  factory ListRedeemModel.fromJson(Map<String, dynamic> json) => ListRedeemModel(
+  factory NotifModel.fromJson(Map<String, dynamic> json) => NotifModel(
     result: Result.fromJson(json["result"]),
     msg: json["msg"],
     status: json["status"],
@@ -42,7 +42,6 @@ class Result {
     this.currentPage,
     this.from,
     this.data,
-    this.saldo,
   });
 
   int total;
@@ -53,7 +52,6 @@ class Result {
   int currentPage;
   int from;
   List<Datum> data;
-  var saldo;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     total: json["total"],
@@ -64,7 +62,6 @@ class Result {
     currentPage: json["current_page"],
     from: json["from"],
     data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-    saldo: json["saldo"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -76,7 +73,6 @@ class Result {
     "current_page": currentPage,
     "from": from,
     "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "saldo": saldo,
   };
 }
 
@@ -84,42 +80,42 @@ class Datum {
   Datum({
     this.totalrecords,
     this.id,
+    this.idMember,
     this.title,
-    this.deskripsi,
-    this.gambar,
-    this.stock,
-    this.harga,
-    this.berat,
+    this.msg,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
   });
 
   String totalrecords;
   String id;
+  String idMember;
   String title;
-  String deskripsi;
-  String gambar;
-  String stock;
-  String harga;
-  int berat;
+  String msg;
+  int status;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     totalrecords: json["totalrecords"],
     id: json["id"],
+    idMember: json["id_member"],
     title: json["title"],
-    deskripsi: json["deskripsi"],
-    gambar: json["gambar"],
-    stock: json["stock"],
-    harga: json["harga"],
-    berat: json["berat"],
+    msg: json["msg"],
+    status: json["status"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
     "totalrecords": totalrecords,
     "id": id,
+    "id_member": idMember,
     "title": title,
-    "deskripsi": deskripsi,
-    "gambar": gambar,
-    "stock": stock,
-    "harga": harga,
-    "berat": berat,
+    "msg": msg,
+    "status": status,
+    "created_at": createdAt.toIso8601String(),
+    "updated_at": updatedAt.toIso8601String(),
   };
 }

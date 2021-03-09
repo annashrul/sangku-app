@@ -238,12 +238,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             testimoni(context),
 
           ],
-          action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,()async{
-            final refer = await DynamicLinksApi().createReferralLink('1234567');
-            SocialShare.checkInstalledAppsForShare().then((data) {
-              print(data.toString());
-            });
-          },Constant().mainColor2)),
+          title:'Home',
           callback: (data){
             setState(() {
               dataMember=data;
@@ -407,7 +402,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          onTap: (){WidgetHelper().myPush(context,NewsScreen());},
+          trailing: Icon(Icons.arrow_right),
+          onTap: (){WidgetHelper().myPush(context,TestimoniScreen());},
           contentPadding: EdgeInsets.only(left:10.0,right:10.0),
           leading: Icon(AntDesign.star,color:Constant().mainColor),
           title: Column(
@@ -431,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               physics: const NeverScrollableScrollPhysics(),
               itemCount: testimoniModel.result.data.length,
               itemBuilder: (context, index) {
-                return new Padding(
+                return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 0.0),
                   child: new Row(
                     children: <Widget>[
@@ -445,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         ),
                       ),
                       new Expanded(
-                        child: TestimoniWidget(testimoniModel: testimoniModel,index:index),
+                        child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe: false,callback: (param){}),
                       ),
 
                     ],
@@ -460,28 +456,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           ],
         ),
         isLoadmoreTestimoni?TestimoniLoading(total: 1):Text(''),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Container(
-        //       width: MediaQuery.of(context).size.width/4,
-        //       color: Constant().greyColor,
-        //       height: 1.0,
-        //     ),
-        //     FlatButton(
-        //       color: Constant().moneyColor,
-        //       onPressed: (){
-        //         WidgetHelper().myPush(context, TestimoniScreen());
-        //       },
-        //       child: WidgetHelper().textQ("Lihat semua testimoni",12,Constant().greyColor,FontWeight.bold),
-        //     ),
-        //     Container(
-        //       width: MediaQuery.of(context).size.width/4,
-        //       color: Constant().greyColor,
-        //       height: 1.0,
-        //     ),
-        //   ],
-        // ),
         SizedBox(height:20)
       ],
     );

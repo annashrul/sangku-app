@@ -27,18 +27,18 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentScreen = HomeScreen(key: PageStorageKey('pageHome'),);
+    currentScreen = HomeScreen();
     if(widget.currentTab==0){
-      currentScreen = RedeemPointScreen(key: PageStorageKey('pageRedeemPoint')); // if user taps on this dashboard tab will be active
+      currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
     }
     else if(widget.currentTab==1){
-      currentScreen = ProductScreen(key: PageStorageKey('pageProduct')); // if user taps on this dashboard tab will be active
+      currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
     }
     else if(widget.currentTab==3){
-      currentScreen = BinaryScreen(key: PageStorageKey('pageBinary')); // if user taps on this dashboard tab will be active
+      currentScreen = BinaryScreen(); // if user taps on this dashboard tab will be active
     }
     else if(widget.currentTab==4){
-      currentScreen = ProfileScreen(key: PageStorageKey('pageProfile')); // if user taps on this dashboard tab will be active
+      currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
     }
     // _pageController = PageController();
 
@@ -151,7 +151,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
             child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
             onPressed: () {
               setState(() {
-                currentScreen = HomeScreen(key: PageStorageKey('pageHome'));
+                currentScreen = HomeScreen();
                 widget.currentTab = 2;
               });
             },
@@ -174,7 +174,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = RedeemPointScreen(key: PageStorageKey('pageRedeemPoint')); // if user taps on this dashboard tab will be active
+                            currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 0;
                           });
                         },
@@ -192,7 +192,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProductScreen(key: PageStorageKey('pageProduct')); // if user taps on this dashboard tab will be active
+                            currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 1;
                           });
                         },
@@ -215,7 +215,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = BinaryScreen(key: PageStorageKey('pageBinary')); // if user taps on this dashboard tab will be active
+                            currentScreen = BinaryScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 3;
                           });
                         },
@@ -232,7 +232,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         minWidth: 40,
                         onPressed: () {
                           setState(() {
-                            currentScreen = ProfileScreen(key: PageStorageKey('pageProfile')); // if user taps on this dashboard tab will be active
+                            currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
                             widget.currentTab = 4;
                           });
                         },

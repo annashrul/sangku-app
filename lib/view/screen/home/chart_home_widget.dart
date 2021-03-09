@@ -34,7 +34,7 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
     // print(double.parse());
     // print()
     super.build(context);
-    return Padding(
+    return widget.data['left_pv']=="0"?Text(''):Padding(
       padding: EdgeInsets.all(0),
       child: Container(
         height: MediaQuery.of(context).size.height/6,

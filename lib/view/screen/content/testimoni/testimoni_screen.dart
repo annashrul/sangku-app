@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
+import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/content/testimoni_model.dart';
 import 'package:sangkuy/model/general_model.dart';
@@ -23,11 +24,11 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
   bool isLoadingTestimoni=false,isLoadmore=false;
   TestimoniModel testimoniModel;
   int perpage=10,total=0;
-  ScrollController controller;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future loadTestimoni()async{
-    var res = await ContentProvider().loadTestimoni("perpage=$perpage");
+    final id_member=await UserHelper().getDataUser('id_user');
+    var res = await ContentProvider().loadTestimoni("id_member=$id_member&perpage=$perpage");
     if(this.mounted) setState(() {
       testimoniModel = res;
       isLoadingTestimoni=false;
@@ -35,6 +36,7 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
       total=testimoniModel.result.total;
     });
   }
+  ScrollController controller;
   void _scrollListener() {
     if (!isLoadingTestimoni) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
@@ -79,38 +81,52 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
         })
       ]),
       body:  isLoadingTestimoni?TestimoniLoading(): RefreshWidget(
-        widget: Stack(
-          children: <Widget>[
-            BuildTimeLine(),
-            new ListView.builder(
-              controller: controller,
-              // physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              shrinkWrap: true,
-              itemCount: testimoniModel.result.data.length,
-              itemBuilder: (context, index) {
-                return  new Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0),
-                  child: new Row(
-                    children: <Widget>[
-                      new Padding(
-                        padding:
-                        new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
-                        child: new Container(
-                          height: 12.0,
-                          width: 12.0,
-                          decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
+        widget: Container(
+          // margin: EdgeInsets.only(bottom: 10),
+          child: Stack(
+            children: <Widget>[
+              BuildTimeLine(),
+              new ListView.separated(
+                controller: controller,
+                // physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                shrinkWrap: true,
+                itemCount: testimoniModel.result.data.length,
+                itemBuilder: (context, index) {
+                  return  new Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0.0),
+                    child: new Row(
+                      children: <Widget>[
+                        new Padding(
+                          padding:
+                          new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
+                          child: new Container(
+                            height: 12.0,
+                            width: 12.0,
+                            decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
+                          ),
                         ),
-                      ),
-                      new Expanded(
-                        child: TestimoniWidget(testimoniModel: testimoniModel,index:index),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                        new Expanded(
+                          child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe:true,callback: (param){
+                            if(param=='success'){
+                              setState(() {
+                                isLoadingTestimoni=true;
+                              });
+                              loadTestimoni();
+                            }
+                          },),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (context,index){return Padding(
+                  padding: EdgeInsets.only(left:15),
+                  child: Divider(thickness: 5,color:Constant().greyColor),
+                );},
+              ),
 
-          ],
+            ],
+          ),
         ),
         callback: (){
           isLoadingTestimoni=true;
@@ -118,12 +134,7 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
           loadTestimoni();
         },
       ),
-      bottomNavigationBar: isLoadmore?TestimoniLoading(total: 1):FlatButton(
-          onPressed: (){},
-          padding: EdgeInsets.all(17.0),
-          color: Constant().moneyColor,
-          child: WidgetHelper().textQ("Lihat Testimoni Saya",14,Colors.white,FontWeight.bold)
-      ),
+      bottomNavigationBar: isLoadmore?TestimoniLoading(total: 1):Text(''),
     );
   }
 }
@@ -144,11 +155,20 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
   var captionController = TextEditingController();
   final FocusNode captionFocus = FocusNode();
   String img='';
+  String previewImage='';
 
   void validate(BuildContext context){
     if(titleController.text==''){
       titleFocus.requestFocus();
       return WidgetHelper().showFloatingFlushbar(context,"failed",'pekerjaan tidak boleh kosong');
+    }
+    if(captionController.text==''){
+      captionFocus.requestFocus();
+      return WidgetHelper().showFloatingFlushbar(context,"failed",'pesan testimoni tidak boleh kosong');
+    }
+    if(videoController.text==''){
+      videoFocus.requestFocus();
+      return WidgetHelper().showFloatingFlushbar(context,"failed",'link video tidak boleh kosong');
     }
     store(context);
   }
@@ -156,14 +176,22 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
   Future store(BuildContext context)async{
     final data={
       "title":titleController.text,
-      "picture":img,
+      // "picture":img==''?,
       "video":videoController.text,
       "caption":captionController.text,
       "type":"1",
       "id_category":"7de638c6-e336-4b53-9beb-0a90f109911e"
     };
+    if(img!=''){
+      data['img']=img;
+    }
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider('content', data,context: context);
+    var res;
+    if(widget.val==null){
+      res = await BaseProvider().postProvider('content', data,context: context);
+    }else{
+      res = await BaseProvider().putProvider('content/${widget.val['id']}', data,context: context);
+    }
     Navigator.pop(context);
     if(res is General){
       General result=res;
@@ -173,9 +201,21 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
         widget.callback("success");
         Navigator.pop(context);
         Navigator.pop(context);
+        if(widget.val!=null){
+          Navigator.pop(context);
+        }
         // Navigator.pop(context);
       });
     }
+  }
+
+  Future handleDetail()async{
+    setState(() {
+      titleController.text=widget.val['jobs'];
+      videoController.text=widget.val['video'];
+      captionController.text=widget.val['caption'];
+      previewImage=widget.val['picture'];
+    });
   }
 
   @override
@@ -183,6 +223,7 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
     // TODO: implement initState
     super.initState();
     videoController.text='-';
+    handleDetail();
   }
 
   @override
@@ -331,7 +372,14 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                             ),
                             width: double.infinity,
                             padding: EdgeInsets.only(left:10.0,right:10.0,top:20,bottom:20),
-                            child: WidgetHelper().textQ(img,12,Constant().darkMode,FontWeight.bold),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: WidgetHelper().textQ(img,12,Constant().darkMode,FontWeight.bold),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(height:10.0),
@@ -383,7 +431,9 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                                 ]
                             ),
                           ),
-                        )
+                        ),
+                        if(widget.val!=null)WidgetHelper().baseImage(previewImage)
+
                       ],
                     )
                 ),

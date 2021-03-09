@@ -105,7 +105,7 @@ class _CameraWidgetState extends State<CameraWidget> {
                     fileName = _image.path.split("/").last;
                     var type = fileName.split('.');
                     base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
-                    widget.callback(base64Image);
+                    widget.callback(base64Image,);
                   }
                 },
                 padding: EdgeInsets.all(15.0),

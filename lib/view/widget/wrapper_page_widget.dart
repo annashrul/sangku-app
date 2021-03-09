@@ -6,10 +6,12 @@ import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/member/data_member_model.dart';
+import 'package:sangkuy/model/notif_model.dart';
 import 'package:sangkuy/model/wallet/config_wallet_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/member_provider.dart';
 import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/screen/profile/notif_screen.dart';
 import 'package:sangkuy/view/widget/detail_scaffold.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/header_widget.dart';
@@ -18,10 +20,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class WrapperPageWidget extends StatefulWidget {
   List<Widget> children;
-  Widget action;
+  String title;
   Function(dynamic data) callback;
   ScrollController controller;
-  WrapperPageWidget({this.children,this.action,this.callback,this.controller});
+  WrapperPageWidget({this.children,this.title,this.callback,this.controller});
   @override
   _WrapperPageWidgetState createState() => _WrapperPageWidgetState();
 }
@@ -29,12 +31,25 @@ class WrapperPageWidget extends StatefulWidget {
 class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKeepAliveClientMixin  {
   @override
   bool get wantKeepAlive => true;
-  bool isLoadingMember=false;
+  bool isLoadingMember=false,isLoadingNotif=false;
   DataMemberModel dataMemberModel;
+  NotifModel notifModel;
+  int total=0;
+
+  Future loadNotif()async{
+    var tot=await MemberProvider().countNotif();
+    // total=0;
+    total=tot;
+    if(this.mounted){
+      setState(() {});
+    }
+  }
   Future loadMember()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final res=await MemberProvider().getDataMember();
     dataMemberModel=res;
     isLoadingMember=false;
+    prefs.setString("saldo",dataMemberModel.result.saldo);
     widget.callback(dataMemberModel.result.toJson());
 
     if(this.mounted) setState(() {});
@@ -45,6 +60,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
     super.initState();
     isLoadingMember=true;
     loadMember();
+    loadNotif();
   }
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -69,7 +85,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
               floating: false,
               pinned: true,
               expandedHeight: 90.0,
-              flexibleSpace: widget.action,
+              flexibleSpace: HeaderWidget(title: widget.title,action: WidgetHelper().myNotif(context,()async{
+                if(total>0){
+                  WidgetHelper().myPushAndLoad(context,NotifScreen(),(){loadNotif();});
+                }
+              },total>0?Colors.redAccent:Colors.transparent)),
             ),
             SliverList(
                 delegate: SliverChildListDelegate([
