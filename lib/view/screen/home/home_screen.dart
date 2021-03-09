@@ -11,22 +11,27 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin  {
   @override
   bool get wantKeepAlive => true;
-
+  final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
+  int perpageTestimoni=5,totalTestimoni=0;
   bool isLoadingNews=false,isErrorNews=false,isTokenExpNews=false;
   bool isLoadingRedeem=false,isErrorRedeem=false,isTokenExpRedeem=false;
   bool isLoadingMember=false;
+  bool isLoadingTestimoni=false,isLoadmoreTestimoni=false;
+  TestimoniModel testimoniModel;
   ContentModel contentModel;
   ListRedeemModel listRedeemModel;
 
   Future loadData()async{
     isLoadingRedeem=true;
     isLoadingNews=true;
+    isLoadingTestimoni=true;
     if(this.mounted) setState(() {});
     loadRedeem();
     loadNews();
+    loadTestimoni();
   }
   Future loadNews()async{
-    var res = await ContentProvider().loadData("page=1&perpage=5");
+    var res = await ContentProvider().loadData("berita","page=1&perpage=5");
     print("RESPONSE NEWS $res");
     if(res=='error' || res=='failed'){
       isLoadingNews=false;
@@ -75,7 +80,14 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       if(this.mounted) setState(() {});
     }
   }
-
+  Future loadTestimoni()async{
+    var res = await ContentProvider().loadTestimoni("perpage=$perpageTestimoni");
+    testimoniModel = res;
+    isLoadingTestimoni=false;
+    totalTestimoni=testimoniModel.result.total;
+    isLoadmoreTestimoni=false;
+    if(this.mounted) setState(() {});
+  }
   String refer='';
   Future getLink()async{
     final ref = await DynamicLinksApi().createReferralLink('1234567');
@@ -83,16 +95,36 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       refer = ref.toString();
     });
   }
+  ScrollController controller;
 
-
+  void _scrollListener() {
+    if (!isLoadingTestimoni) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(perpageTestimoni<totalTestimoni){
+          print('fetch data');
+          setState((){
+            perpageTestimoni=perpageTestimoni+5;
+            isLoadmoreTestimoni=true;
+          });
+          loadTestimoni();
+        }
+      }
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadData();
-  }
+    controller = new ScrollController()..addListener(_scrollListener);
 
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    controller.removeListener(_scrollListener);
+  }
   dynamic dataMember;
   @override
   Widget build(BuildContext context) {
@@ -103,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     return SafeArea(
       child:  RefreshWidget(
         widget:WrapperPageWidget(
+          controller: controller,
           children: [
             Container(
               // height:50,
@@ -201,7 +234,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             Divider(thickness: 10.0),
             section3(context),
             Divider(thickness: 10.0),
-            section4(context)
+            section4(context),
+            testimoni(context),
+
           ],
           action: HeaderWidget(title: 'HOME',action: WidgetHelper().myNotif(context,()async{
             final refer = await DynamicLinksApi().createReferralLink('1234567');
@@ -222,8 +257,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
-  
-  
   Widget section2(BuildContext context){
     return Container(
       padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10.0,top:0.0),
@@ -295,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           ListTile(
             onTap: (){WidgetHelper().myPush(context,NewsScreen());},
             contentPadding: EdgeInsets.only(left:10.0,right:10.0),
-            leading: Icon(AntDesign.profile,size: 30.0,color:Constant().mainColor),
+            leading: Icon(AntDesign.profile,color:Constant().mainColor),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           ListTile(
             onTap: (){WidgetHelper().myPush(context,IndexScreen(currentTab: 0));},
             contentPadding: EdgeInsets.only(left:0.0,right:0.0),
-            leading: Icon(AntDesign.chrome,size: 30.0,color:Constant().mainColor),
+            leading: Icon(AntDesign.chrome,color:Constant().mainColor),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,17 +401,99 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
+  Widget testimoni(BuildContext context){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          onTap: (){WidgetHelper().myPush(context,NewsScreen());},
+          contentPadding: EdgeInsets.only(left:10.0,right:10.0),
+          leading: Icon(AntDesign.star,color:Constant().mainColor),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              WidgetHelper().textQ("Apa Kata Mereka",12,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ("Kata mereka tentang SangQu",12,Constant().darkMode,FontWeight.normal),
+            ],
+          ),
 
+        ),
+
+        isLoadingTestimoni?TestimoniLoading():
+        Stack(
+          children: <Widget>[
+            BuildTimeLine(),
+            new ListView.separated(
+              primary: true,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: testimoniModel.result.data.length,
+              itemBuilder: (context, index) {
+                return new Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 0.0),
+                  child: new Row(
+                    children: <Widget>[
+                      new Padding(
+                        padding:
+                        new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
+                        child: new Container(
+                          height: 12.0,
+                          width: 12.0,
+                          decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
+                        ),
+                      ),
+                      new Expanded(
+                        child: TestimoniWidget(testimoniModel: testimoniModel,index:index),
+                      ),
+
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context,index){return Padding(
+                padding: EdgeInsets.only(left:15),
+                child: Divider(thickness: 5,color:Constant().greyColor),
+              );},
+            ),
+          ],
+        ),
+        isLoadmoreTestimoni?TestimoniLoading(total: 1):Text(''),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Container(
+        //       width: MediaQuery.of(context).size.width/4,
+        //       color: Constant().greyColor,
+        //       height: 1.0,
+        //     ),
+        //     FlatButton(
+        //       color: Constant().moneyColor,
+        //       onPressed: (){
+        //         WidgetHelper().myPush(context, TestimoniScreen());
+        //       },
+        //       child: WidgetHelper().textQ("Lihat semua testimoni",12,Constant().greyColor,FontWeight.bold),
+        //     ),
+        //     Container(
+        //       width: MediaQuery.of(context).size.width/4,
+        //       color: Constant().greyColor,
+        //       height: 1.0,
+        //     ),
+        //   ],
+        // ),
+        SizedBox(height:20)
+      ],
+    );
+  }
 }
 
 double getWidth(BuildContext context){
   return MediaQuery.of(context).size.width;
 }
-
 double getHeight(BuildContext context){
   return MediaQuery.of(context).size.height;
 }
-
 class InfoCard extends StatelessWidget {
   final Function onpress;
   final String imgpath;

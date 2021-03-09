@@ -297,7 +297,7 @@ class _ModalFormBankState extends State<ModalFormBank> {
                 child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("${widget.val==null?'Tambah':'Ubah'} Alamat",14, Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("${widget.val==null?'Tambah':'Ubah'} Bank",14, Theme.of(context).hintColor, FontWeight.bold),
             trailing: InkWell(
                 onTap: ()async{
                   storeBank();

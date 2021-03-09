@@ -62,6 +62,7 @@ class _AppState extends State<App> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          backgroundColor: Colors.white,
           primaryColor: Colors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           fontFamily: Constant().fontStyle,

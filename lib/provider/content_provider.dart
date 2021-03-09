@@ -1,11 +1,12 @@
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/model/content/content_model.dart';
+import 'package:sangkuy/model/content/testimoni_model.dart';
 import 'package:sangkuy/model/mlm/redeem/list_redeem_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 
 class ContentProvider{
-  Future loadData(String where)async{
-    String url = 'content/berita';
+  Future loadData(String param,String where)async{
+    String url = 'content/$param';
     if(where!=''){
       url+='?$where';
     }
@@ -53,4 +54,15 @@ class ContentProvider{
     }
   }
 
+  Future loadTestimoni(String where)async{
+    String url='content/testimoni';
+    if(where!=''){
+      url+='?$where';
+    }
+    var res = await BaseProvider().getProvider(url,testimoniModelFromJson);
+    if(res is TestimoniModel){
+      TestimoniModel result=res;
+      return TestimoniModel.fromJson(result.toJson());
+    }
+  }
 }

@@ -20,8 +20,8 @@ class WrapperPageWidget extends StatefulWidget {
   List<Widget> children;
   Widget action;
   Function(dynamic data) callback;
-
-  WrapperPageWidget({this.children,this.action,this.callback});
+  ScrollController controller;
+  WrapperPageWidget({this.children,this.action,this.callback,this.controller});
   @override
   _WrapperPageWidgetState createState() => _WrapperPageWidgetState();
 }
@@ -59,6 +59,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
     return Scaffold(
       key: _scaffoldKey,
       body:  DetailScaffold(
+          controller: widget.controller,
           hasPinnedAppBar: true,
           expandedHeight:90,
           physics: const AlwaysScrollableScrollPhysics(),

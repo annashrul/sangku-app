@@ -65,10 +65,10 @@ class _CameraWidgetState extends State<CameraWidget> {
                   iconSize: 20,
                   underline: SizedBox(),
                   onChanged: (newValue) async {
-                    WidgetHelper().loadingDialog(context);
+                    // WidgetHelper().loadingDialog(context);
                     var img = await FunctionHelper().getImage(newValue);
-                    Navigator.pop(context);
-                    print(img);
+                    // Navigator.pop(context);
+                    // print(img);
                     setState(() {
                       dropdownValue  = newValue;
                       _image = img;

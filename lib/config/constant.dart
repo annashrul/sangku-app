@@ -29,6 +29,7 @@ class Constant{
   final String descMsgSuccessTrx = 'Terimakasih Telah Melakukan Transaksi disini';
   final String titleErrTimeout = 'Terjadi Kesalahan !';
   final String descErrTimeout = 'silahkan cobalagi untuk melanjutkan proses ini';
+  final String lorem='Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bonorum et Malorum for use in a type specimen book.';
   final Color mainColor       = Color(0xFF732044);
   final Color mainDarkColor   = Color(0xFF22B7CE);
   final Color secondColor     = Color(0xFF04526B);

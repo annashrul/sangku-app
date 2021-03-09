@@ -33,7 +33,7 @@ class _ResiScreenState extends State<ResiScreen> {
       appBar: WidgetHelper().appBarWithButton(context, "Lacak Resi ${widget.resiModel.result.resi}", (){Navigator.pop(context);},<Widget>[]),
       body: Stack(
         children: <Widget>[
-          _buildTimeline(),
+          BuildTimeLine(),
           buildContent(context),
         ],
       ),
@@ -155,17 +155,23 @@ class _ResiScreenState extends State<ResiScreen> {
   }
 
 
-  Widget _buildTimeline() {
-    return new Positioned(
+
+}
+
+class BuildTimeLine extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
       top: 0.0,
       bottom: 0.0,
-      left: 32.0,
+      left: 15.0,
       child: new Container(
         width: 1.0,
-        color:Constant().mainColor,
+        color:Constant().greyColor,
       ),
     );
   }
 }
+
 
 

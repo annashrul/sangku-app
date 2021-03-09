@@ -38,14 +38,11 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
           itemBuilder: (BuildContext context, int index) {
             var val=mergeArray[element][index];
             var checkImg = val['logo'].split(".");
-            print(val);
             return FlatButton(
                 padding: EdgeInsets.all(10.0),
                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                 color: Color(0xFFEEEEEE),
                 onPressed: (){
-                  print(val['kategori']);
-                  // print(mergeArray[element][index]);
                   if(val['kategori']==0){
                     WidgetHelper().myPush(context,PrabayarScreen(val:val));
                   }else{
@@ -102,7 +99,7 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
       children: <Widget>[
         ListTile(
           contentPadding: EdgeInsets.only(left:0.0,right:0.0),
-          leading: Icon(AntDesign.wallet,size: 30.0,color:Constant().mainColor),
+          leading: Icon(AntDesign.wallet,color:Constant().mainColor),
           title: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' show Client;
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/user_helper.dart';
+import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/view/screen/auth/sign_in_screen.dart';
 
 class BaseProvider{
   Client client = Client();
@@ -42,8 +47,7 @@ class BaseProvider{
       return Constant().errSocket;
     }
   }
-  Future postProvider(url,Map<String, Object> data) async {
-    print(data);
+  Future postProvider(url,Map<String, Object> data,{BuildContext context}) async {
     try {
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -65,10 +69,24 @@ class BaseProvider{
       else if(request.statusCode==400){
         return General.fromJson(jsonDecode(request.body));
       }
+      else if(request.statusCode==404){
+        return WidgetHelper().notifOneBtnDialog(context,"Informasi !","url not found",(){Navigator.pop(context);});
+      }
     } on TimeoutException catch (_) {
-      return Constant().errTimeout;
+      print("=================== TimeoutException $url = $TimeoutException ============================");
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errTimeout;
+      }
+
     } on SocketException catch (_) {
-      return Constant().errSocket;
+      print("=================== SocketException $url = $SocketException ============================");
+      if(context!=null){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+      }else{
+        return Constant().errSocket;
+      }
     }
   }
   Future putProvider(url,Map<String, Object> data) async {

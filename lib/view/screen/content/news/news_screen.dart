@@ -21,7 +21,7 @@ class _NewsScreenState extends State<NewsScreen> {
   bool isLoading=false,isError=false,isTokenExp=false;
   ContentModel contentModel;
   Future loadNews()async{
-    var res = await ContentProvider().loadData("page=1");
+    var res = await ContentProvider().loadData("berita","page=1");
     if(res=='error' || res=='failed'){
       setState(() {
         isLoading=false;

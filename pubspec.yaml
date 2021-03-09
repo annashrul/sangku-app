@@ -59,12 +59,14 @@ dependencies:
   shimmer: ^1.1.2
   flutter_custom_clippers: ^1.1.2
   charts_flutter: ^0.9.0
-  timelines: ^0.0.2+1
   firebase_dynamic_links: ^0.7.0+1
   get_it: ^5.0.3
   url_launcher:
   social_share: ^2.0.5
   webview_flutter: ^0.3.17
+#  youtube_player_iframe:
+  photo_view:
+  youtube_player_flutter: ^7.0.0+7
 #  local_auth: ^0.6.2+1
 #  flutter_webview_plugin: ^0.3.11
 #  webview_flutter: ^2.0.0

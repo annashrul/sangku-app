@@ -74,7 +74,6 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
             isError=false;
             isErrToken=false;
             isNodata=false;
-
           });
         }
         else{

@@ -140,22 +140,10 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
                         contentPadding: EdgeInsets.all(0.0),
                         title: WidgetHelper().textQ(val.title,12,Constant().darkMode,FontWeight.bold),
                         subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
-                        trailing: widget.tipe=='1'?CachedNetworkImage(
-                          width: 40,
-                          imageUrl:val.badge,
-                          fit:BoxFit.contain,
-                          placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width:20,),
-                          errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width:20,),
-                        ):Text(''),
+                        trailing: widget.tipe=='1'? WidgetHelper().baseImage(val.badge,width: 40):Text(''),
                       ),
-                      CachedNetworkImage(
-                        imageUrl:val.foto,
-                        // height: 150,
-                        width: double.infinity,
-                        fit:BoxFit.cover,
-                        placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                        errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                      ),
+                      WidgetHelper().baseImage(val.foto,width: double.infinity,fit: BoxFit.cover),
+
                       SizedBox(height:10),
                       WidgetHelper().textQ(val.deskripsi,12,Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
                       SizedBox(height:10),
@@ -175,20 +163,7 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
                           ],
                         ),
                       )
-                      // MaterialButton(
-                      //   onPressed:(){
-                      //     widget.callback(val.id,1,widget.tipe);
-                      //   },
-                      //   child: WidgetHelper().textQ("Keranjang",14,Colors.grey[200],FontWeight.bold),
-                      //   color: Constant().secondColor,
-                      //   elevation: 0,
-                      //   minWidth: 400,
-                      //   height: 50,
-                      //   textColor: Colors.white,
-                      //   shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(10)
-                      //   ),
-                      // ),
+
                     ],
                   ),
                 ));
@@ -200,19 +175,14 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
           ),
           isLoadmore?Expanded(
               flex: 1,
-              child:Shimmer.fromColors(
-                baseColor: Colors.grey[300],
-                highlightColor: Colors.grey[100],
-                enabled: true,
-                child: Padding(
-                  padding: const EdgeInsets.only(left:10.0,right:10.0,bottom:2.0),
-                  child:Container(
-                    width: double.infinity,
-                    height: 8.0,
-                    color: Colors.white,
-                  ),
+              child:WidgetHelper().baseLoading(context, Padding(
+                padding: const EdgeInsets.only(left:10.0,right:10.0,bottom:2.0),
+                child:Container(
+                  width: double.infinity,
+                  height: 8.0,
+                  color: Colors.white,
                 ),
-              )
+              ))
           ):Text('')
         ],
       ),
