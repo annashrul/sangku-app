@@ -12,9 +12,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   @override
   bool get wantKeepAlive => true;
   final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
-  int perpageTestimoni=5,totalTestimoni=0;
-  bool isLoadingNews=false,isErrorNews=false,isTokenExpNews=false;
-  bool isLoadingRedeem=false,isErrorRedeem=false,isTokenExpRedeem=false;
+  int perpageTestimoni=10,totalTestimoni=0;
+  bool isLoadingNews=false;
+  bool isLoadingRedeem=false;
   bool isLoadingMember=false;
   bool isLoadingTestimoni=false,isLoadmoreTestimoni=false;
   TestimoniModel testimoniModel;
@@ -31,62 +31,57 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     loadTestimoni();
   }
   Future loadNews()async{
-    var res = await ContentProvider().loadData("berita","page=1&perpage=5");
-    print("RESPONSE NEWS $res");
-    if(res=='error' || res=='failed'){
-      isLoadingNews=false;
-      isErrorNews=true;
-      if(this.mounted) setState(() {});
-    }
-    else if(res==Constant().errExpToken||res==null){
-      isLoadingNews=true;
-      isErrorNews=false;
-      isTokenExpNews=true;
-      if(this.mounted) setState(() {});
-
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        await FunctionHelper().logout(context);
+    var res=await BaseProvider().getProvider("content/berita?page=1&perpage=5", contentModelFromJson,context: context,callback: (){
+      setState(() {
+        isLoadingNews=false;
       });
-    }
-    else{
-      contentModel = res;
+      loadNews();
+    });
+    if(res is ContentModel){
+      ContentModel result=res;
+      contentModel = result;
       isLoadingNews=false;
-      isErrorNews=false;
-      isTokenExpNews=false;
       if(this.mounted) setState(() {});
-
     }
+
   }
   Future loadRedeem()async{
-    var res = await ContentProvider().loadRedeem("page=1&perpage=5");
-    if(res=='error' || res=='failed'){
+    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson,context: context,callback: (){
+      setState(() {
+        isLoadingRedeem=false;
+      });
+      loadRedeem();
+    });
+    if(res is ListRedeemModel){
+      ListRedeemModel result=res;
+      listRedeemModel = result;
       isLoadingRedeem=false;
-      isErrorRedeem=true;
-      if(this.mounted)setState(() {});
-
-    }
-    else if(res==Constant().errExpToken){
-      isLoadingRedeem=false;
-      isErrorRedeem=false;
-      isTokenExpRedeem=true;
-      if(this.mounted)setState(() {});
-
-    }
-    else{
-      listRedeemModel = res;
-      isLoadingRedeem=false;
-      isErrorRedeem=false;
-      isTokenExpRedeem=false;
       if(this.mounted) setState(() {});
     }
   }
   Future loadTestimoni()async{
-    var res = await ContentProvider().loadTestimoni("perpage=$perpageTestimoni");
-    testimoniModel = res;
-    isLoadingTestimoni=false;
-    totalTestimoni=testimoniModel.result.total;
-    isLoadmoreTestimoni=false;
-    if(this.mounted) setState(() {});
+    var res=await BaseProvider().getProvider("content/testimoni?page=1&perpage=$perpageTestimoni", testimoniModelFromJson,context: context,callback: (){
+      setState(() {
+        isLoadingRedeem=false;
+      });
+      loadTestimoni();
+    });
+    if(res is TestimoniModel){
+      TestimoniModel result=res;
+      testimoniModel = result;
+      isLoadingTestimoni=false;
+      isLoadmoreTestimoni=false;
+      totalTestimoni=testimoniModel.result.total;
+      if(this.mounted) setState(() {});
+    }
+
+
+    // var res = await ContentProvider().loadTestimoni("perpage=$perpageTestimoni");
+    // testimoniModel = res;
+    // isLoadingTestimoni=false;
+    // totalTestimoni=testimoniModel.result.total;
+    // isLoadmoreTestimoni=false;
+    // if(this.mounted) setState(() {});
   }
   String refer='';
   Future getLink()async{
@@ -153,16 +148,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                   Color color;
                   String value='';
                   if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
-                  // if(index==0){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value='10';}
-                  // widget.dataMember['plafon']}'.split(".")[0]
                   if(index==1&&dataMember!=null){
                     icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
                     value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
-                    // value='Rp '+FunctionHelper().formatter.format(int.parse('10000'));
                   }
                   if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
-                  // if(index==2){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri  | kanan ';}
-                  // if(index==3){icon=AntDesign.rightcircleo;title='PV Kanan';color=Color(0xFFdc3545);value=widget.dataMember['right_pv'];}
                   return dataMember==null?WidgetHelper().baseLoading(context,Container(
                     color: Colors.white,
                     height: 50,
@@ -181,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             WidgetHelper().textQ(title,10,Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
-                            WidgetHelper().textQ(value,10,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(value,12,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
                           ],
                         ),
                         // SizedBox(width:7.5),
@@ -418,45 +408,166 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         ),
 
         isLoadingTestimoni?TestimoniLoading():
-        Stack(
-          children: <Widget>[
-            BuildTimeLine(),
-            new ListView.separated(
-              primary: true,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: testimoniModel.result.data.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0),
-                  child: new Row(
-                    children: <Widget>[
-                      new Padding(
-                        padding:
-                        new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
-                        child: new Container(
-                          height: 12.0,
-                          width: 12.0,
-                          decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
+        Container(
+          padding: EdgeInsets.only(left:10),
+          height: 350,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: AlwaysScrollableScrollPhysics(),
+            primary: true,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(left: 0, right: 0, bottom: 0),
+            itemCount: testimoniModel.result.data.length,
+            itemBuilder: (context, index) {
+              var val=testimoniModel.result.data[index];
+              return Container(
+                child: FlatButton(
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                  padding: EdgeInsets.all(0.0),
+                  color: Color(0xFFEEEEEE),
+                  onPressed: (){
+                    WidgetHelper().myModal(context,Container(
+                      height: MediaQuery.of(context).size.height/1.2,
+                      child: ModalDetailTestimoni(val: val.toJson())
+                    ));
+                  },
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width/1.5,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Container(
+                                height: 150,
+                                width: double.infinity,
+                                child: WidgetHelper().baseImage(val.picture,width: double.infinity),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: WidgetHelper().textQ(val.caption, 12,Colors.black,FontWeight.bold,maxLines: 4,textAlign: TextAlign.center),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(AntDesign.user,size: 15,color: Colors.grey,),
+                                              WidgetHelper().textQ(val.writer, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.group_work,size: 15,color: Colors.grey,),
+                                              WidgetHelper().textQ(val.jobs, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.timer,size: 15,color: Colors.grey),
+                                              WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt, " "), 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      new Expanded(
-                        child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe: false,callback: (param){}),
-                      ),
-
+                      val.video!='-'?Positioned(
+                        top: 0,
+                        right: 10,
+                        child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
+                            alignment: AlignmentDirectional.center,
+                            child:Icon(AntDesign.videocamera,color: Colors.white)
+                        ),
+                      ):Text('')
                     ],
                   ),
-                );
-              },
-              separatorBuilder: (context,index){return Padding(
-                padding: EdgeInsets.only(left:15),
-                child: Divider(thickness: 5,color:Constant().greyColor),
-              );},
-            ),
-          ],
-        ),
-        isLoadmoreTestimoni?TestimoniLoading(total: 1):Text(''),
-        SizedBox(height:20)
+                ),
+              );
+            },separatorBuilder: (context,index){return SizedBox(width: 10);},
+          ),
+        )
+        // Stack(
+        //   children: <Widget>[
+        //     BuildTimeLine(),
+        //     new ListView.separated(
+        //       primary: true,
+        //       shrinkWrap: true,
+        //       // physics: const NeverScrollableScrollPhysics(),
+        //       itemCount: testimoniModel.result.data.length,
+        //       scrollDirection: Axis.horizontal,
+        //       itemBuilder: (context, index) {
+        //         return Padding(
+        //           padding: const EdgeInsets.symmetric(vertical: 0.0),
+        //           child: new Row(
+        //             children: <Widget>[
+        //               new Padding(
+        //                 padding: new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
+        //                 child: new Container(
+        //                   height: 12.0,
+        //                   width: 12.0,
+        //                   decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
+        //                 ),
+        //               ),
+        //               new Expanded(
+        //                 child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe: false,callback: (param){}),
+        //               ),
+        //
+        //             ],
+        //           ),
+        //         );
+        //       },
+        //       separatorBuilder: (context,index){return Padding(
+        //         padding: EdgeInsets.only(left:15),
+        //         child: Divider(thickness: 5,color:Constant().greyColor),
+        //       );},
+        //     ),
+        //   ],
+        // ),
+        // isLoadmoreTestimoni?TestimoniLoading(total: 1):Text(''),
+        // SizedBox(height:20)
       ],
     );
   }

@@ -10,6 +10,7 @@ import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/content/content_model.dart';
+import 'package:sangkuy/view/widget/web_view_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -104,8 +105,10 @@ class _DetailNewsScreenState extends State<DetailNewsScreen> with SingleTickerPr
                                 defaultTextStyle: TextStyle(fontSize: 14.0,color: Constant().darkMode),
                               onLinkTap: (String url){
                                 // _launchURL(url);
-                                WidgetHelper().myPush(context,WebViewWidget(val: {"url":url,"title":val.title}));
-
+                                WidgetHelper().myPush(context,Scaffold(
+                                    appBar: WidgetHelper().appBarWithButton(context,url, (){Navigator.pop(context);},<Widget>[]),
+                                    body: WebViewWidget(val: {"url":url})
+                                ));
                               },
                             ),
                           ),
@@ -145,60 +148,5 @@ class _DetailNewsScreenState extends State<DetailNewsScreen> with SingleTickerPr
     );
   }
 
-}
-
-class WebViewWidget extends StatefulWidget {
-  dynamic val;
-  WebViewWidget({this.val});
-  @override
-  _WebViewWidgetState createState() => _WebViewWidgetState();
-}
-
-class _WebViewWidgetState extends State<WebViewWidget> {
-  Completer<WebViewController> _controller = Completer<WebViewController>();
-  num _stackToView = 1;
-  final _key = UniqueKey();
-
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // getUrl();
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, widget.val['title'], ()=>Navigator.pop(context),<Widget>[]),
-      body:IndexedStack(
-        index: _stackToView,
-        children: [
-          WebView(
-            key: _key,
-            initialUrl: widget.val['url'],
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (String uri) {
-              setState(() {
-                _stackToView = 0;
-              });
-            },
-
-            // onPageFinished: _handleLoad,
-            onWebViewCreated: (WebViewController webViewController)async {
-              // _controller.complete(W)
-              // ebViewController.evaluateJavascript(String js){}
-              // webViewController.
-              // print("############################# $value #######################");
-
-              _controller.complete(webViewController);
-            },
-          ),
-          Container(child: Center(child: WidgetHelper().loadingWidget(context))),
-
-        ],
-      ),
-    );
-  }
 }
 

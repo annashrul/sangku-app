@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import 'package:sangkuy/main.dart';
 import 'package:sangkuy/model/content/content_model.dart';
 import 'package:sangkuy/model/content/testimoni_model.dart';
 import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/info_tambahan_model.dart';
 import 'package:sangkuy/model/member/data_member_model.dart';
 import 'package:sangkuy/model/mlm/cart_model.dart';
 import 'package:sangkuy/model/mlm/redeem/list_redeem_model.dart';
@@ -52,6 +55,7 @@ import 'package:sangkuy/view/widget/loading/testimoni_loading.dart';
 import 'package:sangkuy/view/widget/package_widget.dart';
 import 'package:sangkuy/view/widget/redeem_widget.dart';
 import 'package:sangkuy/view/widget/testimoni_widget.dart';
+import 'package:sangkuy/view/widget/web_view_widget.dart';
 import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
 
 part 'profile/profile_screen.dart';

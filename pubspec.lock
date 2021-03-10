@@ -127,13 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
-  datetime_picker_formfield:
+  date_strip_report:
     dependency: "direct main"
     description:
-      name: datetime_picker_formfield
+      name: date_strip_report
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.3"
+    version: "1.0.1"
   device_info:
     dependency: "direct main"
     description:
@@ -365,7 +365,14 @@ packages:
       name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.8"
+    version: "0.16.1"
+  jiffy:
+    dependency: transitive
+    description:
+      name: jiffy
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   js:
     dependency: transitive
     description:

@@ -137,7 +137,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                     width: 100,
                     height: 5,
                     color: Colors.white,
-                  )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",10,Constant().darkMode,FontWeight.bold),
+                  )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",12,Constant().darkMode,FontWeight.bold),
                   const SizedBox(
                     height: 2,
                   ),
@@ -159,7 +159,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                       const SizedBox(
                         width: 4,
                       ),
-                      WidgetHelper().textQ(dataMemberModel.result.membership,10,Constant().darkMode,FontWeight.bold)
+                      WidgetHelper().textQ(dataMemberModel.result.membership,12,Constant().darkMode,FontWeight.bold)
                     ],
                   )
 
@@ -189,14 +189,13 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                             const SizedBox(
                               width: 4,
                             ),
-                            WidgetHelper().textQ(dataMemberModel.result.jenjangKarir,10,Constant().darkMode,FontWeight.bold)
+                            WidgetHelper().textQ(dataMemberModel.result.jenjangKarir,12,Constant().darkMode,FontWeight.bold)
                           ],
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height:5.0),
-
                   isLoadingMember?WidgetHelper().baseLoading(context, Container(
                     width: 100,
                     height: 5,

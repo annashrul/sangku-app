@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/model/content/content_model.dart';
 import 'package:sangkuy/model/content/testimoni_model.dart';
@@ -20,12 +21,7 @@ class ContentProvider{
     else{
       if(res is ContentModel){
         ContentModel result=res;
-        if(result.status=='success'){
-          return ContentModel.fromJson(result.toJson());
-        }
-        else{
-          return 'failed';
-        }
+        return ContentModel.fromJson(result.toJson());
       }
     }
   }

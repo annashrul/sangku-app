@@ -12,8 +12,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/filter_date_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:sangkuy/view/screen/mlm/history/history_transaction_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WidgetHelper{
@@ -95,7 +97,7 @@ class WidgetHelper{
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.rectangle),
+                  SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.circle),
                   // SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
                   // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
                 ],
@@ -526,5 +528,64 @@ class WidgetHelper{
       errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
     );
   }
+
+
+  appBarWithFilter(BuildContext context, title,Function callback,Function(String param) filterQ,Function(String dateFrom, String dateTo) filterDate,{double sizeTitle=14.0}){
+    return  AppBar(
+      elevation: 1.0,
+      backgroundColor: Colors.white, // status bar color
+      title:textQ(title,sizeTitle,Constant().darkMode,FontWeight.bold),
+      leading: IconButton(
+        icon: new Icon(AntDesign.back,color: Colors.grey),
+        onPressed: (){
+          callback();
+        },
+      ),
+      actions:<Widget>[
+        Container(
+            width: 30,
+            height: 30,
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(300),
+              onTap: () {
+                WidgetHelper().myModal(context,FilterSearch(callback: (param){
+                  filterQ(param);
+                }));
+              },
+              child: Icon(AntDesign.search1,),
+            )
+        ),
+        Container(
+            width: 30,
+            height: 30,
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(300),
+              onTap: () {
+                DateTimeRangePicker(
+                    startText: "Dari",
+                    endText: "Sampai",
+                    doneText: "Simpan",
+                    cancelText: "Batal",
+                    interval: 5,
+                    initialStartTime: DateTime.now(),
+                    initialEndTime: DateTime.now(),
+                    mode: DateTimeRangePickerMode.date,
+                    // minimumTime: DateTime.now().subtract(Duration(days: 5)),
+                    maximumTime: DateTime.now(),
+                    onConfirm: (start, end) {
+                      String dateFrom = '${start.year}-${start.month.toString().padLeft(2, '0')}-${start.day.toString().padLeft(2, '0')}';
+                      String dateTo = '${end.year}-${end.month.toString().padLeft(2, '0')}-${end.day.toString().padLeft(2, '0')}';
+                      filterDate(dateFrom,dateTo);
+                    }).showPicker(context);
+              },
+              child: Icon(AntDesign.calendar),
+            )
+        ),
+      ],// status bar brightness
+    );
+  }
+
 
 }

@@ -91,23 +91,19 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final users = await _db.readData(UserTable.SELECT);
     print("###################USER LENGTH###########################");
-    print(users.length);
+    print(users);
     print("##############################################");
     if(users.length<1){
       WidgetHelper().myPushRemove(context, OnboardingScreen());
-      // WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
     }
     else{
       final onBoarding= await userHelper.getDataUser('onboarding');
       final isLogin= await userHelper.getDataUser('is_login');
-      if(onBoarding==null&&isLogin==null){
+      if(onBoarding==null&&isLogin==null||onBoarding=='0'&&isLogin=='0'){
         WidgetHelper().myPushRemove(context, OnboardingScreen());
       }
       else{
-        if(onBoarding=='0'&&isLogin=='0'){
-          WidgetHelper().myPushRemove(context, OnboardingScreen());
-        }
-        else if(onBoarding=='1'&&isLogin=='0'){
+        if(onBoarding=='1'&&isLogin=='0'){
           WidgetHelper().myPushRemove(context, SignInScreen());
         }
         else if(onBoarding=='1'&&isLogin=='1'){

@@ -31,6 +31,12 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
   int filterStatus=5;
   Future loadData()async{
     String url='transaction/ppob/report?page=1&perpage=$perpage';
+    if(dateFrom!=''&&dateTo!=''){
+      url+='&datefrom=$dateFrom&dateto=$dateTo';
+    }
+    if(q!=''){
+      url+='&q=$q';
+    }
     if(filterStatus!=5){
       url+='&status=$filterStatus';
     }
@@ -109,22 +115,105 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
     loadData();
     controller = new ScrollController()..addListener(_scrollListener);
     initializeDateFormatting('id');
-
+    dateFrom=FunctionHelper().formatReportDate()['dateFrom'];
+    dateTo=FunctionHelper().formatReportDate()['dateTo'];
   }
   @override
   void dispose() {
     super.dispose();
     controller.removeListener(_scrollListener);
   }
+  String dateFrom='',dateTo='',q='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context,"Laporan PPOB", (){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithFilter(context,"Laporan PPOB",  (){Navigator.pop(context);}, (param){
+        setState(() {
+          q=param;
+          isLoading=true;
+        });
+        loadData();
+      }, (start, end){
+        setState(() {
+          dateFrom=start;
+          dateTo=end;
+          isLoading=true;
+        });
+        loadData();
+      }),
+      // appBar: WidgetHelper().appBarWithButton(context,"Laporan PPOB", (){Navigator.pop(context);},<Widget>[]),
       body: RefreshWidget(
         widget: Container(
           padding: EdgeInsets.only(top:0,bottom:10,left:0,right:0),
           child: Column(
             children: [
+              if(dateFrom!=''||dateTo!=''||q!='')Expanded(
+                flex:1,
+                child: ListView(
+                  padding: EdgeInsets.all(5.0),
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    if(dateFrom!='')InkWell(
+                      onTap: (){
+                        setState(() {
+                          dateFrom='';
+                          dateTo='';
+                          isLoading=true;
+                        });
+                        loadData();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right:5.0),
+                        child:  Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            FlatButton(
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                              color: Constant().greenColor,
+                              onPressed: (){},
+                              child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,8,Colors.white,FontWeight.bold),
+                            ),
+                            Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    if(q!='')InkWell(
+                      onTap: (){
+                        setState(() {
+                          q='';
+                          isLoading=true;
+                        });
+                        loadData();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right:5.0),
+                        child:  Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            FlatButton(
+                                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                                color: Constant().greenColor,
+                                onPressed: (){},
+                                child:WidgetHelper().textQ(q,8,Colors.white,FontWeight.bold)
+                            ),
+                            Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+
               Expanded(
                 flex: 19,
                 child: isLoading?HistoryPembelianLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):Scrollbar(child: Column(

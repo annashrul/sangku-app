@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -14,6 +16,8 @@ import 'package:sangkuy/view/screen/mlm/history/resi_screen.dart';
 import 'package:sangkuy/view/widget/camera_widget.dart';
 import 'package:sangkuy/view/widget/loading/testimoni_loading.dart';
 import 'package:sangkuy/view/widget/testimoni_widget.dart';
+import 'package:sangkuy/view/widget/web_view_widget.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class TestimoniScreen extends StatefulWidget {
   @override
   _TestimoniScreenState createState() => _TestimoniScreenState();
@@ -28,7 +32,7 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
 
   Future loadTestimoni()async{
     final id_member=await UserHelper().getDataUser('id_user');
-    var res = await ContentProvider().loadTestimoni("id_member=$id_member&perpage=$perpage");
+    var res = await ContentProvider().loadTestimoni("perpage=$perpage");
     if(this.mounted) setState(() {
       testimoniModel = res;
       isLoadingTestimoni=false;
@@ -81,53 +85,7 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
         })
       ]),
       body:  isLoadingTestimoni?TestimoniLoading(): RefreshWidget(
-        widget: Container(
-          // margin: EdgeInsets.only(bottom: 10),
-          child: Stack(
-            children: <Widget>[
-              BuildTimeLine(),
-              new ListView.separated(
-                controller: controller,
-                // physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                shrinkWrap: true,
-                itemCount: testimoniModel.result.data.length,
-                itemBuilder: (context, index) {
-                  return  new Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0.0),
-                    child: new Row(
-                      children: <Widget>[
-                        new Padding(
-                          padding:
-                          new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
-                          child: new Container(
-                            height: 12.0,
-                            width: 12.0,
-                            decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
-                          ),
-                        ),
-                        new Expanded(
-                          child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe:true,callback: (param){
-                            if(param=='success'){
-                              setState(() {
-                                isLoadingTestimoni=true;
-                              });
-                              loadTestimoni();
-                            }
-                          },),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                separatorBuilder: (context,index){return Padding(
-                  padding: EdgeInsets.only(left:15),
-                  child: Divider(thickness: 5,color:Constant().greyColor),
-                );},
-              ),
-
-            ],
-          ),
-        ),
+        widget: buildContent(context),
         callback: (){
           isLoadingTestimoni=true;
           setState(() {});
@@ -135,6 +93,136 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
         },
       ),
       bottomNavigationBar: isLoadmore?TestimoniLoading(total: 1):Text(''),
+    );
+  }
+
+  Widget buildContent(BuildContext context){
+    return new ListView.separated(
+      primary: false,
+      controller: controller,
+      physics: AlwaysScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: testimoniModel.result.data.length,
+      itemBuilder: (BuildContext context, int index) {
+        String desc='';
+        var val=testimoniModel.result.data[index];
+        int lng=100;
+        if(testimoniModel.result.data[index].caption.length>lng){
+          desc=testimoniModel.result.data[index].caption.substring(0,lng)+' ..';
+        }else{
+          desc=testimoniModel.result.data[index].caption;
+        }
+        return Container(
+          margin: EdgeInsets.only(bottom: 10),
+          child: Stack(
+            alignment: AlignmentDirectional.topCenter,
+            children: [
+              FlatButton(
+                color:Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(6),
+                          topRight: Radius.circular(6),
+                        ),
+                      ),
+                      child: WidgetHelper().baseImage(val.picture,width: double.infinity,fit: BoxFit.contain),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width/3,
+                        ),
+                        Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                        Container(
+                          width: MediaQuery.of(context).size.width/3,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height:10),
+                    Padding(
+                      padding: EdgeInsets.only(left:10,right:10),
+                      child: Center(
+                        child: WidgetHelper().textQ(val.caption, 12,Colors.black,FontWeight.bold,maxLines: 12,textAlign: TextAlign.center),
+                      )
+                    ),
+                    SizedBox(height:10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width/3,
+                        ),
+                        Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                        Container(
+                          width: MediaQuery.of(context).size.width/3,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(AntDesign.user,size: 15,color: Colors.grey,),
+                          WidgetHelper().textQ(val.writer, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.group_work,size: 15,color: Colors.grey,),
+                          WidgetHelper().textQ(val.jobs, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.timer,size: 15,color: Colors.grey),
+                          WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt, " "), 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: (){
+                  WidgetHelper().myModal(context,Container(
+                      height: MediaQuery.of(context).size.height/1.2,
+                      child: ModalDetailTestimoni(val: val.toJson())
+                  ));
+                  // WidgetHelper().myPush(context,DetailNewsScreen(contentModel:contentModel,idx:index));
+                },
+                padding: EdgeInsets.all(10.0),
+              ),
+              val.video!='-'?Positioned(
+                top: 0,
+                right: 10,
+                child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
+                    alignment: AlignmentDirectional.center,
+                    child:Icon(AntDesign.videocamera,color: Colors.white)
+                ),
+              ):Text('')
+            ],
+          ),
+        );
+      },
+      separatorBuilder: (context,index){return SizedBox(height: 10);},
     );
   }
 }
@@ -420,7 +508,12 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                                   TextSpan(
                                       text: ' embed URL . \n',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
                                       recognizer:  TapGestureRecognizer()..onTap  = () {
-                                        WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
+                                        WidgetHelper().myPush(context,Scaffold(
+                                            appBar: WidgetHelper().appBarWithButton(context,'Cara memasukan link youtube', (){Navigator.pop(context);},<Widget>[]),
+                                            body: WebViewWidget(val: {"url":'https://support.google.com/youtube/answer/171780?hl=id'})
+                                        ));
+
+                                        // WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
                                       }
                                   ),
                                   TextSpan(
@@ -433,7 +526,6 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                           ),
                         ),
                         if(widget.val!=null)WidgetHelper().baseImage(previewImage)
-
                       ],
                     )
                 ),
@@ -449,3 +541,93 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
 
 }
 
+
+class ModalDetailTestimoni extends StatefulWidget {
+  dynamic val;
+  ModalDetailTestimoni({this.val});
+  @override
+  _ModalDetailTestimoniState createState() => _ModalDetailTestimoniState();
+}
+
+class _ModalDetailTestimoniState extends State<ModalDetailTestimoni> {
+  YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.val['video']!='-'){
+      _controller = YoutubePlayerController(
+        initialVideoId: YoutubePlayer.convertUrlToId(widget.val['video']),
+        flags: YoutubePlayerFlags(
+          // hideControls: true,
+          autoPlay: false,
+        ),
+      );
+    }
+    print(widget.val);
+
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: WidgetHelper().appBarWithButton(context,widget.val['writer'],(){},<Widget>[]),
+      body: ListView(
+        children: [
+          widget.val['video']!='-'?YoutubePlayer(controller: _controller):WidgetHelper().baseImage(widget.val['picture']),
+          
+          SizedBox(height:10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width/3,
+              ),
+              Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+              Container(
+                width: MediaQuery.of(context).size.width/3,
+              ),
+            ],
+          ),
+          SizedBox(height:10),
+          Padding(
+            padding: EdgeInsets.only(left:10,right:10),
+            child: WidgetHelper().textQ(widget.val['caption'], 12,Colors.black,FontWeight.bold,maxLines: 12,textAlign: TextAlign.center),
+          ),
+          SizedBox(height:10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width/3,
+              ),
+              Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+              Container(
+                width: MediaQuery.of(context).size.width/3,
+              ),
+            ],
+          ),
+          SizedBox(height:10),
+          ListTile(
+            contentPadding: EdgeInsets.only(left:10),
+            leading: Icon(Icons.work),
+            title: WidgetHelper().textQ(widget.val['jobs'], 12,Colors.black,FontWeight.bold,maxLines: 12),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.only(left:10,top: 0),
+            leading: Icon(Icons.timer),
+            title: WidgetHelper().textQ(FunctionHelper().formateDate(DateTime.parse(widget.val['created_at']), " "), 12,Colors.black,FontWeight.bold,maxLines: 12),
+          )
+        ],
+      ),
+    );
+  }
+
+
+
+}

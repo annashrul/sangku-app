@@ -31,6 +31,14 @@ class FunctionHelper{
   //   "Dibatalkan",
   //   "Semua status",
   // ];
+  formatReportDate(){
+    var date = new DateTime.now().toString();
+    var dateParse = DateTime.parse(date);
+    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
+    String dateFrom = "${DateFormat('yyyy-MM-dd').format(DateTime(dateParse.year, dateParse.month - 1, dateParse.day))}";
+    String dateTo = formattedDate;
+    return {"dateFrom":dateFrom,"dateTo":dateTo};
+  }
   formateDate(val,param){
     initializeDateFormatting('id');
     if(param=='ymd'){
@@ -83,7 +91,7 @@ class FunctionHelper{
   Future logout(BuildContext context)async{
 
     final id=await UserHelper().getDataUser("id");
-    await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"0"});
+    await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"1"});
     WidgetHelper().myPushRemove(context,SignInScreen());
   }
 }

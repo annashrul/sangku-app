@@ -88,7 +88,9 @@ class _TestimoniWidgetState extends State<TestimoniWidget> with AutomaticKeepAli
           SizedBox(height: 5.0),
           Align(
             alignment: Alignment.bottomRight,
-            child:WidgetHelper().textQ(FunctionHelper().formateDate(widget.testimoniModel.result.data[widget.index].createdAt, "ymd"), 12, Constant().darkMode,FontWeight.normal),
+            child:WidgetHelper().textQ(
+                FunctionHelper().formateDate(widget.testimoniModel.result.data[widget.index].createdAt, "ymd"),
+                12, Constant().darkMode,FontWeight.normal),
           ),
           SizedBox(height: 5.0),
           InkWell(
@@ -199,6 +201,8 @@ class _VideoTestimoniState extends State<VideoTestimoni> {
           ),
           SizedBox(height:10.0),
           YoutubePlayer(controller: _controller),
+          SizedBox(height:10.0),
+
         ],
       ),
     );

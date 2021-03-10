@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' show Client;
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -14,7 +15,7 @@ import 'package:sangkuy/view/screen/auth/sign_in_screen.dart';
 class BaseProvider{
   Client client = Client();
   final userRepository = UserHelper();
-  Future getProvider(url,param)async{
+  Future getProvider(url,param,{BuildContext context,Function callback})async{
     try{
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -36,15 +37,33 @@ class BaseProvider{
         }
       }
       else if(response.statusCode == 400){
-        if(jsonResponse['name']==Constant().errExpToken){
-          return Constant().errExpToken;
+        print(jsonResponse);
+        if(jsonResponse['msg']=='Invalid Token.'){
+          if(context==null){
+            return Constant().errExpToken;
+          }else{
+            return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+              Navigator.pop(context);
+              await FunctionHelper().logout(context);
+            });
+          }
         }
         return General.fromJson(jsonResponse);
       }
     }on TimeoutException catch (_) {
-      return Constant().errTimeout;
+      if(context==null){
+        return Constant().errTimeout;
+      }else{
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,()=>callback);
+      }
     } on SocketException catch (_) {
-      return Constant().errSocket;
+      if(context==null){
+        return Constant().errTimeout;
+      }else{
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+          callback();
+        });
+      }
     }
   }
   Future postProvider(url,Map<String, Object> data,{BuildContext context}) async {

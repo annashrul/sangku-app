@@ -4,6 +4,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/filter_date_helper.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -21,17 +22,17 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController controller;
   HistoryTransactionModel historyTransactionModel;
-  var qController = TextEditingController();
-  final FocusNode qFocus = FocusNode();
-
   bool isLoading=false,isLoadmore=false,isNodata=false,isError=false;
-  int perpage=10,total=0;
-  String dateFrom='',dateTo='';
+  int perpage=20,total=0;
+  String dateFrom='',dateTo='',q='';
   bool isSelected=false;
   Future loadData()async{
-    String url='transaction/history?page=1&perpage=$perpage&datefrom=$dateFrom&dateto=$dateTo';
-    if(qController.text!=''){
-      url+='&q=${qController.text}';
+    String url='transaction/history?page=1&perpage=$perpage';
+    if(dateFrom!=''&&dateTo!=''){
+      url+='&datefrom=$dateFrom&dateto=$dateTo';
+    }
+    if(q!=''){
+      url+='&q=$q';
     }
     var res = await BaseProvider().getProvider(url,historyTransactionModelFromJson);
     print(res);
@@ -131,34 +132,12 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   void initState() {
     // TODO: implement initState
     super.initState();
-    var date = new DateTime.now().toString();
-    var dateParse = DateTime.parse(date);
-
-    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
-    dateFrom = "${DateFormat('yyyy-MM-dd').format(DateTime(dateParse.year, dateParse.month - 1, dateParse.day))}";
-    dateTo = formattedDate;
+    dateFrom=FunctionHelper().formatReportDate()['dateFrom'];
+    dateTo=FunctionHelper().formatReportDate()['dateTo'];
     controller = new ScrollController()..addListener(_scrollListener);
     isLoading=true;
     loadData();
     initializeDateFormatting('id');
-
-  }
-  void _showDatePicker(var param) async{
-    await WidgetHelper().showDatePickerQ(context,param=='1'?'Dari':'Sampai', (_dateTime,index)async{
-      isLoading=true;
-      if(param=='1'){
-        setState(() {
-          dateFrom = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-        });
-      }
-      else{
-        setState(() {
-          dateTo = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-        });
-      }
-
-      loadData();
-    });
 
   }
 
@@ -166,80 +145,86 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Laporan Transaksi", (){Navigator.pop(context);},<Widget>[
-        isSelected?WidgetHelper().myFilter((){
-          setState(() {
-            isSelected=false;
-            qFocus.unfocus();
-          });
-        },icon: AntDesign.closecircleo):WidgetHelper().myFilter((){
-          setState(() {
-            isSelected=true;
-            qFocus.requestFocus();
-          });
-        },icon: AntDesign.search1)
-      ]),
+      appBar: WidgetHelper().appBarWithFilter(context,"Laporan transaksi",  (){Navigator.pop(context);}, (param){
+        setState(() {
+          q=param;
+          isLoading=true;
+        });
+        loadData();
+      }, (start, end){
+        setState(() {
+          dateFrom=start;
+          dateTo=end;
+          isLoading=true;
+        });
+        loadData();
+      }),
       body: Scrollbar(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if(isSelected)Padding(
-              padding: EdgeInsets.only(left:10.0,top:0.0,right:10,bottom: 5),
-              child:TextFormField(
-                controller: qController,
-                focusNode: qFocus,
-                onFieldSubmitted: (e){
-                  setState(() {
-                    isSelected=!isSelected;
-                    isLoading=true;
-                  });
-                  loadData();
-                },
-              ),
-            ),
-            if(!isSelected)Padding(
-              padding: EdgeInsets.only(left:10.0,top:5.0),
-              child: WidgetHelper().textQ("Pecarian",10,Colors.black,FontWeight.bold),
-            ),
-            if(!isSelected)Expanded(
+            if(dateFrom!=''||dateTo!=''||q!='')Expanded(
               flex:1,
               child: ListView(
                 padding: EdgeInsets.all(5.0),
                 scrollDirection: Axis.horizontal,
                 children: [
-                  Container(
-                    margin: EdgeInsets.only(right:5.0),
-                    child:  FlatButton(
-                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(50.0)),
-                        color: Constant().mainColor,
-                        padding: EdgeInsets.all(5.0),
-                        onPressed: (){_showDatePicker("1");},
-                        child:WidgetHelper().textQ(dateFrom,8,Colors.white,FontWeight.bold)
+                  if(dateFrom!='')InkWell(
+                    onTap: (){
+                      setState(() {
+                        dateFrom='';
+                        dateTo='';
+                        isLoading=true;
+                      });
+                      loadData();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right:5.0),
+                      child:  Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          FlatButton(
+                            shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                            color: Constant().greenColor,
+                            onPressed: (){},
+                            child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,8,Colors.white,FontWeight.bold),
+                          ),
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(right:5.0,top:5),
-                    child:  WidgetHelper().textQ('s/d',8,Colors.grey,FontWeight.bold),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right:5.0),
-                    child:  FlatButton(
-                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(50.0)),
-                        color: Constant().mainColor,
-                        padding: EdgeInsets.all(5.0),
-                        onPressed: (){_showDatePicker("2");},
-                        child:WidgetHelper().textQ(dateTo,8,Colors.white,FontWeight.bold)
-                    ),
-                  ),
-                  if(qController.text!='')Container(
-                    margin: EdgeInsets.only(right:5.0),
-                    child:  FlatButton(
-                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(50.0)),
-                        color: Constant().mainColor,
-                        padding: EdgeInsets.all(5.0),
-                        onPressed: (){},
-                        child:WidgetHelper().textQ(qController.text,8,Colors.white,FontWeight.bold)
+                  if(q!='')InkWell(
+                    onTap: (){
+                      setState(() {
+                        q='';
+                        isLoading=true;
+                      });
+                      loadData();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right:5.0),
+                      child:  Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          FlatButton(
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                              color: Constant().greenColor,
+                              onPressed: (){},
+                              child:WidgetHelper().textQ(q,8,Colors.white,FontWeight.bold)
+                          ),
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                          )
+                        ],
+                      ),
                     ),
                   )
                 ],
@@ -326,4 +311,71 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   }
 
 
+}
+
+
+class FilterSearch extends StatefulWidget {
+  Function(String q) callback;
+  FilterSearch({this.callback});
+  @override
+  _FilterSearchState createState() => _FilterSearchState();
+}
+
+class _FilterSearchState extends State<FilterSearch> {
+  var qController = TextEditingController();
+  final FocusNode qFocus = FocusNode();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    qFocus.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // height: MediaQuery.of(context).size.height/2,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
+      ),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height:10.0),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left:10.0,top:0.0,right:10,bottom: 5),
+            child:TextFormField(
+              textInputAction: TextInputAction.search,
+              // keyboardType: Keyboard,
+              decoration: InputDecoration(
+                hintText: 'Tulis sesuatu disini ...'
+              ),
+              maxLines: 3,
+              controller: qController,
+              focusNode: qFocus,
+              onFieldSubmitted: (e){
+                widget.callback(e);
+                Navigator.pop(context);
+              },
+            ),
+          )
+
+        ],
+      ),
+    );
+  }
 }
