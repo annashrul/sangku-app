@@ -45,6 +45,7 @@ import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/screen/profile/bank/bank_screen.dart';
 import 'package:sangkuy/view/screen/profile/info_screen.dart';
+import 'package:sangkuy/view/screen/profile/rekapitulasi_screen.dart';
 import 'package:sangkuy/view/screen/wallet/form_ewallet_screen.dart';
 import 'package:sangkuy/view/screen/wallet/history_deposit_screen.dart';
 import 'package:sangkuy/view/screen/wallet/history_withdraw_screen.dart';
@@ -57,6 +58,7 @@ import 'package:sangkuy/view/widget/redeem_widget.dart';
 import 'package:sangkuy/view/widget/testimoni_widget.dart';
 import 'package:sangkuy/view/widget/web_view_widget.dart';
 import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 part 'profile/profile_screen.dart';
 part 'mlm/package_screen.dart';

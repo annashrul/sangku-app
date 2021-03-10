@@ -51,7 +51,6 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
     isLoadingMember=false;
     prefs.setString("saldo",dataMemberModel.result.saldo);
     widget.callback(dataMemberModel.result.toJson());
-
     if(this.mounted) setState(() {});
   }
   @override

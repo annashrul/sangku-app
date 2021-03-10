@@ -140,6 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     leading: Icon(AntDesign.barschart,color:Constant().mainColor),
                     title: WidgetHelper().textQ("Laporan",14,Colors.black,FontWeight.bold),
                   ),
+                  section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},1,iconData: AntDesign.trademark),
                   section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},0,iconData: AntDesign.shoppingcart),
                   section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},1,iconData: AntDesign.wallet),
                   section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},0,iconData: AntDesign.swapleft),
@@ -234,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               btnSocmed(context,"Twitter",AntDesign.twitter,siteModel.result.socialMedia.tw,color: Color(0xFF00acee)),
               btnSocmed(context,"Facebook",AntDesign.facebook_square,siteModel.result.socialMedia.fb,color: Color(0xFF3b5998)),
@@ -271,10 +272,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget btnSocmed(BuildContext context,title,IconData iconData, String url,{Color color,Gradient gradient}){
     return Container(
-      decoration: BoxDecoration(
-        color:  color,
-        gradient: gradient
-      ),
+      // decoration: BoxDecoration(
+      //   // color:  color,
+      //   // gradient: gradient
+      // ),
       child: FlatButton(
         onPressed: ()async{
           WidgetHelper().myPush(context,Scaffold(
@@ -283,7 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ));
         },
         // color: Color(0xFFFF0000),
-        child: Icon(iconData,color: Colors.white),
+        child: Icon(iconData,color: Colors.black),
       ),
     );
   }

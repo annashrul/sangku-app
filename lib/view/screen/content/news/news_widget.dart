@@ -24,35 +24,22 @@ class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(4.0),
-      onTap: () {
-        WidgetHelper().myPush(context,DetailNewsScreen(contentModel:widget.contentModel,idx: widget.idx));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFFEEEEEE),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        width: getWidth(context) * 0.78,
-        height: getWidth(context) * 0.6,
+    return FlatButton(
+        padding: EdgeInsets.all(0),
+        // color: Color(0xFFEEEEEE),
+        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+        onPressed: (){
+          WidgetHelper().myPush(context,DetailNewsScreen(contentModel:widget.contentModel,idx: widget.idx));
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-              child: CachedNetworkImage(
-                imageUrl:  widget.contentModel.result.data[widget.idx].picture,
-                fit: BoxFit.cover,
-                width: getWidth(context) * 0.78,
-                height: getWidth(context) * 0.28,
-                placeholder: (context, url) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
-                errorWidget: (context, url, error) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
-              ),
-
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              child: WidgetHelper().baseImage(widget.contentModel.result.data[widget.idx].picture,width: double.infinity,fit: BoxFit.cover),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 4),
+              padding: const EdgeInsets.fromLTRB(0, 14, 14, 4),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
@@ -64,13 +51,12 @@ class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMi
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-                child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].title,12,Constant().darkMode,FontWeight.normal,maxLines: 2),
+                padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
+                child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].title,12,Constant().darkMode,FontWeight.normal,maxLines: 3),
               ),
             )
           ],
-        ),
-      ),
+        )
     );
   }
 

@@ -576,7 +576,7 @@ class _ModalDetailTestimoniState extends State<ModalDetailTestimoni> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context,widget.val['writer'],(){},<Widget>[]),
+      appBar: WidgetHelper().appBarWithButton(context,widget.val['writer'],(){Navigator.pop(context);},<Widget>[]),
       body: ListView(
         children: [
           widget.val['video']!='-'?YoutubePlayer(controller: _controller):WidgetHelper().baseImage(widget.val['picture']),

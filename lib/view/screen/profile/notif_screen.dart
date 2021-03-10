@@ -99,6 +99,7 @@ class _NotifScreenState extends State<NotifScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   Container(
                     padding: EdgeInsets.only(top:10,bottom: 10,left:15,right:15),
                     color: Constant().greyColor,

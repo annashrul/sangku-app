@@ -12,7 +12,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   @override
   bool get wantKeepAlive => true;
   final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
-  int perpageTestimoni=10,totalTestimoni=0;
+  int perpageTestimoni=6,totalTestimoni=0;
   bool isLoadingNews=false;
   bool isLoadingRedeem=false;
   bool isLoadingMember=false;
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     loadTestimoni();
   }
   Future loadNews()async{
-    var res=await BaseProvider().getProvider("content/berita?page=1&perpage=5", contentModelFromJson,context: context,callback: (){
+    var res=await BaseProvider().getProvider("content/berita?page=1&perpage=10", contentModelFromJson,context: context,callback: (){
       setState(() {
         isLoadingNews=false;
       });
@@ -90,35 +90,18 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       refer = ref.toString();
     });
   }
-  ScrollController controller;
 
-  void _scrollListener() {
-    if (!isLoadingTestimoni) {
-      if (controller.position.pixels == controller.position.maxScrollExtent) {
-        if(perpageTestimoni<totalTestimoni){
-          print('fetch data');
-          setState((){
-            perpageTestimoni=perpageTestimoni+5;
-            isLoadmoreTestimoni=true;
-          });
-          loadTestimoni();
-        }
-      }
-    }
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadData();
-    controller = new ScrollController()..addListener(_scrollListener);
 
   }
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(_scrollListener);
   }
   dynamic dataMember;
   @override
@@ -130,7 +113,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     return SafeArea(
       child:  RefreshWidget(
         widget:WrapperPageWidget(
-          controller: controller,
           children: [
             Container(
               // height:50,
@@ -303,7 +285,12 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       child: MenuPPOBScreen(),
     );
   }
+  static const double padding = 16;
+  static const double spacing = 8;
+  static const int crossAxisCount = 2;
+
   Widget section4(BuildContext context){
+
     return Container(
       padding: EdgeInsets.only(top:0),
       child: Column(
@@ -325,17 +312,23 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             trailing: Icon(Icons.arrow_right),
           ),
           Container(
-            height: 200,
-            child: isLoadingNews?AddressLoading(tot: 1):ListView.separated(
+            height: MediaQuery.of(context).size.height/2,
+            child: isLoadingNews?AddressLoading(tot: 1):GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: 2/2,
+                mainAxisSpacing: spacing,
+                crossAxisSpacing: spacing,
+              ),
               scrollDirection: Axis.horizontal,
               physics: AlwaysScrollableScrollPhysics(),
               primary: true,
               // reverse:true ,
-              padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              padding: EdgeInsets.only(left: 10, right: 15, bottom: 10),
               itemCount: contentModel.result.data.length,
               itemBuilder: (context, index) {
                 return NewsWidget(contentModel: contentModel,idx: index);
-              },separatorBuilder: (context,index){return SizedBox(width: 10);},
+              },
             ),
           )
         ],
@@ -409,165 +402,133 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
         isLoadingTestimoni?TestimoniLoading():
         Container(
-          padding: EdgeInsets.only(left:10),
-          height: 350,
-          child: ListView.separated(
+          padding: EdgeInsets.only(left:0),
+          height: MediaQuery.of(context).size.height/1.8,
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 2/2,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+            ),
             scrollDirection: Axis.horizontal,
             physics: AlwaysScrollableScrollPhysics(),
             primary: true,
+            // reverse:true ,
+            padding: EdgeInsets.only(left: 10, right: 15, bottom: 10),
+
+
+            // scrollDirection: Axis.horizontal,
+            // physics: AlwaysScrollableScrollPhysics(),
+            // primary: true,
             shrinkWrap: true,
-            padding: EdgeInsets.only(left: 0, right: 0, bottom: 0),
+            // padding: EdgeInsets.only(left: 0, right: 0, bottom: 0),
             itemCount: testimoniModel.result.data.length,
             itemBuilder: (context, index) {
+
               var val=testimoniModel.result.data[index];
-              return Container(
-                child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-                  padding: EdgeInsets.all(0.0),
-                  color: Color(0xFFEEEEEE),
-                  onPressed: (){
-                    WidgetHelper().myModal(context,Container(
+              return FlatButton(
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                padding: EdgeInsets.all(0.0),
+                onPressed: (){
+                  WidgetHelper().myModal(context,Container(
                       height: MediaQuery.of(context).size.height/1.2,
                       child: ModalDetailTestimoni(val: val.toJson())
-                    ));
-                  },
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width/1.5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Container(
-                                height: 150,
-                                width: double.infinity,
-                                child: WidgetHelper().baseImage(val.picture,width: double.infinity),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                  ));
+                },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: WidgetHelper().baseImage(val.picture,width: double.infinity,fit: BoxFit.contain,height: 150),
+                          ),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
 
-                                  Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Center(
-                                          child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Center(
-                                          child: WidgetHelper().textQ(val.caption, 12,Colors.black,FontWeight.bold,maxLines: 4,textAlign: TextAlign.center),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Center(
-                                          child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(AntDesign.user,size: 15,color: Colors.grey,),
-                                              WidgetHelper().textQ(val.writer, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.group_work,size: 15,color: Colors.grey,),
-                                              WidgetHelper().textQ(val.jobs, 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.timer,size: 15,color: Colors.grey),
-                                              WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt, " "), 12,Colors.grey,FontWeight.bold,maxLines: 10,textAlign: TextAlign.center)
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Center(
+                                        child: WidgetHelper().textQ(val.caption, 12,Colors.black,FontWeight.normal,maxLines: 2,textAlign: TextAlign.center),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Center(
+                                        child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
+                                      ),
+                                      // SizedBox(height: 5),
+                                      // Center(
+                                      //   child: Row(
+                                      //     mainAxisAlignment: MainAxisAlignment.start,
+                                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                                      //     children: [
+                                      //       Icon(AntDesign.user,size: 15,color: Colors.grey,),
+                                      //       WidgetHelper().textQ(val.writer, 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                      // SizedBox(height: 5),
+                                      // Center(
+                                      //   child: Row(
+                                      //     mainAxisAlignment: MainAxisAlignment.start,
+                                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                                      //     children: [
+                                      //       Icon(Icons.group_work,size: 15,color: Colors.grey,),
+                                      //       WidgetHelper().textQ(val.jobs, 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                      // SizedBox(height: 5),
+                                      // Center(
+                                      //   child: Row(
+                                      //     mainAxisAlignment: MainAxisAlignment.start,
+                                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                                      //     children: [
+                                      //       Icon(Icons.timer,size: 15,color: Colors.grey),
+                                      //       WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt, " "), 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
+                                )
 
-                                ],
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      val.video!='-'?Positioned(
-                        top: 0,
-                        right: 10,
-                        child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
-                            alignment: AlignmentDirectional.center,
-                            child:Icon(AntDesign.videocamera,color: Colors.white)
-                        ),
-                      ):Text('')
-                    ],
-                  ),
+                    ),
+                    val.video!='-'?Positioned(
+                      top: 0,
+                      right: 10,
+                      child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
+                          alignment: AlignmentDirectional.center,
+                          child:Icon(AntDesign.videocamera,color: Colors.white)
+                      ),
+                    ):Text('')
+                  ],
                 ),
               );
-            },separatorBuilder: (context,index){return SizedBox(width: 10);},
+            }
           ),
         )
-        // Stack(
-        //   children: <Widget>[
-        //     BuildTimeLine(),
-        //     new ListView.separated(
-        //       primary: true,
-        //       shrinkWrap: true,
-        //       // physics: const NeverScrollableScrollPhysics(),
-        //       itemCount: testimoniModel.result.data.length,
-        //       scrollDirection: Axis.horizontal,
-        //       itemBuilder: (context, index) {
-        //         return Padding(
-        //           padding: const EdgeInsets.symmetric(vertical: 0.0),
-        //           child: new Row(
-        //             children: <Widget>[
-        //               new Padding(
-        //                 padding: new EdgeInsets.symmetric(horizontal: 15.0 - 12.0 / 2),
-        //                 child: new Container(
-        //                   height: 12.0,
-        //                   width: 12.0,
-        //                   decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().greyColor),
-        //                 ),
-        //               ),
-        //               new Expanded(
-        //                 child: TestimoniWidget(testimoniModel: testimoniModel,index:index,isMe: false,callback: (param){}),
-        //               ),
-        //
-        //             ],
-        //           ),
-        //         );
-        //       },
-        //       separatorBuilder: (context,index){return Padding(
-        //         padding: EdgeInsets.only(left:15),
-        //         child: Divider(thickness: 5,color:Constant().greyColor),
-        //       );},
-        //     ),
-        //   ],
-        // ),
-        // isLoadmoreTestimoni?TestimoniLoading(total: 1):Text(''),
-        // SizedBox(height:20)
+
       ],
     );
   }

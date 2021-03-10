@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewWidget extends StatefulWidget {
@@ -17,7 +18,7 @@ class _WebViewWidgetState extends State<WebViewWidget> {
   Completer<WebViewController> _controller = Completer<WebViewController>();
   num _stackToView = 1;
   final _key = UniqueKey();
-
+  bool isError=false;
 
 
   @override
@@ -29,10 +30,24 @@ class _WebViewWidgetState extends State<WebViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
+      body: isError?Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Text("Terjadi kesalahan"),
+          )
+        ],
+      ):IndexedStack(
         index: _stackToView,
         children: [
           WebView(
+            // debuggingEnabled: true,
+            onWebResourceError: (WebResourceError w){
+              setState(() {
+                isError =true;
+              });
+            },
             key: _key,
             initialUrl: widget.val['url'],
             javascriptMode: JavascriptMode.unrestricted,
@@ -44,8 +59,12 @@ class _WebViewWidgetState extends State<WebViewWidget> {
             onWebViewCreated: (WebViewController webViewController)async {
               _controller.complete(webViewController);
             },
+
           ),
           Container(child: Center(child: WidgetHelper().loadingWidget(context))),
+          Container(
+            child: WidgetHelper().textQ("Terjadi kesalahan", 12, Constant().darkMode,FontWeight.bold),
+          )
         ],
       ),
       floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
@@ -54,7 +73,9 @@ class _WebViewWidgetState extends State<WebViewWidget> {
         onPressed: ()=>_controller.future.then((value){
           if(_stackToView==0){
             value.reload();
+            value.loadUrl(widget.val['url']);
             setState(() {
+              isError=false;
               _stackToView=1;
             });
           }
