@@ -38,9 +38,9 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
       padding: EdgeInsets.all(0),
       child: Container(
         height: MediaQuery.of(context).size.height/6,
-        padding: EdgeInsets.only(right: 80,top: 0,left: 0),
+        // padding: EdgeInsets.only(right: 80,top: 0,left: 0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Expanded(

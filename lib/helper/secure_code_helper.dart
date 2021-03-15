@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
@@ -134,6 +135,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       _fingerPrint();
     });
     final height = MediaQuery.of(context).size.height;
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Scaffold(
       backgroundColor:Colors.white,
@@ -161,7 +163,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                     height: Platform.isIOS ? 40 : 15,
                   ),
                   Padding(
-                    padding: EdgeInsets.all(10.0),
+                    padding: scaler.getPadding(0,1),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +175,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                               textAlign: TextAlign.center,
                               text: TextSpan(
                                 text:widget.deskripsi,
-                                style: TextStyle(fontSize:12,color:Constant().darkMode,fontFamily:Constant().fontStyle,fontWeight:FontWeight.bold),
+                                style: TextStyle(fontSize:scaler.getTextSize(10),color:Constant().darkMode,fontFamily:Constant().fontStyle,fontWeight:FontWeight.bold),
                               )
                           )
                           // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
@@ -203,8 +205,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                   Container(
                     // color:Theme.of(context).focusColor.withOpacity(0.1),
                     padding: EdgeInsets.only(left: 0, top: 10),
-                    child:
-                    NotificationListener<OverscrollIndicatorNotification>(
+                    child: NotificationListener<OverscrollIndicatorNotification>(
                       onNotification: (overscroll) {
                         overscroll.disallowGlow();
                         return null;
@@ -243,118 +244,6 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
     );
   }
 
-  Widget ex1(BuildContext context){
-    return Expanded(
-      flex: 4,
-      child: Container(
-        child: Stack(
-          children: <Widget>[
-            ClipPath(
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: Platform.isIOS ? 50 : 50,
-                    ),
-                    Image.asset("assets/img/secure.png",height:70),
-                    // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
-                    SizedBox(
-                      height: Platform.isIOS ? 40 : 15,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RichText(
-                                maxLines: 2,
-                                overflow: TextOverflow.clip,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  text:widget.deskripsi,
-                                  style: TextStyle(fontSize:12,color:Constant().darkMode,fontFamily:Constant().fontStyle,fontWeight:FontWeight.bold),
-                                )
-                            )
-                            // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
-                          ],
-                        ),
-                      ),
-                    ),
-                    // RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:Theme.of(context).textTheme.title.merge(TextStyle(color: Theme.of(context).accentColor,fontSize: 12)), children: [TextSpan(text:widget.deskripsi)])),
-                    SizedBox(
-                      height: Platform.isIOS ? 40 : 15,
-                    ),
-                    CodePanel(
-                      codeLength: widget.passLength,
-                      currentLength: _currentCodeLength,
-                      borderColor: widget.borderColor,
-                      foregroundColor: widget.foregroundColor,
-                      deleteCode: _deleteCode,
-                      fingerVerify: widget.fingerVerify,
-                      status: _currentState,
-                    ),
-                    widget.showFingerPass ?SizedBox(
-                      height: Platform.isIOS ? 40 : 40,
-                    ):Container(),
-                    widget.showFingerPass ? forgotScreen() :Container(),
-                    widget.showFingerPass ?SizedBox(
-                      height: Platform.isIOS ? 40 : 15,
-                    ):Container(),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget ex2(BuildContext context){
-    return Expanded(
-      flex: Platform.isIOS ? 5 : 6,
-      child: Container(
-        // color:Theme.of(context).focusColor.withOpacity(0.1),
-        padding: EdgeInsets.only(left: 0, top: 10),
-        child:
-        NotificationListener<OverscrollIndicatorNotification>(
-          onNotification: (overscroll) {
-            overscroll.disallowGlow();
-            return null;
-          },
-          child: GridView.count(
-            primary: false,
-            physics: ClampingScrollPhysics(),
-            shrinkWrap: true,
-            crossAxisCount: 3,
-            childAspectRatio: 1.6,
-            mainAxisSpacing: 10,
-            padding: EdgeInsets.all(5),
-            children: <Widget>[
-              buildContainerCircle(1),
-              buildContainerCircle(2),
-              buildContainerCircle(3),
-              buildContainerCircle(4),
-              buildContainerCircle(5),
-              buildContainerCircle(6),
-              buildContainerCircle(7),
-              buildContainerCircle(8),
-              buildContainerCircle(9),
-              buildRemoveIcon(Icons.close),
-              buildContainerCircle(0),
-              buildContainerIcon(Icons.arrow_back),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
   Widget forgotScreen(){
     return InkResponse(
       onTap: (){
@@ -369,6 +258,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
   }
 
   Widget buildContainerCircle(int number) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return InkResponse(
       highlightColor: Colors.black38,
       splashColor:  Colors.black38,
@@ -376,9 +267,9 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         _onCodeClick(number);
       },
       child: Container(
-        margin: EdgeInsets.all(10.0),
-        height: 60,
-        width: 60,
+        margin: scaler.getMargin(0,0),
+        // height: 60,
+        // width: 60,
         decoration: BoxDecoration(
           color: Color(0xFFEEEEEE),
           // borderRadius:  BorderRadius.circular(10.0),
@@ -399,6 +290,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
 
   Widget buildRemoveIcon(IconData icon) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return InkResponse(
       highlightColor: Colors.black38,
       splashColor:  Colors.black38,
@@ -408,9 +301,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         }
       },
       child: Container(
-        margin: EdgeInsets.all(10.0),
-        height: 50,
-        width: 50,
+        margin: scaler.getMargin(0,0),
         decoration: BoxDecoration(
           color:  Color(0xFFEEEEEE),
           shape: BoxShape.circle,
@@ -426,6 +317,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
   }
 
   Widget buildContainerIcon(IconData icon) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return InkResponse(
       highlightColor: Colors.black38,
       splashColor:  Colors.black38,
@@ -443,9 +336,9 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         _deleteCode();
       },
       child: Container(
-        margin: EdgeInsets.all(10.0),
-        height: 50,
-        width: 50,
+        margin: scaler.getMargin(0,0),
+        // height: 50,
+        // width: 50,
         decoration: BoxDecoration(
           color:  Color(0xFFEEEEEE),
           shape: BoxShape.circle,
@@ -487,6 +380,8 @@ class CodePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     var circles = <Widget>[];
     var color = borderColor;
     int circlePice = 1;
@@ -499,8 +394,8 @@ class CodePanel extends StatelessWidget {
             height: H,
             child: new Container(
               decoration: new BoxDecoration(
-                borderRadius:  BorderRadius.circular(10.0),
-                shape: BoxShape.rectangle,
+                // borderRadius:  BorderRadius.circular(50.0),
+                shape: BoxShape.circle,
                 border: new Border.all(color: color, width: 1.0),
                 color: Constant().mainColor1,
               ),
@@ -509,7 +404,8 @@ class CodePanel extends StatelessWidget {
         );
         circlePice++;
       } while (circlePice <= codeLength);
-    } else {
+    }
+    else {
       if (status == 1) {
         color = Constant().mainColor1;
       }
@@ -523,8 +419,8 @@ class CodePanel extends StatelessWidget {
               height: H,
               child: Container(
                 decoration: new BoxDecoration(
-                    borderRadius:  BorderRadius.circular(10.0),
-                    shape: BoxShape.rectangle,
+                    // borderRadius:  BorderRadius.circular(10.0),
+                    shape: BoxShape.circle,
                     border: new Border.all(color: color, width: 2.0),
                     color: foregroundColor
                 ),
@@ -535,8 +431,8 @@ class CodePanel extends StatelessWidget {
               height: H,
               child: new Container(
                 decoration: new BoxDecoration(
-                  borderRadius:  BorderRadius.circular(10.0),
-                  shape: BoxShape.rectangle,
+                  // borderRadius:  BorderRadius.circular(10.0),
+                  shape: BoxShape.circle,
                   border: new Border.all(color: color, width: 1.0),
                   color: color,
                 ),
@@ -546,7 +442,7 @@ class CodePanel extends StatelessWidget {
     }
 
     return new SizedBox.fromSize(
-      size: new Size(MediaQuery.of(context).size.width, 30.0),
+      size: new Size(MediaQuery.of(context).size.width, scaler.getHeight(10)),
       child: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

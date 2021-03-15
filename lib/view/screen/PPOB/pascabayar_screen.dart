@@ -291,7 +291,6 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
           }));
         },
         code:result.result.otpAnying,
-        param: 'otp',
         desc: 'WhatsApp',
         data: data,
       ));

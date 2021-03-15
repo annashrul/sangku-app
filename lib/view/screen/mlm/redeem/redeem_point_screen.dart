@@ -34,19 +34,16 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
   DataMemberModel dataMemberModel;
   bool isLoadingMember=false;
   Future loadMember()async{
-    final res=await MemberProvider().getDataMember();
-    if(res=='error' || res=='failed'){
-      isLoadingRedeem=false;
-      isLoadingMember=false;
-      isErrorRedeem=true;
+    final res=await MemberProvider().getDataMember(context,(){
+      Navigator.pop(context);
+      isLoadingMember=true;
       if(this.mounted) setState(() {});
+      loadMember();
+    });
+    dataMemberModel=res;
+    isLoadingMember=false;
+    if(this.mounted) setState(() {});
 
-    }
-    else{
-      dataMemberModel=res;
-      isLoadingMember=false;
-      if(this.mounted) setState(() {});
-    }
 
   }
   Future loadRedeem()async{

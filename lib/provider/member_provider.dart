@@ -9,33 +9,17 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberProvider{
-  Future getDataMember()async{
+  Future getDataMember(BuildContext context,Function callback)async{
     final idMember = await UserHelper().getDataUser("id_user");
     String url = 'member/get/$idMember';
-    print("URL $url");
-    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      print("######################## error LOAD MEMBER #########################");
-      return 'error';
-    }
-    else if(res==Constant().errExpToken){
-      print("######################## errExpToken LOAD MEMBER #########################");
-      return Constant().errExpToken;
-    }
-    else{
-      if(res is DataMemberModel){
-        DataMemberModel result=res;
-        // SharedPreferences preferences = await SharedPreferences.getInstance();
-        // List<String> val=['${result.result.toJson()}'];
-        // print("######################## SUCCESS LOAD MEMBER $val #########################");
-        // preferences.setStringList("member",val);
-        if(result.status=='success'){
-          return DataMemberModel.fromJson(result.toJson());
-        }
-        else{
-          print("######################## FAILED LOAD MEMBER #########################");
-          return 'failed';
-        }
+    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson,context: context,callback: callback);
+    if(res is DataMemberModel){
+      DataMemberModel result=res;
+      if(result.status=='success'){
+        return DataMemberModel.fromJson(result.toJson());
+      }
+      else{
+        return 'failed';
       }
     }
   }

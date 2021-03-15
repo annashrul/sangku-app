@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -143,6 +144,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: WidgetHelper().appBarWithFilter(context,"Laporan transaksi",  (){Navigator.pop(context);}, (param){
@@ -167,7 +170,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
             if(dateFrom!=''||dateTo!=''||q!='')Expanded(
               flex:1,
               child: ListView(
-                padding: EdgeInsets.all(5.0),
+                padding: scaler.getPadding(0,1),
                 scrollDirection: Axis.horizontal,
                 children: [
                   if(dateFrom!='')InkWell(
@@ -239,38 +242,44 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                       var val=historyTransactionModel.result.data[index];
                       return FlatButton(
                         onPressed: (){},
-                        padding: EdgeInsets.only(top:0,bottom:0),
+                        padding: EdgeInsets.all(0),
                         color: index%2==0?Color(0xFFEEEEEE):Colors.white,
                         child: ListTile(
-                          contentPadding: EdgeInsets.only(left:10,right:10,top:10,bottom:10),
+                          contentPadding: scaler.getPadding(0.5,1),
                           onTap: (){},
                           title: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(AntDesign.paperclip,size: 10),
-                                  SizedBox(width: 5.0),
+                                  Icon(AntDesign.paperclip,size: scaler.getTextSize(10)),
+                                  SizedBox(width: scaler.getWidth(1)),
                                   Expanded(
-                                    child: WidgetHelper().textQ(val.note, 10,Constant().darkMode,FontWeight.bold),
+                                    child: WidgetHelper().textQ(val.note, scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
                                   )
                                 ],
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(height: scaler.getHeight(0.5)),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(AntDesign.codepen,size: 10),
-                                  SizedBox(width: 5.0),
-                                  WidgetHelper().textQ(val.kdTrx, 10,Constant().mainColor,FontWeight.bold)
+                                  Icon(AntDesign.codepen,size: scaler.getTextSize(10)),
+                                  SizedBox(width: scaler.getWidth(1)),
+                                  WidgetHelper().textQ(val.kdTrx, scaler.getTextSize(9),Constant().mainColor,FontWeight.bold)
                                 ],
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(height: scaler.getHeight(0.5)),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(AntDesign.calendar,size: 10),
-                                  SizedBox(width: 5.0),
-                                  WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,"ymd"), 10,Colors.grey,FontWeight.bold)
+                                  Icon(AntDesign.calendar,size: scaler.getTextSize(10)),
+                                  SizedBox(width: scaler.getWidth(1)),
+                                  WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,"ymd"), scaler.getTextSize(9),Constant().darkMode,FontWeight.normal)
                                 ],
                               ),
                             ],
@@ -280,9 +289,9 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxIn))} .- ( + )", 10,Constant().mainColor,FontWeight.bold),
-                                SizedBox(height:5.0),
-                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxOut.split(".")[0]))} .- ( - )", 10,Constant().moneyColor,FontWeight.bold),
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxIn))} .- ( + )", scaler.getTextSize(9),Constant().mainColor,FontWeight.bold),
+                                SizedBox(height: scaler.getHeight(0.5)),
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxOut.split(".")[0]))} .- ( - )", scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
                               ],
                             ),
                           ),

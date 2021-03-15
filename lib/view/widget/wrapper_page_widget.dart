@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -46,7 +47,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
   }
   Future loadMember()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final res=await MemberProvider().getDataMember();
+    final res=await MemberProvider().getDataMember(context,(){
+      Navigator.pop(context);
+      isLoadingMember=true;
+      loadMember();
+    });
     dataMemberModel=res;
     isLoadingMember=false;
     prefs.setString("saldo",dataMemberModel.result.saldo);
@@ -65,6 +70,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
 
   @override
   Widget build(BuildContext context) {
+
     super.build(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -105,6 +111,8 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
     );
   }
   Widget section1(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -122,11 +130,11 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                 param: 'network',
                 key: Key("profile"),
                 image: dataMemberModel.result.picture,
-                size: 50.0,
+                size:scaler.getTextSize(20),
                 padding: 0.0,
               ),
               SizedBox(
-                width: 16,
+                width: scaler.getWidth(2),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -136,17 +144,17 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                     width: 100,
                     height: 5,
                     color: Colors.white,
-                  )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",12,Constant().darkMode,FontWeight.bold),
-                  const SizedBox(
-                    height: 2,
+                  )):WidgetHelper().textQ("${dataMemberModel.result.fullName}",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                  SizedBox(
+                    height: scaler.getHeight(0.1),
                   ),
                   isLoadingMember?WidgetHelper().baseLoading(context, Container(
                     width: 100,
                     height: 10,
                     color: Colors.white,
-                  )):WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",14,Constant().moneyColor,FontWeight.bold),
-                  const SizedBox(
-                    height: 4,
+                  )):WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.saldo))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
+                  SizedBox(
+                    height: scaler.getHeight(0.1),
                   ),
                   isLoadingMember?WidgetHelper().baseLoading(context, Container(
                     width: 100,
@@ -158,7 +166,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                       const SizedBox(
                         width: 4,
                       ),
-                      WidgetHelper().textQ(dataMemberModel.result.membership,12,Constant().darkMode,FontWeight.bold)
+                      WidgetHelper().textQ(dataMemberModel.result.membership,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold)
                     ],
                   )
 
@@ -181,25 +189,25 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
                     child: Container(
                       color: Colors.black12,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+                        padding: scaler.getPadding(0.2,1.5),
                         child: Row(
                           children: <Widget>[
                             Image.network(dataMemberModel.result.jenjangKarirBadge,width: 16,height: 16),
-                            const SizedBox(
-                              width: 4,
+                            SizedBox(
+                              width: scaler.getWidth(2),
                             ),
-                            WidgetHelper().textQ(dataMemberModel.result.jenjangKarir,12,Constant().darkMode,FontWeight.bold)
+                            WidgetHelper().textQ(dataMemberModel.result.jenjangKarir,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold)
                           ],
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height:5.0),
+                  SizedBox(height:scaler.getHeight(0.2)),
                   isLoadingMember?WidgetHelper().baseLoading(context, Container(
                     width: 100,
                     height: 5,
                     color: Colors.white,
-                  )):WidgetHelper().textQ("${dataMemberModel.result.referralCode}",10,Constant().darkMode,FontWeight.bold),
+                  )):WidgetHelper().textQ("${dataMemberModel.result.referralCode}",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                 ],
               )
             ],

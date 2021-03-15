@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/secure_code_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -13,12 +14,11 @@ import 'package:sangkuy/provider/base_provider.dart';
 class SecureCodeScreen extends StatefulWidget {
   final Function(BuildContext context, bool isTrue) callback;
   String code;
-  final String param;
   final String desc;
   final Map<String, Object> data;
   // final Widget child;
 
-  SecureCodeScreen({this.callback,this.code,this.param,this.desc,this.data});
+  SecureCodeScreen({this.callback,this.code,this.desc,this.data});
   @override
   _SecureCodeScreenState createState() => _SecureCodeScreenState();
 }
@@ -63,18 +63,19 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
   bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       key: _scaffoldKey,
       bottomNavigationBar:!timeUpFlag?Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         color: Constant().moneyColor,
         child: FlatButton(
-            padding: EdgeInsets.all(20.0),
+            padding: scaler.getPadding(1.5,0),
             onPressed: ()async{
               WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
             },
-            child: WidgetHelper().textQ("$timeCounter DETIK", 12,Colors.white,FontWeight.bold,letterSpacing: 3.0)
+            child: WidgetHelper().textQ("$timeCounter DETIDetikK", scaler.getTextSize(10),Colors.white,FontWeight.bold,letterSpacing: 3.0)
         ),
       ):Container(
         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -132,7 +133,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
       ),
       body: SecureCodeHelper(
           showFingerPass: false,
-          forgotPin: 'Lupa OTP ? Klik Disini',
+          forgotPin: '',
           title: "Keamanan",
           passLength: 4,
           bgImage: "assets/images/bg.jpg",
@@ -165,7 +166,8 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
 
 class PinScreen extends StatefulWidget {
   Function(BuildContext context, bool isTrue,String pin) callback;
-  PinScreen({this.callback});
+  String param;
+  PinScreen({this.callback,this.param});
   @override
   _PinScreenState createState() => _PinScreenState();
 }
@@ -177,17 +179,27 @@ class _PinScreenState extends State<PinScreen> {
   
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    String desc='';
+    if(widget.param=='create'){
+      desc='Silahkan ubah pin demi keamanan bertransaksi anda';
+    }else if(widget.param=='confirm'){
+      desc='KONFIRMASI PIN';
+    }
+    else{
+      desc='Masukan PIN Anda demi keamanan bertransaksi';
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
-        bottomNavigationBar:FlatButton(
-            padding: EdgeInsets.all(20.0),
+        bottomNavigationBar:widget.param==null||widget.param==''?FlatButton(
+            padding: scaler.getPadding(1.5,0),
             color: Constant().moneyColor,
             onPressed: ()async{
               
             },
-            child: WidgetHelper().textQ("LUPA PIN", 12,Colors.white,FontWeight.bold)
-        ),
+            child: WidgetHelper().textQ("Lupa Pin", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+        ):Text(''),
         body: SecureCodeHelper(
             showFingerPass: false,
             title: "Keamanan",
@@ -198,12 +210,9 @@ class _PinScreenState extends State<PinScreen> {
             wrongPassContent: "PIN Tidak Sesuai",
             wrongPassTitle: "Opps!",
             wrongPassCancelButtonText: "Batal",
-            deskripsi: 'Masukan PIN Anda demi keamanan bertransaksi',
+            deskripsi:desc,
             passCodeVerify: (passcode) async {
               print(passcode);
-
-              // print(widget.code.split(''));
-              // var code = widget.code.split('');
               String code='';
               for (int i = 0; i < 6; i++) {
                 code+= passcode[i].toString();

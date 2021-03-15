@@ -16,11 +16,17 @@ class FunctionHelper{
   final formatter = new NumberFormat("#,###");
   DatabaseConfig db = DatabaseConfig();
   static var dataNominal=["100000","200000","300000","400000","500000","1000000"];
+  toRp(val){
+    return formatter.format(val);
+  }
   percentToRp(var disc,var price){
     double diskon =  (disc/100)*price;
     var exp = diskon.toString().split('.');
     print("############################### VOUCHER ${int.parse(exp[0])} ####################################");
     return int.parse(exp[0]);
+  }
+  rmTitik(val,idx){
+    return val.split(".")[idx];
   }
 
   // static var arrStatus=[
@@ -65,11 +71,9 @@ class FunctionHelper{
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
-
   decode(val){
     return base64.encode(utf8.encode(val));
   }
-
   Future removePackage()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.remove("packageType");
@@ -89,7 +93,6 @@ class FunctionHelper{
     return saldo;
   }
   Future logout(BuildContext context)async{
-
     final id=await UserHelper().getDataUser("id");
     await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"1"});
     WidgetHelper().myPushRemove(context,SignInScreen());

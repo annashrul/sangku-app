@@ -1,5 +1,6 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -43,6 +44,8 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
         appBar: WidgetHelper().appBarWithButton(context,"Rekapitulasi ${FunctionHelper().formateDate(_selectedValue, "ymd")}", (){Navigator.pop(context);},<Widget>[]),
         body:Column(
@@ -51,17 +54,14 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
           children: [
             DatePicker(
               DateTime.now().subtract(Duration(days: 20)),
-              width: 60,
-              height: 80,
+              width: scaler.getWidth(13),
+              height: scaler.getWidth(20),
               controller: _controller,
               initialSelectedDate: DateTime.now(),
               selectionColor:Constant().mainColor,
               selectedTextColor:Constant().mainColor2,
               locale: "id_ID",
 
-              // inactiveDates: [
-              //   DateTime.now().add(Duration(days: 360)),
-              // ],
               onDateChange: (date) {
                 setState(() {
                   _selectedValue = date;
@@ -93,12 +93,14 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
   }
 
   Widget buildItem(BuildContext context,String title,String title1, String value1,{String title2, String value2}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: EdgeInsets.only(top:10,bottom: 10,left:15,right:15),
+          padding:scaler.getPadding(1,2),
           color: Constant().greyColor,
           width: double.infinity,
           child: Column(

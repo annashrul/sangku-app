@@ -67,6 +67,9 @@ dependencies:
   url_launcher:
   webview_flutter: ^0.3.17
   youtube_player_flutter: ^7.0.0+7
+  flutter_screen_scaler: ^2.0.0
+
+
 #  date_strip_report: ^1.0.0
 #  zoom_widget:
 

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
 class CardWidget extends StatelessWidget {
@@ -33,6 +34,8 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       // padding: EdgeInsets.only(top:10,bottom: 10),
       color: Colors.transparent,
@@ -46,8 +49,8 @@ class CardWidget extends StatelessWidget {
           child: Row(
             children: <Widget>[
               (this.prefixBadge != null) ? Container(
-                width: 10.0,
-                height: 60.0,
+                width: scaler.getWidth(1),
+                height: scaler.getHeight(5),
                 decoration: BoxDecoration(
                     color: this.prefixBadge,
                     borderRadius: new BorderRadius.circular(10.0)
@@ -72,9 +75,9 @@ class CardWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      (this.title != null) ? Container(child:WidgetHelper().textQ(title, 12, (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)): Container(),
+                      (this.title != null) ? Container(child:WidgetHelper().textQ(title, scaler.getTextSize(9), (this.titleColor != null) ? this.titleColor : Colors.black, FontWeight.bold)): Container(),
                       SizedBox(height: 5.0),
-                      (this.description != null)? Container(child:WidgetHelper().textQ(description, 12, (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)) : Container(),
+                      (this.description != null)? Container(child:WidgetHelper().textQ(description,  scaler.getTextSize(9), (this.descriptionColor != null) ? this.descriptionColor : Colors.grey, FontWeight.normal)) : Container(),
                     ],
                   ),
                 ),
@@ -82,7 +85,7 @@ class CardWidget extends StatelessWidget {
               (this.suffixIcon != null)
                   ? Container(
                 margin: const EdgeInsets.only(right: 10.0),
-                child: Icon(this.suffixIcon,
+                child: Icon(this.suffixIcon,size: scaler.getTextSize(12),
                     color: (this.suffixIconColor != null)
                         ? this.suffixIconColor
                         : Colors.black),
@@ -90,8 +93,8 @@ class CardWidget extends StatelessWidget {
                   : Container(),
               (this.suffixBadge != null)
                   ? Container(
-                width: 10.0,
-                height: 60.0,
+                width: scaler.getWidth(1),
+                height: scaler.getHeight(5),
                 color: this.suffixBadge,
               )
                   : Container(),

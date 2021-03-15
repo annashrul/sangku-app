@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -207,13 +208,14 @@ class WidgetHelper{
     );
   }
   appBarNoButton(BuildContext context,String title,List<Widget> widget){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white, // status bar color
-      title:textQ(title,14,Constant().darkMode,FontWeight.bold),
+      title:textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
       elevation: 0,
       leading:Padding(
-        padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
+        padding: scaler.getPadding(1,1),
         child:  CircleAvatar(
           backgroundColor: Colors.transparent,
           backgroundImage:AssetImage(Constant().localAssets+"logo.png"),
@@ -269,7 +271,6 @@ class WidgetHelper{
 
 
   }
-
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
@@ -315,7 +316,6 @@ class WidgetHelper{
         }
     );
   }
-
   notifDialog(BuildContext context,title,desc,Function callback1, Function callback2,{titleBtn1='Batal',titleBtn2='Oke'}){
     return showDialog(
         barrierDismissible: false,
@@ -371,7 +371,6 @@ class WidgetHelper{
       messageText: textQ(desc,12,Constant().secondDarkColor, FontWeight.bold),
     )..show(context);
   }
-
   myNotif(BuildContext context,Function callback,Color color){
     return FlatButton(
         padding: EdgeInsets.all(0.0),
@@ -403,7 +402,6 @@ class WidgetHelper{
         )
     );
   }
-
   myCart(BuildContext context,Function callback,Color color,{IconData iconData=AntDesign.shoppingcart}){
     return FlatButton(
         padding: EdgeInsets.all(0.0),
@@ -428,7 +426,6 @@ class WidgetHelper{
         )
     );
   }
-
   baseLoading(BuildContext context,Widget widget){
     return Shimmer.fromColors(
       baseColor: Colors.grey[300],
@@ -437,16 +434,16 @@ class WidgetHelper{
       child: widget,
     );
   }
-  titleNoButton(BuildContext context,IconData icon,String title,{double fontSize=12.0,String img='',Color color=Colors.white,double iconSize=20.0,FontWeight fontWeight=FontWeight.bold}){
+  titleNoButton(BuildContext context,IconData icon,String title,{double fontSize=10,String img='',Color color=Colors.white,double iconSize=15.0,FontWeight fontWeight=FontWeight.bold}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return  Row(
       children: [
-        img==''?Icon(icon,color:color,size: iconSize):Image.network(img,height: 30,fit: BoxFit.contain),
+        img==''?Icon(icon,color:color,size: scaler.getTextSize(iconSize)):Image.network(img,height: 30,fit: BoxFit.contain),
         SizedBox(width:5.0),
-        WidgetHelper().textQ(title,fontSize,color,fontWeight),
+        WidgetHelper().textQ(title,scaler.getTextSize(fontSize),color,fontWeight),
       ],
     );
   }
-
   myFilter(Function callback,{IconData icon,Color bg, Color iconColor=Colors.grey}){
     return FlatButton(
         padding: EdgeInsets.all(10.0),
@@ -457,7 +454,6 @@ class WidgetHelper{
         child: Icon(icon,color: iconColor)
     );
   }
-
   Future showDatePickerQ(BuildContext context,title,Function(DateTime dateTime,List<int> index) callback) async {
     String _format = 'yyyy-MM-dd';
     DateTime _dateTime = DateTime.now();
@@ -483,8 +479,6 @@ class WidgetHelper{
       onConfirm: callback,
     );
   }
-
-
   filterStatus(BuildContext context,List data,Function(dynamic val) callback,filterStatus){
 
     return ListView.builder(
@@ -517,19 +511,26 @@ class WidgetHelper{
       },
     );
   }
-
   baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain}){
     return CachedNetworkImage(
       imageUrl:img,
       width: width,
       height: height,
       fit:fit,
-      placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-      errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+      placeholder: (context, url) => Image.asset(
+        Constant().localAssets+'logo.png',
+        width: width,
+        height: height,
+        fit:fit,
+      ),
+      errorWidget: (context, url, error) => Image.asset(
+        Constant().localAssets+'logo.png',
+        width: width,
+        height: height,
+        fit:fit,
+      ),
     );
   }
-
-
   appBarWithFilter(BuildContext context, title,Function callback,Function(String param) filterQ,Function(String dateFrom, String dateTo) filterDate,{double sizeTitle=14.0}){
     return  AppBar(
       elevation: 1.0,
@@ -572,7 +573,6 @@ class WidgetHelper{
                     initialStartTime: DateTime.now(),
                     initialEndTime: DateTime.now(),
                     mode: DateTimeRangePickerMode.date,
-                    // minimumTime: DateTime.now().subtract(Duration(days: 5)),
                     maximumTime: DateTime.now(),
                     onConfirm: (start, end) {
                       String dateFrom = '${start.year}-${start.month.toString().padLeft(2, '0')}-${start.day.toString().padLeft(2, '0')}';
@@ -587,5 +587,54 @@ class WidgetHelper{
     );
   }
 
+  titleQ(BuildContext context,String title,desc,{
+    Color colorTitle=Colors.black,
+    Color colorDesc=Colors.black,
+    double sizeTitle=9,
+    double sizeDesc=9,
+    Function callback,
+    IconData icon,
+    TextAlign textAlign=TextAlign.left,
+    String param='',
+    FontWeight fontWeight = FontWeight.normal
+  }){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return InkWell(
+      onTap:callback,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: Constant().mainColor,
+                  size: scaler.getTextSize(15),
+                ),
+                SizedBox(width: scaler.getWidth(1)),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    WidgetHelper().textQ(title, scaler.getTextSize(sizeTitle),colorTitle,FontWeight.bold,textAlign: textAlign),
+                    WidgetHelper().textQ(desc, scaler.getTextSize(sizeDesc),colorDesc,fontWeight,textAlign: textAlign),
+                  ],
+                )
+              ],
+            ),
+          ),
+          param==''?Text(''):Align(
+            alignment: Alignment.centerRight,
+            child: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
+          )
+        ],
+      ),
+    );
+
+  }
 
 }

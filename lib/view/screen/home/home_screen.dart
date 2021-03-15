@@ -31,12 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     loadTestimoni();
   }
   Future loadNews()async{
-    var res=await BaseProvider().getProvider("content/berita?page=1&perpage=10", contentModelFromJson,context: context,callback: (){
-      setState(() {
-        isLoadingNews=false;
-      });
-      loadNews();
-    });
+    var res=await BaseProvider().getProvider("content/berita?page=1&perpage=10", contentModelFromJson);
     if(res is ContentModel){
       ContentModel result=res;
       contentModel = result;
@@ -46,12 +41,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   }
   Future loadRedeem()async{
-    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson,context: context,callback: (){
-      setState(() {
-        isLoadingRedeem=false;
-      });
-      loadRedeem();
-    });
+    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson);
     if(res is ListRedeemModel){
       ListRedeemModel result=res;
       listRedeemModel = result;
@@ -60,12 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
   }
   Future loadTestimoni()async{
-    var res=await BaseProvider().getProvider("content/testimoni?page=1&perpage=$perpageTestimoni", testimoniModelFromJson,context: context,callback: (){
-      setState(() {
-        isLoadingRedeem=false;
-      });
-      loadTestimoni();
-    });
+    var res=await BaseProvider().getProvider("content/testimoni?page=1&perpage=$perpageTestimoni", testimoniModelFromJson);
     if(res is TestimoniModel){
       TestimoniModel result=res;
       testimoniModel = result;
@@ -74,14 +59,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       totalTestimoni=testimoniModel.result.total;
       if(this.mounted) setState(() {});
     }
-
-
-    // var res = await ContentProvider().loadTestimoni("perpage=$perpageTestimoni");
-    // testimoniModel = res;
-    // isLoadingTestimoni=false;
-    // totalTestimoni=testimoniModel.result.total;
-    // isLoadmoreTestimoni=false;
-    // if(this.mounted) setState(() {});
   }
   String refer='';
   Future getLink()async{
@@ -110,18 +87,16 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     print(dataMember);
     print("================================================================");
     super.build(context);
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return SafeArea(
       child:  RefreshWidget(
         widget:WrapperPageWidget(
           children: [
             Container(
-              // height:50,
-              padding: EdgeInsets.only(left:0),
               child: StaggeredGridView.countBuilder(
                 shrinkWrap: true,
                 primary: false,
-                padding: EdgeInsets.only(top:10),
-                // scrollDirection: Axis.horizontal,
                 crossAxisCount: 3,
                 itemCount: DataHelper.dataProfile.length,
                 itemBuilder: (context,index){
@@ -140,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     height: 50,
                     width: double.infinity,
                   )):Container(
-                    padding: EdgeInsets.only(top:10,bottom: 10),
+                    padding: scaler.getPadding(1,1),
                     decoration: BoxDecoration(
                       color:Color(0xFF732044),
                     ),
@@ -152,11 +127,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            WidgetHelper().textQ(title,10,Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
-                            WidgetHelper().textQ(value,12,Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(title,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                            SizedBox(height: scaler.getHeight(0.3)),
+                            WidgetHelper().textQ(value,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
                           ],
                         ),
-                        // SizedBox(width:7.5),
                       ],
                     ),
                   );
@@ -199,14 +174,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 ],
               ),
             )),
-            SizedBox(height:10),
+            SizedBox(height: scaler.getHeight(1)),
             section2(context),
-            Divider(thickness: 10.0),
+            Divider(thickness:scaler.getHeight(1)),
             section6(context),
-            Divider(thickness: 10.0),
+            Divider(thickness:scaler.getHeight(1)),
             section3(context),
-            Divider(thickness: 10.0),
+            Divider(thickness:scaler.getHeight(1)),
             section4(context),
+            Divider(thickness:scaler.getHeight(1)),
             testimoni(context),
 
           ],
@@ -225,8 +201,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     );
   }
   Widget section2(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      padding: EdgeInsets.only(left:10.0,right:10.0,bottom:10.0,top:0.0),
+      padding: scaler.getPadding(0,0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -259,12 +236,12 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       children: [
                         SvgPicture.asset(
                             DataHelper.dataWallet[index]['icon'],
-                            height: 30,
-                            width: 30,
+                            height: scaler.getHeight(3),
+                            width: scaler.getWidth(10),
                             color:Constant().mainColor1
                         ),
                         SizedBox(height:5.0),
-                        WidgetHelper().textQ(DataHelper.dataWallet[index]['title'],12,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
+                        WidgetHelper().textQ(DataHelper.dataWallet[index]['title'],scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center),
                       ],
                     ),
                   ),
@@ -280,8 +257,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     );
   }
   Widget section3(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      padding: EdgeInsets.only(top:10,left:10.0,right:10.0),
+      padding: scaler.getPadding(1,2),
       child: MenuPPOBScreen(),
     );
   }
@@ -290,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   static const int crossAxisCount = 2;
 
   Widget section4(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Container(
       padding: EdgeInsets.only(top:0),
@@ -297,22 +276,20 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ListTile(
-            onTap: (){WidgetHelper().myPush(context,NewsScreen());},
-            contentPadding: EdgeInsets.only(left:10.0,right:10.0),
-            leading: Icon(AntDesign.profile,color:Constant().mainColor),
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                WidgetHelper().textQ("Berita Terbaru",12,Constant().darkMode,FontWeight.bold),
-                WidgetHelper().textQ("Kumpulan berita terbaru seputar SangQu",12,Constant().darkMode,FontWeight.normal),
-              ],
+          Padding(
+            padding: scaler.getPadding(1,2),
+            child: WidgetHelper().titleQ(
+              context,
+              'Berita Terbaru',
+              'Kumpulan berita terbaru seputar SangQu',
+              icon: Ionicons.ios_paper,
+              param: 'with',
+              callback:(){WidgetHelper().myPush(context,NewsScreen());}
             ),
-            trailing: Icon(Icons.arrow_right),
           ),
+
           Container(
-            height: MediaQuery.of(context).size.height/2,
+            height: scaler.getHeight(50),
             child: isLoadingNews?AddressLoading(tot: 1):GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
@@ -324,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               physics: AlwaysScrollableScrollPhysics(),
               primary: true,
               // reverse:true ,
-              padding: EdgeInsets.only(left: 10, right: 15, bottom: 10),
+              padding: scaler.getPadding(0,2),
               itemCount: contentModel.result.data.length,
               itemBuilder: (context, index) {
                 return NewsWidget(contentModel: contentModel,idx: index);
@@ -336,34 +313,27 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     );
   }
   Widget section6(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return  Container(
-      padding: EdgeInsets.only(left: 10, right: 10,bottom: 10),
+      padding: scaler.getPadding(1,2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ListTile(
-            onTap: (){WidgetHelper().myPush(context,IndexScreen(currentTab: 0));},
-            contentPadding: EdgeInsets.only(left:0.0,right:0.0),
-            leading: Icon(AntDesign.chrome,color:Constant().mainColor),
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                WidgetHelper().textQ("Poin Anda",12,Constant().darkMode,FontWeight.bold),
-                dataMember==null?WidgetHelper().baseLoading(context,Container(
-                  height: 15.0,
-                  width:MediaQuery.of(context).size.width/10,
-                  color: Colors.white,
-                )):WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(dataMember['point_ro'].split(".")[0]))} POIN",14,Constant().moneyColor,FontWeight.bold),
-                // )):WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('0'))} POIN",14,Constant().moneyColor,FontWeight.bold),
-              ],
-            ),
-            trailing: Icon(Icons.arrow_right),
+          WidgetHelper().titleQ(
+            context,
+            'Poin Anda',
+            dataMember==null?"":"${FunctionHelper().toRp(int.parse(FunctionHelper().rmTitik(dataMember['point_ro'], 0)))} poin",
+            icon: Ionicons.logo_chrome,
+            param: 'with',
+            callback:(){WidgetHelper().myPush(context,IndexScreen(currentTab: 0));},
+            colorDesc: Constant().moneyColor,
+            fontWeight: FontWeight.bold
           ),
-          WidgetHelper().textQ("Silahkan Redeem Poin RO Anda Dengan Hadiah - Hadiah Dibawah Ini !",12,Constant().darkMode,FontWeight.normal),
-          SizedBox(height:5.0),
+          SizedBox(height:scaler.getHeight(1)),
+          WidgetHelper().textQ("Silahkan Redeem Poin RO Anda Dengan Hadiah - Hadiah Dibawah Ini !",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+          SizedBox(height:scaler.getHeight(0.5)),
           Container(
-            height: 240,
+            height: scaler.getHeight(25),
             child: isLoadingRedeem||dataMember==null?RedeemHorizontalLoading():ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: AlwaysScrollableScrollPhysics(),
@@ -380,52 +350,33 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     );
   }
   Widget testimoni(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(
-          trailing: Icon(Icons.arrow_right),
-          onTap: (){WidgetHelper().myPush(context,TestimoniScreen());},
-          contentPadding: EdgeInsets.only(left:10.0,right:10.0),
-          leading: Icon(AntDesign.star,color:Constant().mainColor),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              WidgetHelper().textQ("Apa Kata Mereka",12,Constant().darkMode,FontWeight.bold),
-              WidgetHelper().textQ("Kata mereka tentang SangQu",12,Constant().darkMode,FontWeight.normal),
-            ],
+        Padding(
+          padding: scaler.getPadding(1,2),
+          child: WidgetHelper().titleQ(
+            context,
+            'Apa Kata Mereka',
+            "Kata mereka tentang SangQu",
+            icon: AntDesign.star,
+            param: 'with',
+            callback:(){WidgetHelper().myPush(context,TestimoniScreen());},
           ),
-
         ),
-
         isLoadingTestimoni?TestimoniLoading():
         Container(
-          padding: EdgeInsets.only(left:0),
-          height: MediaQuery.of(context).size.height/1.8,
-          child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 2/2,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-            ),
+          height: scaler.getHeight(25),
+          child:ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: AlwaysScrollableScrollPhysics(),
             primary: true,
-            // reverse:true ,
-            padding: EdgeInsets.only(left: 10, right: 15, bottom: 10),
-
-
-            // scrollDirection: Axis.horizontal,
-            // physics: AlwaysScrollableScrollPhysics(),
-            // primary: true,
+            padding:scaler.getPadding(0,2),
             shrinkWrap: true,
-            // padding: EdgeInsets.only(left: 0, right: 0, bottom: 0),
             itemCount: testimoniModel.result.data.length,
             itemBuilder: (context, index) {
-
               var val=testimoniModel.result.data[index];
               return FlatButton(
                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
@@ -440,68 +391,39 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                   alignment: AlignmentDirectional.center,
                   children: [
                     Container(
+                      width: (MediaQuery.of(context).size.width - 57) * 0.5,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
-                            child: WidgetHelper().baseImage(val.picture,width: double.infinity,fit: BoxFit.contain,height: 150),
+                            child: Container(
+                              height: scaler.getHeight(12),
+                              width: double.infinity,
+                              child: WidgetHelper().baseImage(val.picture),
+                            ),
                           ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 5, 5, 0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-
                                 Padding(
-                                  padding: EdgeInsets.all(10),
+                                  padding: EdgeInsets.all(5),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Center(
                                         child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
                                       ),
-                                      SizedBox(height: 5),
+                                      SizedBox(height:scaler.getHeight(0.5)),
                                       Center(
-                                        child: WidgetHelper().textQ(val.caption, 12,Colors.black,FontWeight.normal,maxLines: 2,textAlign: TextAlign.center),
+                                        child: WidgetHelper().textQ(val.caption, scaler.getTextSize(9),Colors.black,FontWeight.normal,maxLines: 4,textAlign: TextAlign.center),
                                       ),
-                                      SizedBox(height: 5),
+                                      SizedBox(height:scaler.getHeight(0.5)),
                                       Center(
                                         child: Icon(FontAwesome.quote_left,size: 10,color: Colors.grey,),
                                       ),
-                                      // SizedBox(height: 5),
-                                      // Center(
-                                      //   child: Row(
-                                      //     mainAxisAlignment: MainAxisAlignment.start,
-                                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                                      //     children: [
-                                      //       Icon(AntDesign.user,size: 15,color: Colors.grey,),
-                                      //       WidgetHelper().textQ(val.writer, 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
-                                      //     ],
-                                      //   ),
-                                      // ),
-                                      // SizedBox(height: 5),
-                                      // Center(
-                                      //   child: Row(
-                                      //     mainAxisAlignment: MainAxisAlignment.start,
-                                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                                      //     children: [
-                                      //       Icon(Icons.group_work,size: 15,color: Colors.grey,),
-                                      //       WidgetHelper().textQ(val.jobs, 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
-                                      //     ],
-                                      //   ),
-                                      // ),
-                                      // SizedBox(height: 5),
-                                      // Center(
-                                      //   child: Row(
-                                      //     mainAxisAlignment: MainAxisAlignment.start,
-                                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                                      //     children: [
-                                      //       Icon(Icons.timer,size: 15,color: Colors.grey),
-                                      //       WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt, " "), 12,Colors.grey,FontWeight.normal,maxLines: 10,textAlign: TextAlign.center)
-                                      //     ],
-                                      //   ),
-                                      // ),
+
                                     ],
                                   ),
                                 )
@@ -514,18 +436,18 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     ),
                     val.video!='-'?Positioned(
                       top: 0,
-                      right: 10,
+                      right: 0,
                       child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
+                          padding: scaler.getPadding(0,2),
+                          // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4)), color:Constant().mainColor),
                           alignment: AlignmentDirectional.center,
-                          child:Icon(AntDesign.videocamera,color: Colors.white)
+                          child:Icon(AntDesign.videocamera,color:Constant().mainColor,size: scaler.getTextSize(10))
                       ),
                     ):Text('')
                   ],
                 ),
               );
-            }
+            },separatorBuilder: (context,index){return SizedBox(width: 10);},
           ),
         )
 

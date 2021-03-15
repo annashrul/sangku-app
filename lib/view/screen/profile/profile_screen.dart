@@ -11,6 +11,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   List dataInfo=[];
+  List dataSocmed=[
+    {}
+  ];
   ScrollController controller;
   SiteModel siteModel;
   bool isLoading=true,isLoadingInfo=true;
@@ -56,13 +59,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   @override
   Widget build(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return SafeArea(
       child: RefreshWidget(
         widget: WrapperPageWidget(
           controller: controller,
           children: [
             Container(
-              padding: EdgeInsets.only(left:0.0,right:0.0,bottom:0.0,top:0.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -83,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: FlatButton(
                             onPressed: (){},
                             shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
-                            padding: EdgeInsets.all(10.0),
+                            padding: scaler.getPadding(1,1),
                             color: Constant().mainColor1,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -92,8 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    WidgetHelper().textQ(dataInfo[index]['title'],10,Constant().mainColor2, FontWeight.normal,textAlign: TextAlign.left),
-                                    WidgetHelper().textQ("${FunctionHelper().formatter.format(dataInfo[index]['value'])}",12,Constant().mainColor2, FontWeight.bold,textAlign: TextAlign.left),
+                                    WidgetHelper().textQ(dataInfo[index]['title'],scaler.getTextSize(9),Constant().mainColor2, FontWeight.normal,textAlign: TextAlign.left),
+                                    WidgetHelper().textQ("${FunctionHelper().formatter.format(dataInfo[index]['value'])}",scaler.getTextSize(9),Constant().mainColor2, FontWeight.bold,textAlign: TextAlign.left),
                                   ],
                                 ),
                               ],
@@ -109,43 +113,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            SizedBox(height:10),
-            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?Container(
-              padding: EdgeInsets.only(top:10,bottom:10),
-              child:ListTile(
-                trailing: Icon(Icons.arrow_right),
-                leading: WidgetHelper().baseImage(infoTambahanModel.result.reward.gambar),
-                title: WidgetHelper().textQ(infoTambahanModel.result.reward.title,12,Constant().darkMode,FontWeight.bold),
-                subtitle: WidgetHelper().textQ(infoTambahanModel.result.reward.caption,12,Constant().darkMode,FontWeight.normal),
-                onTap: (){},
+            SizedBox(height:scaler.getHeight(1)),
+            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?ListTile(
+              contentPadding: scaler.getPadding(0,2),
+              trailing: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
+              leading: WidgetHelper().baseImage(infoTambahanModel.result.reward.gambar),
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WidgetHelper().textQ(infoTambahanModel.result.reward.title,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                  WidgetHelper().textQ(infoTambahanModel.result.reward.caption,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal)
+                ],
               ),
+              onTap: (){},
             ):Text(''),
-
-
+            SizedBox(height:scaler.getHeight(1)),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              margin: scaler.getMargin(0,2),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 0)
-
-                  // BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
                 ],
               ),
               child: Column(
                 children: <Widget>[
-                  ListTile(
-                    contentPadding: EdgeInsets.only(left:10,right:20),
-                    leading: Icon(AntDesign.barschart,color:Constant().mainColor),
-                    title: WidgetHelper().textQ("Laporan",14,Colors.black,FontWeight.bold),
+                  Padding(
+                    child: WidgetHelper().titleQ(context,"Laporan","lihat riwayat transaksi anda disini",icon: AntDesign.barschart),
+                    padding: scaler.getPadding(1,2),
                   ),
-                  section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},1,iconData: AntDesign.trademark),
-                  section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},0,iconData: AntDesign.shoppingcart),
-                  section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},1,iconData: AntDesign.wallet),
-                  section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},0,iconData: AntDesign.swapleft),
-                  section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},1,iconData: AntDesign.swapright),
-                  section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},0,iconData: AntDesign.folder1),
+                  section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},0,iconData: AntDesign.trademark),
+                  section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},1,iconData: AntDesign.shoppingcart),
+                  section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},0,iconData: AntDesign.wallet),
+                  section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},1,iconData: AntDesign.swapleft),
+                  section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},0,iconData: AntDesign.swapright),
+                  section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData: AntDesign.folder1),
                 ],
               ),
             ),
@@ -160,13 +164,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: <Widget>[
-                  ListTile(
-                    contentPadding: EdgeInsets.only(left:10,right:20),
-                    leading: Icon(AntDesign.setting,color:Constant().mainColor),
-                    title: WidgetHelper().textQ("Pengaturan Umum",14,Colors.black,FontWeight.bold),
+                  Padding(
+                    child: WidgetHelper().titleQ(context,"Pengaturan Umum","Atur pengaturan data anda disini",icon: AntDesign.setting),
+                    padding: scaler.getPadding(1,2),
                   ),
                   section2("Data Diri",(){},0,iconData: AntDesign.user),
-                  // section2("Keamanan",(){},1,iconData: AntDesign.lock),
                   section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},1,iconData: Entypo.location),
                   section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},0,iconData:AntDesign.bank),
                   section2("Privacy Policy",(){
@@ -209,21 +211,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
   Widget section2(String title, Function callback,int idx,{IconData iconData=AntDesign.arrowright}){
-    return FlatButton(
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+    return Container(
       color: idx==0?Color(0xFFEEEEEE):Colors.white,
-      padding: EdgeInsets.all(0.0),
-      highlightColor:Colors.black38,
-      splashColor:Colors.black38,
-      onPressed: ()async{
-        await Future.delayed(Duration(milliseconds: 90));
-        callback();
-        // WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0));
-      },
       child: ListTile(
-        contentPadding: EdgeInsets.only(left:20,right:20),
+        onTap: ()async{
+          await Future.delayed(Duration(milliseconds: 90));
+          callback();
+        },
+        contentPadding:scaler.getPadding(0,2),
         dense: true,
-        title: WidgetHelper().textQ("$title",12,Colors.black,FontWeight.normal,letterSpacing: 2.0),
-        trailing: Icon(iconData,color: Colors.grey),
+        title: WidgetHelper().textQ("$title",scaler.getTextSize(9),Colors.black,FontWeight.bold,letterSpacing: 2.0),
+        trailing: Icon(iconData,color: Colors.grey,size: scaler.getTextSize(12)),
       ),
     );
   }
@@ -235,10 +235,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               btnSocmed(context,"Twitter",AntDesign.twitter,siteModel.result.socialMedia.tw,color: Color(0xFF00acee)),
+              SizedBox(width: 10),
               btnSocmed(context,"Facebook",AntDesign.facebook_square,siteModel.result.socialMedia.fb,color: Color(0xFF3b5998)),
+              SizedBox(width: 10),
               btnSocmed(context,"Instagram",AntDesign.instagram,siteModel.result.socialMedia.ig,gradient: LinearGradient(
                 colors: [
                   Color(0xff8a3ab9),
@@ -247,6 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Color(0xff4c68d7),
                 ],
               )),
+              SizedBox(width: 10),
               btnSocmed(context,"Youtube",AntDesign.youtube,siteModel.result.socialMedia.yt,color: Color(0xFFFF0000)),
             ],
           ),
@@ -276,8 +280,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //   // color:  color,
       //   // gradient: gradient
       // ),
-      child: FlatButton(
-        onPressed: ()async{
+      child: InkWell(
+        onTap: ()async{
           WidgetHelper().myPush(context,Scaffold(
               appBar: WidgetHelper().appBarWithButton(context,title, (){Navigator.pop(context);},<Widget>[]),
               body: WebViewWidget(val: {"url":url})

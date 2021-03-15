@@ -54,87 +54,11 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
   }
 
 
-  // @override
-  // Widget build(context) {
-  //   super.build(context);
-  //   return Scaffold(
-  //     extendBody: true,
-  //     body: PageView(
-  //       onPageChanged: (int page){
-  //         print(page);
-  //       },
-  //       controller: controller,
-  //       children: [
-  //         currentScreen
-  //       ],
-  //     ),
-  //     bottomNavigationBar: FluidNavBar(
-  //       icons: [
-  //         FluidNavBarIcon(
-  //             icon: AntDesign.gift,
-  //             backgroundColor:Constant().mainColor,
-  //             extras: {"label": "redeem"}),
-  //         FluidNavBarIcon(
-  //             icon: AntDesign.shoppingcart,
-  //             backgroundColor:Constant().mainColor,
-  //             extras: {"label": "produk"}),
-  //         FluidNavBarIcon(
-  //             icon:AntDesign.home,
-  //             backgroundColor:Constant().mainColor,
-  //             extras: {"label": "home"}),
-  //         FluidNavBarIcon(
-  //             icon: AntDesign.addusergroup,
-  //             backgroundColor:Constant().mainColor,
-  //             extras: {"label": "binary"}),
-  //         FluidNavBarIcon(
-  //             icon: AntDesign.user,
-  //             backgroundColor:Constant().mainColor,
-  //             extras: {"label": "profil"}),
-  //       ],
-  //       onChange: _handleNavigationChange,
-  //       style: FluidNavBarStyle(
-  //         barBackgroundColor: Constant().mainColor,
-  //           iconSelectedForegroundColor:Colors.white,
-  //           iconUnselectedForegroundColor: Colors.white
-  //       ),
-  //       scaleFactor: 1.0,
-  //       defaultIndex: 2,
-  //       itemBuilder: (icon, item) => Semantics(
-  //         label: icon.extras["label"],
-  //         child: item,
-  //       ),
-  //     ),
-  //   );
-  // }
-  //
-  // void _handleNavigationChange(int index) {
-  //   switch (index) {
-  //     case 0:
-  //       currentScreen = RedeemPointScreen();
-  //       break;
-  //     case 1:
-  //       currentScreen = ProductScreen();
-  //       break;
-  //     case 2:
-  //       currentScreen = HomeScreen();
-  //       break;
-  //     case 3:
-  //       currentScreen = BinaryScreen();
-  //       break;
-  //     case 4:
-  //       currentScreen = ProfileScreen();
-  //       break;
-  //   }
-  //   currentScreen = AnimatedSwitcher(
-  //     switchInCurve: Curves.easeOut,
-  //     switchOutCurve: Curves.easeIn,
-  //     duration: Duration(milliseconds: 500),
-  //     child: currentScreen,
-  //   );
-  //   if(this.mounted)setState(() {});
-  // }
+ 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     super.build(context);
     return WillPopScope(
         child: Scaffold(
@@ -148,7 +72,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
-            child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: 30.0),
+            child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: scaler.getTextSize(15)),
             onPressed: () {
               setState(() {
                 currentScreen = HomeScreen();
@@ -171,7 +95,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                       MaterialButton(
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
-                        minWidth: 40,
+                        minWidth: scaler.getWidth(10),
                         onPressed: () {
                           setState(() {
                             currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
@@ -182,14 +106,15 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.gift,color: widget.currentTab == 0?Constant().mainColor:Constant().secondColor,size: 30.0),
+                            Icon(AntDesign.gift,color: widget.currentTab == 0?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       ),
                       MaterialButton(
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
-                        minWidth: 40,
+                        minWidth: scaler.getWidth(10),
+
                         onPressed: () {
                           setState(() {
                             currentScreen = ProductScreen(); // if user taps on this dashboard tab will be active
@@ -199,7 +124,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.shoppingcart,color: widget.currentTab == 1?Constant().mainColor:Constant().secondColor,size: 30.0),
+                            Icon(AntDesign.shoppingcart,color: widget.currentTab == 1?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       )
@@ -212,7 +137,8 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                       MaterialButton(
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
-                        minWidth: 40,
+                        minWidth: scaler.getWidth(10),
+
                         onPressed: () {
                           setState(() {
                             currentScreen = BinaryScreen(); // if user taps on this dashboard tab will be active
@@ -222,14 +148,15 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.addusergroup,color: widget.currentTab == 3?Constant().mainColor:Constant().secondColor,size: 30.0),
+                            Icon(AntDesign.addusergroup,color: widget.currentTab == 3?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       ),
                       MaterialButton(
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
-                        minWidth: 40,
+                        minWidth: scaler.getWidth(10),
+
                         onPressed: () {
                           setState(() {
                             currentScreen = ProfileScreen(); // if user taps on this dashboard tab will be active
@@ -239,7 +166,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.user,color: widget.currentTab == 4?Constant().mainColor:Constant().secondColor,size: 30.0),
+                            Icon(AntDesign.user,color: widget.currentTab == 4?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       )
@@ -264,10 +191,10 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
 
 
 class NavigationProvider with ChangeNotifier {
-  DataMemberModel dataMemberModel;
-  Future loadMember()async{
-    dataMemberModel = await MemberProvider().getDataMember();
-  }
+  // DataMemberModel dataMemberModel;
+  // Future loadMember()async{
+  //   dataMemberModel = await MemberProvider().getDataMember();
+  // }
 
   String currentNavigation = "index";
   Widget get getNavigation {

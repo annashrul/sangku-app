@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -23,6 +24,8 @@ class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     super.build(context);
     return FlatButton(
         padding: EdgeInsets.all(0),
@@ -36,23 +39,23 @@ class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMi
           children: [
             ClipRRect(
               borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              child: WidgetHelper().baseImage(widget.contentModel.result.data[widget.idx].picture,width: double.infinity,fit: BoxFit.cover),
+              child: WidgetHelper().baseImage(widget.contentModel.result.data[widget.idx].picture,height:scaler.getHeight(10),width: double.infinity,fit: BoxFit.cover),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 14, 14, 4),
+              padding:scaler.getPadding(1,0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
                   color: Constant().moneyColor,
-                  padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
-                  child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].category,10,Constant().secondDarkColor,FontWeight.bold),
+                  padding:scaler.getPadding(0.5,2),
+                  child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].category,scaler.getTextSize(9),Constant().secondDarkColor,FontWeight.bold),
                 ),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 14, 0),
-                child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].title,12,Constant().darkMode,FontWeight.normal,maxLines: 3),
+                padding:scaler.getPadding(0,0),
+                child:WidgetHelper().textQ(widget.contentModel.result.data[widget.idx].title,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines: 3),
               ),
             )
           ],

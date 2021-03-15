@@ -44,9 +44,9 @@ class Result {
     this.status,
     this.createdAt,
     this.updatedAt,
+    this.havePin,
     this.picture,
-    this.otp,
-    this.msgOtp,
+    this.isRegister,
   });
 
   String id;
@@ -59,9 +59,9 @@ class Result {
   int status;
   DateTime createdAt;
   DateTime updatedAt;
+  bool havePin;
   String picture;
-  String otp;
-  String msgOtp;
+  int isRegister;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     id: json["id"],
@@ -74,9 +74,9 @@ class Result {
     status: json["status"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
+    havePin: json["have_pin"],
     picture: json["picture"],
-    otp: json["otp"],
-    msgOtp: json["msg_otp"],
+    isRegister: json["is_register"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -90,8 +90,8 @@ class Result {
     "status": status,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+    "have_pin": havePin,
     "picture": picture,
-    "otp": otp,
-    "msg_otp": msgOtp,
+    "is_register": isRegister,
   };
 }
