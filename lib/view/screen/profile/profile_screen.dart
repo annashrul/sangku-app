@@ -18,6 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   SiteModel siteModel;
   bool isLoading=true,isLoadingInfo=true;
   InfoTambahanModel infoTambahanModel;
+  double height=0;
   Future loadInfo()async{
     var res = await BaseProvider().getProvider('member/tambahan',infoTambahanModelFromJson,context: context,callback: (){
       setState(() {
@@ -29,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if(res is InfoTambahanModel){
       InfoTambahanModel result=res;
       infoTambahanModel=result;
+      height=1;
       dataInfo.add({"title":"Bonus Diterima","value":infoTambahanModel.result.bonus});
       dataInfo.add({"title":"Bonus Sponsor","value":infoTambahanModel.result.bonusSponsor});
       dataInfo.add({"title":"Total Withdrawal","value":int.parse(infoTambahanModel.result.withdrawal)});
@@ -113,7 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            SizedBox(height:scaler.getHeight(1)),
+            isLoadingInfo?Text(''):SizedBox(
+                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?1:0)
+            ),
             isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?ListTile(
               contentPadding: scaler.getPadding(0,2),
               trailing: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
@@ -128,7 +132,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               onTap: (){},
             ):Text(''),
-            SizedBox(height:scaler.getHeight(1)),
+            isLoadingInfo?Text(''):SizedBox(
+                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?1:0)
+            ),
             Container(
               margin: scaler.getMargin(0,2),
               decoration: BoxDecoration(

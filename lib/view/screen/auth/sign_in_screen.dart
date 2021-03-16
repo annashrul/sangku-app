@@ -18,6 +18,7 @@ import 'package:sangkuy/provider/member_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/home_view.dart';
 import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/screen/profile/form_profile_screen.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -147,22 +148,30 @@ class _SignInScreenState extends State<SignInScreen> {
     else{
       var loginModel = LoginModel.fromJson(baseAuth);
       if(loginModel.result.isRegister==0){
-        WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin){
-          String isPin=myPin;
-          WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin)async{
-            if(myPin==isPin){
-              WidgetHelper().loadingDialog(context);
-              await insertDb(loginModel);
-              await MemberProvider().updateMember({'pin':myPin}, context);
-              Navigator.pop(context);
-              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-              print('sama');
-            }else{
-              WidgetHelper().showFloatingFlushbar(context,"failed","pin yang masukan tidak sama");
-              print('beda');
-            }
-          },param:'confirm'));
-        },param:'create'));
+        WidgetHelper().myPush(context, CreatePinScreen(callback: (myPin)async{
+          WidgetHelper().loadingDialog(context);
+          await insertDb(loginModel);
+          await MemberProvider().updateMember({'pin':myPin}, context);
+          Navigator.pop(context);
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        }));
+        // WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin){
+        //   String isPin=myPin;
+        //
+        //   WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin)async{
+        //     if(myPin==isPin){
+        //       WidgetHelper().loadingDialog(context);
+        //       await insertDb(loginModel);
+        //       await MemberProvider().updateMember({'pin':myPin}, context);
+        //       Navigator.pop(context);
+        //       WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        //       print('sama');
+        //     }else{
+        //       WidgetHelper().showFloatingFlushbar(context,"failed","pin yang masukan tidak sama");
+        //       print('beda');
+        //     }
+        //   },param:'confirm'));
+        // },param:'create'));
       }
       else{
         await insertDb(loginModel);

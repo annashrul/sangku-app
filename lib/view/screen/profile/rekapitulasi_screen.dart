@@ -76,13 +76,13 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
                 child: ListView(
                   children: [
                     buildItem(context,"PERTUMBUHAN","KIRI","${isLoading?'':rekapitulasiModel.result.pertumbuhanKiri}",title2:"KANAN",value2:"${isLoading?'':rekapitulasiModel.result.pertumbuhanKanan}"),
-                    SizedBox(height: 10),
+                    SizedBox(height: scaler.getHeight(1)),
                     buildItem(context,"TABUNGAN","KIRI","${isLoading?'':rekapitulasiModel.result.tabunganKiri}",title2:"KANAN",value2:"${isLoading?'':rekapitulasiModel.result.tabunganKanan}"),
-                    SizedBox(height: 10),
+                    SizedBox(height: scaler.getHeight(1)),
                     buildItem(context,"BALANCE","KIRI","${isLoading?'':rekapitulasiModel.result.balanceKiri}",title2:"KANAN",value2: "${isLoading?'':rekapitulasiModel.result.balanceKanan}"),
-                    SizedBox(height: 10),
+                    SizedBox(height: scaler.getHeight(1)),
                     buildItems(context,"TERPASANG (T)", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.hakBonus)} .-"),
-                    SizedBox(height: 10),
+                    SizedBox(height: scaler.getHeight(1)),
                     buildItems(context,"BONUS (T x 20.000) ", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.nominalBonus)} .-")
                   ],
                 )
@@ -107,11 +107,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              WidgetHelper().textQ(title,14,Constant().greenColor,FontWeight.bold),
+              WidgetHelper().textQ(title,scaler.getTextSize(10),Constant().greenColor,FontWeight.bold),
             ],
           ),
         ),
-        SizedBox(height:10),
+        SizedBox(height:scaler.getHeight(1)),
         Container(
           padding: EdgeInsets.only(left:15),
           child: Row(
@@ -119,9 +119,9 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
             children: [
               isLoading?WidgetHelper().baseLoading(context,Container(color: Colors.white,width: 150,height: 15)):Container(
                 width: 150,
-                child:  WidgetHelper().textQ(title1,14,Constant().darkMode,FontWeight.bold),
+                child:  WidgetHelper().textQ(title1,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
               ),
-              WidgetHelper().textQ(":",14,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ(":",scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
               SizedBox(width: 10),
               isLoading?WidgetHelper().baseLoading(context,Container(color: Colors.white,width: 150,height: 15)):WidgetHelper().textQ(value1,14,Constant().darkMode,FontWeight.bold),
             ],

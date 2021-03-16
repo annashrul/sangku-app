@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           children: [
             Container(
               child: StaggeredGridView.countBuilder(
+                padding: EdgeInsets.all(0.0),
                 shrinkWrap: true,
                 primary: false,
                 crossAxisCount: 3,
@@ -137,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                   );
                 },
                 staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-                mainAxisSpacing: 10.0,
+                mainAxisSpacing: 0.0,
                 crossAxisSpacing: 1.0,
               ),
             ),
@@ -174,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 ],
               ),
             )),
-            SizedBox(height: scaler.getHeight(1)),
+            if(dataMember!=null)SizedBox(height: scaler.getHeight(0)),
             section2(context),
             Divider(thickness:scaler.getHeight(1)),
             section6(context),
@@ -230,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
                     },
                     shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                    padding: EdgeInsets.all(10.0),
+                    padding: EdgeInsets.all(0.0),
                     // color: Color(0xFFEEEEEE),
                     child: Column(
                       children: [
@@ -248,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 );
               },
               staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-              mainAxisSpacing: 0.0,
+              mainAxisSpacing: 10.0,
               crossAxisSpacing: 0.0,
             ),
           ),

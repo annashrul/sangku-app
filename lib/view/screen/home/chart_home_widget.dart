@@ -32,7 +32,10 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     // print(double.parse());
-    // print()
+    print(kiri);
+    print(kanan);
+    print(pvKiri);
+    print(pvKanan);
     super.build(context);
     return widget.data['left_pv']=="0"?Text(''):Padding(
       padding: EdgeInsets.all(0),
