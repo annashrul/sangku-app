@@ -258,7 +258,6 @@ class _DetailRedeemState extends State<DetailRedeem> {
   }
   Widget desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Padding(
       padding: EdgeInsets.only(left:10,right:10),
       child: Row(

@@ -166,8 +166,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
 
 class PinScreen extends StatefulWidget {
   Function(BuildContext context, bool isTrue,String pin) callback;
-  String param;
-  PinScreen({this.callback,this.param});
+  PinScreen({this.callback});
   @override
   _PinScreenState createState() => _PinScreenState();
 }
@@ -180,26 +179,18 @@ class _PinScreenState extends State<PinScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-    String desc='';
-    if(widget.param=='create'){
-      desc='Silahkan ubah pin demi keamanan bertransaksi anda';
-    }else if(widget.param=='confirm'){
-      desc='KONFIRMASI PIN';
-    }
-    else{
-      desc='Masukan PIN Anda demi keamanan bertransaksi';
-    }
+
     return Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
-        bottomNavigationBar:widget.param==null||widget.param==''?FlatButton(
+        bottomNavigationBar:FlatButton(
             padding: scaler.getPadding(1.5,0),
             color: Constant().moneyColor,
             onPressed: ()async{
               
             },
             child: WidgetHelper().textQ("Lupa Pin", scaler.getTextSize(10),Colors.white,FontWeight.bold)
-        ):Text(''),
+        ),
         body: SecureCodeHelper(
             showFingerPass: false,
             title: "Keamanan",
@@ -210,7 +201,7 @@ class _PinScreenState extends State<PinScreen> {
             wrongPassContent: "PIN Tidak Sesuai",
             wrongPassTitle: "Opps!",
             wrongPassCancelButtonText: "Batal",
-            deskripsi:desc,
+            deskripsi:'Masukan PIN Anda demi keamanan bertransaksi',
             passCodeVerify: (passcode) async {
               print(passcode);
               String code='';

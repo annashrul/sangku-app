@@ -1,18 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'file:///E:/NETINDO/mobile/sangkuy/lib/model/mlm/package/package_model.dart';
+import 'package:sangkuy/model/mlm/package/package_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
-import 'package:sangkuy/provider/cart_provider.dart';
 import 'package:sangkuy/view/screen/mlm/detail_package_screen.dart';
+import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/loading/package_loading.dart';
-import 'package:shimmer/shimmer.dart';
 
-import 'error_widget.dart';
 
 class PackageWidget extends StatefulWidget {
   final String tipe;
@@ -35,42 +32,25 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
   bool isLoading=false,isError=false,isErrToken=false;
   PackageModel packageModel;
   Future loadData()async{
-    var res = await BaseProvider().getProvider("package?page=1&tipe=${widget.tipe}&perpage=$perpage", packageModelFromJson);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      isLoading=false;
-      isError=true;
-      isLoadmore=false;
-      setState(() {});
-    }
-    else if(res==Constant().errExpToken){
-      isLoading=false;
-      isError=false;
-      isErrToken=true;
-      setState(() {});
-      WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
-        await FunctionHelper().logout(context);
-      },titleBtn1: "Login");
-    }
-    else{
-      if(res is PackageModel){
-        PackageModel result=res;
-        if(result.status=='success'){
-          if(this.mounted){
-            setState(() {
-              packageModel = PackageModel.fromJson(result.toJson());
-              total=result.result.total;
-              isLoading=false;
-              isError=false;
-              isLoadmore=false;
-            });
-          }
+    var res = await BaseProvider().getProvider("package?page=1&tipe=${widget.tipe}&perpage=$perpage",packageModelFromJson,context: context,callback: (){});
+    if(res is PackageModel){
+      PackageModel result=res;
+      if(result.status=='success'){
+        if(this.mounted){
+          setState(() {
+            packageModel = PackageModel.fromJson(result.toJson());
+            total=result.result.total;
+            isLoading=false;
+            isError=false;
+            isLoadmore=false;
+          });
         }
-        else{
-          isLoading=false;
-          isError=true;
-          isLoadmore=false;
-          setState(() {});
-        }
+      }
+      else{
+        isLoading=false;
+        isError=true;
+        isLoadmore=false;
+        setState(() {});
       }
     }
   }

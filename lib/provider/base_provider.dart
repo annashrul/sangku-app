@@ -29,6 +29,7 @@ class BaseProvider{
       print("=================== GET DATA $url = ${response.statusCode} ============================");
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 200) {
+        print("=================== SUCCESS $url = $jsonResponse ==========================");
         if(jsonResponse['result'].length>0){
           return param(response.body);
         }else{
@@ -37,7 +38,6 @@ class BaseProvider{
         }
       }
       else if(response.statusCode == 400){
-        print(jsonResponse);
         if(jsonResponse['msg']=='Invalid Token.'){
           if(context==null){
             return Constant().errExpToken;
@@ -83,10 +83,19 @@ class BaseProvider{
       ).timeout(Duration(seconds: Constant().timeout));
       print("=================== POST DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
-        return jsonDecode(request.body);
+        return json.decode(request.body);
       }
       else if(request.statusCode==400){
-        return General.fromJson(jsonDecode(request.body));
+        final jsonResponse = json.decode(request.body);
+        // if(context!=null){
+        //   print("request.statusCode==400 ${jsonResponse['msg']}");
+        //   return WidgetHelper().showFloatingFlushbar(context,"failed", jsonResponse['msg']);
+        // }
+        // else{
+        //   return General.fromJson(json.decode(request.body));
+        // }
+        return General.fromJson(json.decode(request.body));
+
       }
       else if(request.statusCode==404){
         return WidgetHelper().notifOneBtnDialog(context,"Informasi !","url not found",(){Navigator.pop(context);});

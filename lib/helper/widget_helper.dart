@@ -193,11 +193,13 @@ class WidgetHelper{
 
 
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{double sizeTitle=14.0,Brightness brightness=Brightness.light}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return  AppBar(
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,sizeTitle,Constant().darkMode,FontWeight.bold),
+      title:textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
       leading: IconButton(
         icon: new Icon(AntDesign.back,color: Colors.grey),
         onPressed: (){
@@ -238,6 +240,7 @@ class WidgetHelper{
           ),
         ));
     });
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return AppBar(
       elevation: 0.0,
@@ -247,8 +250,8 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ("$title",14,Colors.grey,FontWeight.bold),
-          if(description!='')WidgetHelper().textQ("$description",12,Colors.black,FontWeight.normal),
+          WidgetHelper().textQ("$title",scaler.getTextSize(10),Colors.grey,FontWeight.bold),
+          if(description!='')WidgetHelper().textQ("$description",scaler.getTextSize(9),Colors.black,FontWeight.normal),
         ],
       ),
       // title:textQ(title,18,Colors.black,FontWeight.bold),

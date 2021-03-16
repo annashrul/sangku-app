@@ -30,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if(res is InfoTambahanModel){
       InfoTambahanModel result=res;
       infoTambahanModel=result;
+      print(infoTambahanModel.toJson());
       height=1;
       dataInfo.add({"title":"Bonus Diterima","value":infoTambahanModel.result.bonus});
       dataInfo.add({"title":"Bonus Sponsor","value":infoTambahanModel.result.bonusSponsor});
@@ -116,9 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?1:0)
+                height:scaler.getHeight(infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?1:0)
             ),
-            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?ListTile(
+            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?ListTile(
               contentPadding: scaler.getPadding(0,2),
               trailing: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
               leading: WidgetHelper().baseImage(infoTambahanModel.result.reward.gambar),
@@ -130,10 +131,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   WidgetHelper().textQ(infoTambahanModel.result.reward.caption,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal)
                 ],
               ),
-              onTap: (){},
+              onTap: (){
+                WidgetHelper().myModal(context,RewardScreen(infoTambahanModel: infoTambahanModel));
+              },
             ):Text(''),
             isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'||infoTambahanModel.result.reward.isClaimed?1:0)
+                height:scaler.getHeight(infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?1:0)
             ),
             Container(
               margin: scaler.getMargin(0,2),
@@ -147,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: <Widget>[
                   Padding(
-                    child: WidgetHelper().titleQ(context,"Laporan","lihat riwayat transaksi anda disini",icon: AntDesign.barschart),
+                    child: WidgetHelper().titleQ(context,"Laporan","Lihat riwayat transaksi anda disini",icon: AntDesign.barschart),
                     padding: scaler.getPadding(1,2),
                   ),
                   section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},0,iconData: AntDesign.trademark),
@@ -299,4 +302,168 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+}
+
+
+class RewardScreen extends StatefulWidget {
+  InfoTambahanModel infoTambahanModel;
+  RewardScreen({this.infoTambahanModel});
+  @override
+  _RewardScreenState createState() => _RewardScreenState();
+}
+
+class _RewardScreenState extends State<RewardScreen> {
+  AddressModel addressModel;
+  bool isLoading=true;
+  String idAddress='';
+
+  Future loadAddress()async{
+    var res = await BaseProvider().getProvider("alamat?page=1&perpage=10", addressModelFromJson,context: context,callback: (){
+
+    });
+    if(res is AddressModel){
+      if (this.mounted) {
+        setState(() {
+          addressModel = res;
+          isLoading = false;
+        });
+      }
+    }
+
+  }
+
+  Future checkout(BuildContext context)async{
+    
+    if(idAddress==''){
+      return WidgetHelper().showFloatingFlushbar(context,"failed","silahkan pilih alamat anda");
+    }
+    WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
+      final data={
+        "pin_member":pin.toString(),
+        "alamat":idAddress,
+        "id_barang":widget.infoTambahanModel.result.reward.id
+      };
+      WidgetHelper().loadingDialog(context);
+      final res=await BaseProvider().postProvider('transaction/claim/reward', data,context: context);
+      Navigator.pop(context);
+      if(res is General){
+        General result=res;
+        print(result.msg);
+        if(result.msg!='PIN anda tidak sesuai.'){
+          Navigator.pop(context);
+        }
+        WidgetHelper().showFloatingFlushbar(context,"failed", result.msg);
+      }else{
+        WidgetHelper().notifOneBtnDialog(context,"Transaksi Berhasil","barang reward anda berhasil di claim.",(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        });
+        print(res);
+      }
+    }));
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadAddress();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(70),
+      child: isLoading?WidgetHelper().loadingWidget(context):Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height:scaler.getHeight(1)),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SizedBox(height:scaler.getHeight(1)),
+          Padding(
+            padding: scaler.getPadding(1,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Barang reward anda',color: Constant().mainColor1,iconSize: 12,),
+          ),
+          ListTile(
+            contentPadding: scaler.getPadding(0,2),
+            leading: WidgetHelper().baseImage(widget.infoTambahanModel.result.reward.gambar),
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                WidgetHelper().textQ(widget.infoTambahanModel.result.reward.title,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                WidgetHelper().textQ(widget.infoTambahanModel.result.reward.caption,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines: 3)
+              ],
+            ),
+            onTap: (){
+              // WidgetHelper().myModal(context,RewardScreen(infoTambahanModel: infoTambahanModel));
+            },
+          ),
+
+          Padding(
+            padding: scaler.getPadding(1,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Pilih Alamat',color: Constant().mainColor1,iconSize: 12),
+          ),
+          Expanded(
+              flex: 1,
+              child: ListView.separated(
+                padding: scaler.getPadding(0,2),
+                addRepaintBoundaries: true,
+                primary: false,
+                shrinkWrap: true,
+                itemCount: addressModel.result.data.length,
+                itemBuilder: (context,index){
+                  var val=addressModel.result.data[index];
+                  return CardWidget(
+                    onTap:(){
+                      setState(() {
+                        idAddress=val.id;
+                      });
+                    },
+                    titleColor: Constant().darkMode,
+                    prefixBadge: Constant().mainColor,
+                    // title: val.title,
+                    description: val.mainAddress,
+                    descriptionColor: Constant().darkMode,
+                    suffixIcon:AntDesign.checkcircleo,
+                    suffixIconColor: idAddress==val.id?Constant().mainColor:Colors.transparent,
+                    backgroundColor:Constant().greyColor,
+                  );
+                },
+                separatorBuilder: (_,i){return(Text(''));},
+              )
+          ),
+          FlatButton(
+              padding: scaler.getPadding(1.3,0),
+              color: Constant().moneyColor,
+              onPressed: (){
+                checkout(context);
+                // postRedeem();
+                // handleSubmit();
+                // checkingAccount();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(AntDesign.checkcircleo,color: Colors.white,size: scaler.getTextSize(12),),
+                  SizedBox(width: 10.0),
+                  WidgetHelper().textQ("CHECKOUT", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+                ],
+              )
+          )
+        ],
+      ),
+    );
+  }
 }

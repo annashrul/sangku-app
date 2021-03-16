@@ -127,6 +127,22 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
       }
     }
   }
+  PinAvailableModel pinAvailableModel;
+
+  Future loadPin()async{
+    var res=await BaseProvider().getProvider('transaction/pin_available', pinAvailableModelFromJson,context: context,callback: (){
+
+    });
+    if(res is PinAvailableModel){
+      PinAvailableModel result=res;
+      setState(() {
+        isNodata=false;
+        isLoading=false;
+        pinAvailableModel=result;
+      });
+    }
+  }
+
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
@@ -615,7 +631,7 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
               }
             }),
             title: WidgetHelper().textQ(isNext?"Kembali":"REAKTIVASI MEMBERSHIP".toLowerCase(),10,Colors.grey,FontWeight.bold),
-            trailing: isNext?WidgetHelper().textQ("PIN YANG ANDA MILIKI : ${isLoading?'':pinAvailableModel.result.totalPin}".toLowerCase(),10,Constant().moneyColor,FontWeight.bold):Text(''),
+            trailing: isNext?WidgetHelper().textQ("PIN YANG ANDA MILIKI",10,Constant().moneyColor,FontWeight.bold):Text(''),
           ),
           Expanded(
             child: isNext?step2(context):isLoading?ListView.separated(
@@ -638,21 +654,21 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
                 itemCount: 3
             ):ListView.separated(
                 itemBuilder: (context,index){
-                  var val=pinAvailableModel.result.data[index];
+                  var val=pinAvailableModel.result[index];
                   return ListTile(
                     onTap: (){
                       print(val.toJson());
-                      if(val.jumlah<int.parse(pinAvailableModel.result.totalPin)){
-                        handleNext(index);
-                        setState(() {
-                          id=val.id;
-                          gambar=val.badge;
-                          title=val.title;
-                        });
-                      }
-                      else{
-                        WidgetHelper().showFloatingFlushbar(context,"failed","Jumlah PIN yang anda miliki masih kurang!");
-                      }
+                      // if(val.jumlah<int.parse(pinAvailableModel.result.totalPin)){
+                      //   handleNext(index);
+                      //   setState(() {
+                      //     id=val.id;
+                      //     gambar=val.badge;
+                      //     title=val.title;
+                      //   });
+                      // }
+                      // else{
+                      //   WidgetHelper().showFloatingFlushbar(context,"failed","Jumlah PIN yang anda miliki masih kurang!");
+                      // }
 
                     },
                     contentPadding: EdgeInsets.only(left:10.0,right:10.0),
@@ -663,7 +679,7 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
                   );
                 },
                 separatorBuilder: (context,index){return Divider();},
-                itemCount: pinAvailableModel.result.data.length
+                itemCount: pinAvailableModel.result.length
             ),
           ),
 
@@ -678,7 +694,7 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
             width: double.infinity,
             child: FlatButton(
               padding: EdgeInsets.all(10.0),
-              child: WidgetHelper().textQ('PIN YANG ANDA MILIKI : ${isLoading?'':pinAvailableModel.result.totalPin}', 10, Colors.white, FontWeight.normal,maxLines: 100),
+              child: WidgetHelper().textQ('PIN YANG ANDA MILIKI', 10, Colors.white, FontWeight.normal,maxLines: 100),
             ),
           )
         ],

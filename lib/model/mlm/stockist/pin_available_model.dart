@@ -15,18 +15,18 @@ class PinAvailableModel {
     this.status,
   });
 
-  Result result;
+  List<Result> result;
   String msg;
   String status;
 
   factory PinAvailableModel.fromJson(Map<String, dynamic> json) => PinAvailableModel(
-    result: Result.fromJson(json["result"]),
+    result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
     msg: json["msg"],
     status: json["status"],
   );
 
   Map<String, dynamic> toJson() => {
-    "result": result.toJson(),
+    "result": List<dynamic>.from(result.map((x) => x.toJson())),
     "msg": msg,
     "status": status,
   };
@@ -34,26 +34,6 @@ class PinAvailableModel {
 
 class Result {
   Result({
-    this.data,
-    this.totalPin,
-  });
-
-  List<Datum> data;
-  String totalPin;
-
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
-    data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-    totalPin: json["total_pin"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    "total_pin": totalPin,
-  };
-}
-
-class Datum {
-  Datum({
     this.id,
     this.title,
     this.badge,
@@ -63,9 +43,9 @@ class Datum {
   String id;
   String title;
   String badge;
-  int jumlah;
+  String jumlah;
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory Result.fromJson(Map<String, dynamic> json) => Result(
     id: json["id"],
     title: json["title"],
     badge: json["badge"],

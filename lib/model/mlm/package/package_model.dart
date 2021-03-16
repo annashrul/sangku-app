@@ -84,6 +84,8 @@ class Datum {
     this.deskripsi,
     this.idKategori,
     this.kategori,
+    this.harga,
+    this.ppn,
     this.badge,
     this.jumlahBarang,
     this.jumlahPin,
@@ -91,7 +93,6 @@ class Datum {
     this.pointVolume,
     this.type,
     this.berat,
-    this.harga,
     this.stock,
     this.foto,
     this.createdAt,
@@ -104,14 +105,15 @@ class Datum {
   String deskripsi;
   String idKategori;
   String kategori;
+  String harga;
+  String ppn;
   String badge;
   String jumlahBarang;
   String jumlahPin;
-  int status;
-  int pointVolume;
+  var status;
+  var pointVolume;
   String type;
   String berat;
-  String harga;
   String stock;
   String foto;
   DateTime createdAt;
@@ -124,6 +126,8 @@ class Datum {
     deskripsi: json["deskripsi"],
     idKategori: json["id_kategori"],
     kategori: json["kategori"],
+    harga: json["harga"],
+    ppn: json["ppn"],
     badge: json["badge"],
     jumlahBarang: json["jumlah_barang"],
     jumlahPin: json["jumlah_pin"],
@@ -131,7 +135,6 @@ class Datum {
     pointVolume: json["point_volume"],
     type: json["type"],
     berat: json["berat"],
-    harga: json["harga"],
     stock: json["stock"],
     foto: json["foto"],
     createdAt: DateTime.parse(json["created_at"]),
@@ -145,6 +148,8 @@ class Datum {
     "deskripsi": deskripsi,
     "id_kategori": idKategori,
     "kategori": kategori,
+    "harga": harga,
+    "ppn": ppn,
     "badge": badge,
     "jumlah_barang": jumlahBarang,
     "jumlah_pin": jumlahPin,
@@ -152,7 +157,6 @@ class Datum {
     "point_volume": pointVolume,
     "type": type,
     "berat": berat,
-    "harga": harga,
     "stock": stock,
     "foto": foto,
     "created_at": createdAt.toIso8601String(),

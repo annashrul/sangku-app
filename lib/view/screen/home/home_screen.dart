@@ -128,9 +128,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            WidgetHelper().textQ(title,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(title,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
                             SizedBox(height: scaler.getHeight(0.3)),
-                            WidgetHelper().textQ(value,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                            WidgetHelper().textQ(value,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
                           ],
                         ),
                       ],
@@ -224,7 +224,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         return WidgetHelper().myPush(context,HistoryTransactionScreen());
                       }
                       if(DataHelper.dataWallet[index]['type']!=''){
-                        return WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataWallet[index]['type']));
+                        // return WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataWallet[index]['type']));
+                        return WidgetHelper().myPush(context,PinAktivasiScreen());
                       }else{
                         return WidgetHelper().myPush(context,FormEwalletScreen(title:DataHelper.dataWallet[index]['title'].toUpperCase()));
                       }
@@ -401,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                             child: Container(
                               height: scaler.getHeight(12),
                               width: double.infinity,
-                              child: WidgetHelper().baseImage(val.picture),
+                              child: WidgetHelper().baseImage(val.picture,fit: BoxFit.cover),
                             ),
                           ),
                           Container(

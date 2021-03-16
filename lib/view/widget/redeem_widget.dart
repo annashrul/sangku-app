@@ -47,13 +47,7 @@ class RedeemWidget extends StatelessWidget {
                   child: Container(
                     height: scaler.getHeight(15),
                     width: double.infinity,
-                    child: CachedNetworkImage(
-                      imageUrl: this.data['gambar'],
-                      width: double.infinity ,
-                      fit:BoxFit.contain,
-                      placeholder: (context, url) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
-                      errorWidget: (context, url, error) => Image.asset(Constant().localAssets+"logo.png", fit:BoxFit.cover),
-                    ),
+                    child: WidgetHelper().baseImage(this.data['gambar'],fit: BoxFit.cover),
                   ),
                 ),
                 Container(
