@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                       }
                       if(DataHelper.dataWallet[index]['type']!=''){
                         // return WidgetHelper().myPush(context,StockistScreen(type:DataHelper.dataWallet[index]['type']));
-                        return WidgetHelper().myPush(context,PinAktivasiScreen());
+                        return WidgetHelper().myPush(context,PinAktivasiScreen(type:DataHelper.dataWallet[index]['type']));
                       }else{
                         return WidgetHelper().myPush(context,FormEwalletScreen(title:DataHelper.dataWallet[index]['title'].toUpperCase()));
                       }

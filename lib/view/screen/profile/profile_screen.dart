@@ -159,11 +159,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},1,iconData: AntDesign.swapleft),
                   section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},0,iconData: AntDesign.swapright),
                   section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData: AntDesign.folder1),
+                  section2("Redeem",(){WidgetHelper().myPush(context,HistoryRedeemScreen());},0,iconData:Ionicons.ios_gift),
+                  section2("Reward",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData:Ionicons.ios_medal),
                 ],
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              margin: scaler.getMargin(1,2),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(6),

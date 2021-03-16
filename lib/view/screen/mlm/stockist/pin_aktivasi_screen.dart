@@ -7,6 +7,8 @@ import 'package:sangkuy/model/mlm/stockist/pin_available_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 
 class PinAktivasiScreen extends StatefulWidget {
+  final String type;
+  PinAktivasiScreen({this.type});
   @override
   _PinAktivasiScreenState createState() => _PinAktivasiScreenState();
 }
@@ -16,7 +18,7 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
   PinAvailableModel pinAvailableModel;
   bool isLoading=true;
   Future loadPin()async{
-    var res=await BaseProvider().getProvider('transaction/pin_available', pinAvailableModelFromJson,context: context,callback: (){
+    var res=await BaseProvider().getProvider('transaction/pin_available?type=${widget.type}', pinAvailableModelFromJson,context: context,callback: (){
 
     });
     print(res);

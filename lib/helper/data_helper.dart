@@ -15,7 +15,7 @@ class DataHelper{
     'https://ecs7.tokopedia.net/img/cache/100-square/attachment/2019/11/15/21181130/21181130_0653d8df-0bb4-4714-9267-b987298c0420.png'
   ];
   static List dataWallet=[
-    {'title':"Pin Aktivasi",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"1"},
+    {'title':"Pin Aktivasi",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"aktivasi"},
     {'title':"Pin RO",'icon':Constant().localIcon+'lainnya_icon.svg',"type":"ro"},
     {'title':"Laporan",'icon':Constant().localIcon+'history_icon.svg',"type":"h"},
     {'title':"Top Up",'icon':Constant().localIcon+'topup_icon.svg',"type":""},

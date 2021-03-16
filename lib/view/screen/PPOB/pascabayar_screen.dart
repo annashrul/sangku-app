@@ -393,6 +393,7 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
   }
 
   Widget desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
+
     return Padding(
       padding: EdgeInsets.only(left:10,right:10),
       child: Row(

@@ -44,6 +44,7 @@ import 'package:sangkuy/view/screen/mlm/history/history_pembelian_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/history_transaction_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/resi_screen.dart';
 import 'package:sangkuy/view/screen/mlm/network/binary_screen.dart';
+import 'package:sangkuy/view/screen/mlm/redeem/history_redeen_screen.dart';
 import 'package:sangkuy/view/screen/mlm/redeem/redeem_point_screen.dart';
 import 'package:sangkuy/view/screen/mlm/stockist/pin_aktivasi_screen.dart';
 import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';

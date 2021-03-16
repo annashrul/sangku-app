@@ -640,4 +640,26 @@ class WidgetHelper{
 
   }
 
+  desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Padding(
+      padding: scaler.getPadding(0,2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // WidgetHelper().textQ(title,scaler.getTextSize(9),colorttl,FontWeight.normal),
+          Expanded(
+            flex: 1,
+            child: WidgetHelper().textQ(title,scaler.getTextSize(9),colorttl,FontWeight.normal),
+          ),
+          Expanded(
+            flex: 1,
+            child: WidgetHelper().textQ(desc,scaler.getTextSize(9),color,FontWeight.normal,textAlign: TextAlign.end),
+          )
+        ],
+      ),
+    );
+  }
+
 }
