@@ -662,4 +662,25 @@ class WidgetHelper{
     );
   }
 
+
+  myBtnBorder(BuildContext context,title,callback,Color color){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return InkWell(
+      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      child: Container(
+        padding: scaler.getPadding(0.5,2),
+        decoration: BoxDecoration(
+            border: Border.all(color:color),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(0.0),
+          child: WidgetHelper().textQ(title, scaler.getTextSize(9),color,FontWeight.bold),
+        ),
+
+      ),
+      onTap:callback,
+    );
+  }
+
 }

@@ -146,6 +146,11 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       }
       else{
         var resLayanan = OngkirModel.fromJson(res);
+        if(resLayanan.result.ongkir.length==0){
+          WidgetHelper().notifOneBtnDialog(context, "Terjadi Kesalahan", "maaf layanan dari $kurirTitle tidak tersedia", (){
+            Navigator.pop(context);
+          });
+        }
         setState(() {
           ongkirModel = OngkirModel.fromJson(resLayanan.toJson());
           kurirDeskripsi = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
@@ -153,6 +158,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           cost = resLayanan.result.ongkir[0].cost;
         });
         getGrandTotal();
+
       }
     }
   }
@@ -191,7 +197,6 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     subTotal = st;
   }
   Future postCheckout(pin)async{
-
     final data={
       "ongkir":cost.toString(),
       "layanan_pengiriman":kurirTitle.toString(),
@@ -219,11 +224,17 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     }else{
       await FunctionHelper().removePackage();
       await FunctionHelper().removeSaldo();
-      if(idBank=='-'){
-        WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
-      }else{
-        WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
-      }
+
+      WidgetHelper().notifDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      }, ()async{
+        if(idBank=='-'){
+          await FunctionHelper().setBackHome();
+          WidgetHelper().myPush(context,DetailHistoryPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
+        }else{
+          WidgetHelper().myPushRemove(context,SuccessPembelianScreen(kdTrx:FunctionHelper().decode(res['result']['kd_trx'])));
+        }
+      },titleBtn1: 'Kembali',titleBtn2:idBank=='-'?"Detail Pembelian":"Invoice");
     }
   }
   Future getVoucher()async{

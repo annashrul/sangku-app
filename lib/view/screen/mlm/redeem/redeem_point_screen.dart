@@ -12,7 +12,7 @@ import 'package:sangkuy/model/member/data_member_model.dart';
 import 'package:sangkuy/model/mlm/redeem/list_redeem_model.dart';
 import 'package:sangkuy/provider/content_provider.dart';
 import 'package:sangkuy/provider/member_provider.dart';
-import 'package:sangkuy/view/screen/redeem/detail_redeem_screen.dart';
+import 'file:///E:/NETINDO/mobile/sangkuy/lib/view/screen/mlm/redeem/detail_redeem_screen.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
 import 'package:sangkuy/view/widget/loading/redeem_loading.dart';
 import 'package:sangkuy/view/widget/redeem_widget.dart';

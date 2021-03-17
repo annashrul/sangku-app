@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},0,iconData: AntDesign.swapright),
                   section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData: AntDesign.folder1),
                   section2("Redeem",(){WidgetHelper().myPush(context,HistoryRedeemScreen());},0,iconData:Ionicons.ios_gift),
-                  section2("Reward",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData:Ionicons.ios_medal),
+                  section2("Reward",(){WidgetHelper().myPush(context,HistoryRewardScreen());},1,iconData:Ionicons.ios_medal),
                 ],
               ),
             ),
@@ -240,9 +240,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   
   Widget section3(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       padding: EdgeInsets.only(left:0),
-      margin: EdgeInsets.only(bottom: 100),
+      margin: EdgeInsets.only(bottom: scaler.getHeight(4)),
       child: Column(
         children: [
           Row(

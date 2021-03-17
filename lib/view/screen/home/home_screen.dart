@@ -22,6 +22,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   ListRedeemModel listRedeemModel;
 
   Future loadData()async{
+    // SharedPreferences prefs=await SharedPreferences.getInstance();
+    // prefs.setString("pageHome","true");
+    // if(prefs.getString("pageHome")=="false"){
+    //
+    // }
     isLoadingRedeem=true;
     isLoadingNews=true;
     isLoadingTestimoni=true;
@@ -36,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ContentModel result=res;
       contentModel = result;
       isLoadingNews=false;
+      print("#################### TYPE OF ${result.result.data.runtimeType} ##############################");
       if(this.mounted) setState(() {});
     }
 
@@ -73,7 +79,16 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadData();
+    // loadData();
+    isLoadingRedeem=true;
+    isLoadingNews=true;
+    isLoadingTestimoni=true;
+    // print("#################### TYPE OF ${contentModel.result.data.runtimeType} ##############################");
+
+    // if(this.mounted) setState(() {});
+    loadRedeem();
+    loadNews();
+    loadTestimoni();
 
   }
   @override
@@ -142,39 +157,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 crossAxisSpacing: 1.0,
               ),
             ),
-            dataMember!=null?ChartWidgetHome1(data:dataMember):WidgetHelper().baseLoading(context,Container(
-              padding: EdgeInsets.only(left:20.0),
-              child: Row(
-                children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left:20.0),
-                    child: Column(
-                      children: [
-                        Container(
-                            height: 10,
-                            width: 100,
-                            color: Colors.white
-                        ),
-                        SizedBox(height:10),
-                        Container(
-                            height: 10,
-                            width: 100,
-                            color: Colors.white
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )),
+            dataMember!=null?ChartWidgetHome1(data:dataMember):Text(''),
             if(dataMember!=null)SizedBox(height: scaler.getHeight(0)),
             section2(context),
             Divider(thickness:scaler.getHeight(1)),

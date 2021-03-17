@@ -16,53 +16,68 @@ class BaseProvider{
   Client client = Client();
   final userRepository = UserHelper();
   Future getProvider(url,param,{BuildContext context,Function callback})async{
-    try{
-      final token= await userRepository.getDataUser('token');
-      Map<String, String> head={
-        'Authorization':token,
-        'username': Constant().username,
-        'password': Constant().password,
-        'myconnection':Constant().connection,
-        "HttpHeaders.contentTypeHeader": "application/json"
-      };
-      final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
-      print("=================== GET DATA $url = ${response.statusCode} ============================");
-      final jsonResponse = json.decode(response.body);
-      if (response.statusCode == 200) {
-        print("=================== SUCCESS $url = $jsonResponse ==========================");
-        if(jsonResponse['result'].length>0){
-          return param(response.body);
-        }else{
-          print("=================== GET DATA $url = NODATA ============================");
-          return Constant().errNoData;
-        }
-      }
-      else if(response.statusCode == 400){
-        if(jsonResponse['msg']=='Invalid Token.'){
-          if(context==null){
-            return Constant().errExpToken;
+    int onRetry=0;
+    if(onRetry>2){
+      return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+        Navigator.pop(context);
+        await FunctionHelper().logout(context);
+      });
+    }
+    else{
+      try{
+        final token= await userRepository.getDataUser('token');
+        Map<String, String> head={
+          'Authorization':token,
+          'username': Constant().username,
+          'password': Constant().password,
+          'myconnection':Constant().connection,
+          "HttpHeaders.contentTypeHeader": "application/json"
+        };
+        final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
+        // print("=================== GET DATA $url = ${response.statusCode} ============================");
+        final jsonResponse = json.decode(response.body);
+        if (response.statusCode == 200) {
+          // print("=================== SUCCESS $url = $jsonResponse ==========================");
+          if(jsonResponse['result'].length>0){
+            return param(response.body);
           }else{
-            return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-              Navigator.pop(context);
-              await FunctionHelper().logout(context);
-            });
+            // print("=================== GET DATA $url = NODATA ============================");
+            return Constant().errNoData;
           }
         }
-        return General.fromJson(jsonResponse);
-      }
-    }on TimeoutException catch (_) {
-      if(context==null){
-        return Constant().errTimeout;
-      }else{
-        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,()=>callback);
-      }
-    } on SocketException catch (_) {
-      if(context==null){
-        return Constant().errTimeout;
-      }else{
-        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
-          callback();
-        });
+        else if(response.statusCode == 400){
+          if(jsonResponse['msg']=='Invalid Token.'){
+            if(context==null){
+              return Constant().errExpToken;
+            }else{
+              return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+                Navigator.pop(context);
+                await FunctionHelper().logout(context);
+              });
+            }
+          }
+          return General.fromJson(jsonResponse);
+        }
+      }on TimeoutException catch (_) {
+        if(context==null){
+          return Constant().errTimeout;
+        }
+        else{
+          return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+            callback();
+            onRetry+=1;
+          });
+        }
+      } on SocketException catch (_) {
+        if(context==null){
+          return Constant().errTimeout;
+        }
+        else{
+          return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+            callback();
+            onRetry+=1;
+          });
+        }
       }
     }
   }

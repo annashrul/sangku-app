@@ -6,46 +6,45 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/mlm/history/history_reward_model.dart';
 import 'package:sangkuy/model/mlm/redeem/history_redeem_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/loading/history_pembelian_loading.dart';
 
-class HistoryRedeemScreen extends StatefulWidget {
+class HistoryRewardScreen extends StatefulWidget {
   @override
-  _HistoryRedeemScreenState createState() => _HistoryRedeemScreenState();
+  _HistoryRewardScreenState createState() => _HistoryRewardScreenState();
 }
 
-class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
+class _HistoryRewardScreenState extends State<HistoryRewardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  HistoryRedeemModel historyRedeemModel;
+  HistoryRewardModel historyRewardModel;
   ScrollController controller;
   int perpage=10;
   int total=0;
   bool isLoading=false,isLoadmore=false;
   String lbl='';
-  int filterStatus=5;
   String dateFrom='',dateTo='',q='';
 
   Future loadData()async{
-    String url='transaction/redeem/report?perpage=$perpage';
+    String url='transaction/reward/report?perpage=$perpage';
     if(dateFrom!=''&&dateTo!=''){
       url+='&datefrom=$dateFrom&dateto=$dateTo';
     }
     if(q!=''){
       url+='&q=$q';
     }
-    if(filterStatus!=5){
-      url+='&status=$filterStatus';
-    }
-    var res = await BaseProvider().getProvider(url,historyRedeemModelFromJson,context: context,callback: (){
+    var res = await BaseProvider().getProvider(url,historyRewardModelFromJson,context: context,callback: (){
 
     });
-    if(res is HistoryRedeemModel){
-      HistoryRedeemModel result=res;
+    if(res is HistoryRewardModel){
+      HistoryRewardModel result=res;
       if(result.status=='success'){
-        historyRedeemModel = HistoryRedeemModel.fromJson(result.toJson());
+        historyRewardModel = HistoryRewardModel.fromJson(result.toJson());
         setState(() {
-          total = historyRedeemModel.result.total;
+          total = historyRewardModel.result.total;
           isLoading=false;
           isLoadmore=false;
         });
@@ -75,6 +74,20 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
       }
     }
   }
+
+  Future handleDone(val,BuildContext context)async{
+    WidgetHelper().loadingDialog(context);
+    var res=await BaseProvider().putProvider('transaction/done/${FunctionHelper().decode(val['kd_trx'])}', {},context: context);
+    Navigator.pop(context);
+    if(res is General){
+      General result=res;
+      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    }else{
+      WidgetHelper().notifOneBtnDialog(context,"Berhasil","Selamat ... reward anda berhasil diselesaikan", (){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      });
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -95,9 +108,8 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Scaffold(
-      appBar: WidgetHelper().appBarWithFilter(context,"Laporan Redeem Poin",  (){Navigator.pop(context);}, (param){
+      appBar: WidgetHelper().appBarWithFilter(context,"Laporan Claim Reward",  (){Navigator.pop(context);}, (param){
         setState(() {
           q=param;
           isLoading=true;
@@ -185,32 +197,38 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
 
             Expanded(
               flex: 19,
-              child: isLoading?HistoryPembelianLoading(tot: 10):RefreshWidget(
-                widget: Scrollbar(child: Column(
+              child: isLoading?HistoryPembelianLoading(tot: 10):Scrollbar(child: RefreshWidget(
+                widget: Column(
                   children: [
                     Expanded(
                         flex:16,
                         child: ListView.separated(
                           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                          shrinkWrap: true,
+                          // primary: true,
+                          // shrinkWrap: true,
+                          // shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           controller: controller,
-                          itemCount: historyRedeemModel.result.data.length,
+                          itemCount: historyRewardModel.result.data.length,
                           itemBuilder: (context,index){
-                            final val=historyRedeemModel.result.data[index];
+                            final val=historyRewardModel.result.data[index];
                             String status='';
                             Color color;
                             if(val.status==0){
-                              status='Dikemas';
+                              status='Dalam Antrian';
                               color=Color(0xFFff9800);
                             }
                             if(val.status==1){
-                              status='Dikirim';
-                              color=Constant().mainColor;
+                              status='Diterima';
+                              color=Constant().mainColor2;
                             }
                             if(val.status==2){
-                              status='Diterima';
+                              status='Selesai';
                               color=Constant().greenColor;
+                            }
+                            if(val.status==2){
+                              status='Ditolak';
+                              color=Constant().moneyColor;
                             }
                             return FlatButton(
                               padding: EdgeInsets.all(0.0),
@@ -232,7 +250,7 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,''),scaler.getTextSize(8),Constant().mainColor,FontWeight.bold),
+                                            WidgetHelper().textQ(FunctionHelper().formateDate(val.createdAt,''),scaler.getTextSize(8),Constant().mainColor,FontWeight.normal),
                                             WidgetHelper().textQ("(${val.kdTrx})",scaler.getTextSize(8),Constant().mainColor,FontWeight.bold),
                                           ],
                                         ),
@@ -240,27 +258,28 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                                           print(val.status);
                                           if(val.status!=1){
                                           }else{
-                                            // print('bus');
-                                            // handleDone(val.toJson(),context);
+                                            print('bus');
+                                            handleDone(val.toJson(),context);
                                           }
                                         },Constant().greenColor)
+
                                       ],
                                     ),
                                   ),
                                   Container(
                                     child: ListTile(
                                       contentPadding:scaler.getPadding(0,2),
-                                      leading:WidgetHelper().baseImage(val.gambar,width: scaler.getWidth(10),height:scaler.getHeight(10)),
-                                      title: WidgetHelper().textQ(val.title+' ( ${val.subtotal} poin )',scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
+                                      leading:WidgetHelper().baseImage(val.gambar),
+                                      title: WidgetHelper().textQ(val.reward,scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
                                       subtitle: Column(
                                         children: [
-                                          WidgetHelper().textQ("${val.penerima}",scaler.getTextSize(8), Constant().darkMode,FontWeight.bold),
+                                          WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",scaler.getTextSize(8), Constant().darkMode,FontWeight.bold),
                                           WidgetHelper().textQ("${val.mainAddress}",scaler.getTextSize(8), Constant().darkMode,FontWeight.normal),
                                         ],
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                       ),
-
+                                      // trailing: WidgetHelper().textQ(status,scaler.getTextSize(9),color,FontWeight.bold),
                                     ),
                                     // color: Constant().secondColor,
                                   ),
@@ -274,6 +293,13 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                                       ],
                                     ),
                                   )
+                                  // Container(
+                                  //   child: WidgetHelper().textQ("${val.penerima} ( ${val.noHp} )",scaler.getTextSize(9), Constant().darkMode,FontWeight.normal),
+                                  // ),
+                                  // Divider(),
+                                  // Container(
+                                  //   child: WidgetHelper().textQ(val.mainAddress,scaler.getTextSize(8), Constant().darkMode,FontWeight.normal),
+                                  // )
 
                                 ],
                               ),
@@ -287,14 +313,14 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                     SizedBox(height: isLoadmore?10.0:0.0),
                     isLoadmore?Expanded(flex:4,child: HistoryPembelianLoading(tot: 1)):Container()
                   ],
-                )),
+                ),
                 callback: (){
                   setState(() {
                     isLoading=true;
                   });
                   loadData();
                 },
-              ),
+              )),
             )
           ],
         ),

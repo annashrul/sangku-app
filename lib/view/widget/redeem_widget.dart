@@ -5,7 +5,7 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:sangkuy/view/screen/redeem/detail_redeem_screen.dart';
+import 'file:///E:/NETINDO/mobile/sangkuy/lib/view/screen/mlm/redeem/detail_redeem_screen.dart';
 
 class RedeemWidget extends StatelessWidget {
   dynamic data;

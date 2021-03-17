@@ -13,7 +13,9 @@ import 'package:sangkuy/view/widget/web_view_widget.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BinaryScreen extends StatefulWidget {
-  const BinaryScreen({Key key}) : super(key: key);
+  final WebViewWidget homePageState;
+
+  const BinaryScreen({Key key, @required this.homePageState}) : super(key: key);
 
   @override
   _BinaryScreenState createState() => _BinaryScreenState();
@@ -25,6 +27,8 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
   String url='';
   bool isLoading=true;
   String fullName='',picture='', referralCode='';
+  // GlobalKey<WebViewWidget> _myKey = GlobalKey();
+
   Future loadMember()async{
     final name=await UserHelper().getDataUser("full_name");
     final img=await UserHelper().getDataUser("picture");
@@ -80,7 +84,7 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
 
 
 
-
+  Completer<WebViewController> _controller = Completer<WebViewController>();
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -104,7 +108,12 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
               size: 50.0,
               padding: 0.0,
             ),
-          ),description:referralCode,widget: []),
+          ),description:referralCode,widget: [
+            IconButton(icon: Icon(AntDesign.reload1), onPressed:(){
+              widget.homePageState.
+              // WebViewWidget().createState().handleRefresh();
+            })
+          ]),
 
           body:url!=''?Padding(
             padding: EdgeInsets.only(top:0,left:0,right:0),

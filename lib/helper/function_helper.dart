@@ -92,6 +92,19 @@ class FunctionHelper{
     final saldo=prefs.getString("saldo");
     return saldo;
   }
+  Future removeBackHome()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.remove("isBackHome");
+  }
+  Future setBackHome()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString("isBackHome", "1");
+  }
+  Future isBackHome()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final home=prefs.getString("isBackHome");
+    return home;
+  }
   Future logout(BuildContext context)async{
     final id=await UserHelper().getDataUser("id");
     await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"1"});

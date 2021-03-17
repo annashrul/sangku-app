@@ -12,7 +12,7 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
-import '../pages.dart';
+import '../../pages.dart';
 
 class DetailRedeem extends StatefulWidget {
   dynamic val;

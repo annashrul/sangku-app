@@ -20,6 +20,25 @@ class _WebViewWidgetState extends State<WebViewWidget> {
   final _key = UniqueKey();
   bool isError=false;
 
+  handleRefresh(){
+    print('abus');
+    setState(() {
+      _stackToView=1;
+    });
+    return _controller.future.then((value){
+      if(_stackToView==0){
+        // widget.callback();
+        value.reload();
+        value.loadUrl(widget.val['url']);
+        setState(() {
+          isError=false;
+          _stackToView=1;
+        });
+      }
+    });
+
+  }
+
 
   @override
   void initState() {
@@ -27,9 +46,12 @@ class _WebViewWidgetState extends State<WebViewWidget> {
     super.initState();
     // getUrl();
   }
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: isError?Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,21 +89,23 @@ class _WebViewWidgetState extends State<WebViewWidget> {
           )
         ],
       ),
-      floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
-        backgroundColor: Constant().mainColor,
-        foregroundColor: Colors.white,
-        onPressed: ()=>_controller.future.then((value){
-          if(_stackToView==0){
-            value.reload();
-            value.loadUrl(widget.val['url']);
-            setState(() {
-              isError=false;
-              _stackToView=1;
-            });
-          }
-        }),
-        child: _stackToView==1?CircularProgressIndicator(backgroundColor: Colors.white,valueColor:new AlwaysStoppedAnimation<Color>(Constant().mainColor)):Icon(AntDesign.reload1),
-      ),
+      // floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
+      //   backgroundColor: Constant().mainColor,
+      //   foregroundColor: Colors.white,
+      //   // onPressed: ()=>_controller.future.then((value){
+      //   //   if(_stackToView==0){
+      //   //     // widget.callback();
+      //   //     value.reload();
+      //   //     value.loadUrl(widget.val['url']);
+      //   //     setState(() {
+      //   //       isError=false;
+      //   //       _stackToView=1;
+      //   //     });
+      //   //   }
+      //   // }),
+      //   // onPressed:widget.callback(_controller),
+      //   child: _stackToView==1?CircularProgressIndicator(backgroundColor: Colors.white,valueColor:new AlwaysStoppedAnimation<Color>(Constant().mainColor)):Icon(AntDesign.reload1),
+      // ),
 
     );
   }

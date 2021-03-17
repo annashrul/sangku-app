@@ -1,12 +1,9 @@
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/config/database_config.dart';
-import 'package:sangkuy/helper/dynamic_link_api.dart';
 import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/get_it_setup.dart';
 import 'package:sangkuy/helper/table_helper.dart';
@@ -14,7 +11,6 @@ import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/model/dynamic_link_model.dart';
 import 'package:sangkuy/view/screen/auth/sign_in_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'helper/widget_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 

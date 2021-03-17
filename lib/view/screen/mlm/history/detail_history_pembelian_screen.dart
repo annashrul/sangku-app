@@ -114,7 +114,6 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     }
 
   }
-
   Future doneTrx()async{
     if(detailHistoryPembelianModel.result.resi=='-'){
       WidgetHelper().showFloatingFlushbar(context,"failed","No.Resi belum tersedia");
@@ -236,7 +235,17 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     }
 
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context,"Detail Pembelian",(){Navigator.pop(context);},<Widget>[
+      appBar: WidgetHelper().appBarWithButton(context,"Detail Pembelian",()async{
+        final cek=await FunctionHelper().isBackHome();
+        print(cek);
+        if(cek=='1'){
+          await FunctionHelper().removeBackHome();
+          WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+        }
+        else{
+          Navigator.pop(context);
+        }
+      },<Widget>[
         isLoading?Text(''):(detailHistoryPembelianModel.result.metodePembayaran!='saldo') ?FlatButton(
             padding: EdgeInsets.all(0.0),
             highlightColor:Colors.black38,

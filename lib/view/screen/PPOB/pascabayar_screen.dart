@@ -78,7 +78,6 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }
     else{
-
       WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
     }
   }
@@ -340,19 +339,7 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height:10.0),
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:10.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
+
           Padding(
             padding: EdgeInsets.only(left:10,bottom: 10),
             child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor1),
