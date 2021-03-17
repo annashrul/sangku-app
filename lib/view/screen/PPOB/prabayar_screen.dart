@@ -517,23 +517,28 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
         "pin":pin.toString()
       };
       WidgetHelper().loadingDialog(context);
-      var res=await BaseProvider().postProvider("transaction/prabayar/checkout", data);
-      Navigator.pop(context);
-      if(res is General){
-
-        General result=res;
-        if(result.msg=='PIN anda tidak sesuai.'){
-
-        }else{
-          Navigator.pop(context);
-        }
-        WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-      }
-      else{
+      var res=await BaseProvider().postProvider("transaction/prabayar/checkout", data,context: context);
+      if(res!=null){
+        Navigator.pop(context);
         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         });
       }
+      // if(res is General){
+      //
+      //   General result=res;
+      //   if(result.msg=='PIN anda tidak sesuai.'){
+      //
+      //   }else{
+      //     Navigator.pop(context);
+      //   }
+      //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+      // }
+      // else{
+      //   WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+      //     WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      //   });
+      // }
     }));
   }
   @override

@@ -6,8 +6,13 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/redeem/history_redeem_model.dart';
+import 'package:sangkuy/model/mlm/resi_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/provider/tracking_provider.dart';
+import 'package:sangkuy/view/screen/mlm/history/resi_screen.dart';
+import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/loading/history_pembelian_loading.dart';
 
 class HistoryRedeemScreen extends StatefulWidget {
@@ -73,6 +78,27 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
           loadData();
         }
       }
+    }
+  }
+  Future handleDone(val,BuildContext context)async{
+    // print(val);
+    WidgetHelper().loadingDialog(context);
+    var res=await BaseProvider().putProvider('transaction/redeem/done/${FunctionHelper().decode(val['kd_trx'])}', {},context: context);
+    Navigator.pop(context);
+    if(res!=null){
+      WidgetHelper().notifOneBtnDialog(context,"Berhasil","Selamat ... transaksi redeem anda berhasil diselesaikan", (){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      });
+    }
+
+  }
+  Future handleCheckResi(resi,BuildContext context)async{
+    WidgetHelper().loadingDialog(context);
+    var res = await TrackingProvider().checkResi('JD0099164063', 'jnt', '',context: context);
+    if(res is ResiModel){
+      ResiModel result=res;
+      Navigator.pop(context);
+      WidgetHelper().myPush(context,ResiScreen(resiModel: result));
     }
   }
   @override
@@ -236,14 +262,19 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                                             WidgetHelper().textQ("(${val.kdTrx})",scaler.getTextSize(8),Constant().mainColor,FontWeight.bold),
                                           ],
                                         ),
-                                        WidgetHelper().myBtnBorder(context,"Selesaikan",(){
+                                        WidgetHelper().myBtnBorder(context,val.status!=1?"Lacak Resi":"Selesaikan",(){
                                           print(val.status);
                                           if(val.status!=1){
+                                            handleCheckResi(val.resi,context);
+                                            // WidgetHelper().myPush(context,ResiScreen());
                                           }else{
+                                            if(val.status==1){
+                                              handleDone(val.toJson(),context);
+                                            }
                                             // print('bus');
                                             // handleDone(val.toJson(),context);
                                           }
-                                        },Constant().greenColor)
+                                        },val.status!=1?Constant().mainColor:Constant().greenColor)
                                       ],
                                     ),
                                   ),

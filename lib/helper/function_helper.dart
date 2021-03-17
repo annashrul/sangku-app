@@ -64,7 +64,7 @@ class FunctionHelper{
       imageSource = ImageSource.gallery;
     }
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: imageSource);
+    final pickedFile = await picker.getImage(source: imageSource,imageQuality: 50);
     return File(pickedFile.path);
   }
   fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {

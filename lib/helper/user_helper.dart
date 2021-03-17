@@ -24,8 +24,5 @@ class UserHelper{
       if(param=='onboarding'){return users[0]['onboarding'];}
       if(param=='exit_app'){return users[0]['exit_app'];}
     }
-
-
-
   }
 }

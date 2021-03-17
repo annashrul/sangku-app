@@ -70,16 +70,21 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().postProvider('transaction/pascabayar/tagihan', data);
     Navigator.pop(context);
-    if(res==Constant().errTimeout||res==Constant().errSocket){
-      WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){}, (){},titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
-    }
-    else if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }
-    else{
+
+    if(res!=null){
       WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
+
     }
+    // if(res==Constant().errTimeout||res==Constant().errSocket){
+    //   WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){}, (){},titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
+    // }
+    // else if(res is General){
+    //   General result=res;
+    //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    // }
+    // else{
+    //   WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
+    // }
   }
 
   @override

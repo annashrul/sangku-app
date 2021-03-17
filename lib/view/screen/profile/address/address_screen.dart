@@ -373,22 +373,27 @@ class _ModalFormState extends State<ModalForm> {
       else{
         res = await BaseProvider().postProvider("alamat",data);
       }
-      if(res==Constant().errTimeout||res==Constant().errSocket){
+      if(res!=null){
         Navigator.pop(context);
         Navigator.pop(context);
-        widget.callback('gagal');
+        widget.callback('berhasil');
       }
-      else{
-        if(res is General){
-          Navigator.pop(context);
-          Navigator.pop(context);
-          widget.callback('gagal');
-        }else{
-          Navigator.pop(context);
-          Navigator.pop(context);
-          widget.callback('berhasil');
-        }
-      }
+      // if(res==Constant().errTimeout||res==Constant().errSocket){
+      //   Navigator.pop(context);
+      //   Navigator.pop(context);
+      //   widget.callback('gagal');
+      // }
+      // else{
+      //   if(res is General){
+      //     Navigator.pop(context);
+      //     Navigator.pop(context);
+      //     widget.callback('gagal');
+      //   }else{
+      //     Navigator.pop(context);
+      //     Navigator.pop(context);
+      //     widget.callback('berhasil');
+      //   }
+      // }
     }
   }
 

@@ -87,11 +87,8 @@ class _SignInScreenState extends State<SignInScreen> {
       };
       var res = await BaseProvider().postProvider("auth/otp", data,context: context);
       Navigator.pop(context);
-      if(res is General){
-        General result=res;
-        WidgetHelper().notifBar(context,"failed",result.msg);
-      }
-      else{
+
+      if(res!=null){
         var result = OtpModel.fromJson(res);
         if(result.status=='success'){
           if(configModel.result.type=='otp'){
@@ -113,19 +110,18 @@ class _SignInScreenState extends State<SignInScreen> {
               login();
             }));
           }
-
         }
         else{
           WidgetHelper().notifBar(context,"failed",result.msg);
         }
       }
+
     }
   }
   Future login()async{
     WidgetHelper().loadingDialog(context);
     var status = await OneSignal.shared.getPermissionSubscriptionState();
     String onesignalUserId = status.subscriptionStatus.userId;
-
     final dataLogin={
       "type":configModel.result.type,
       "nohp":nohpController.text,
@@ -134,18 +130,13 @@ class _SignInScreenState extends State<SignInScreen> {
     if(configModel.result.type=='uid'){
       dataLogin['pin']=pin;
     }
-    print(dataLogin);
-    var baseAuth = await BaseProvider().postProvider("auth", dataLogin,context: context);
-    Navigator.pop(context);
-    if(baseAuth is General){
-      General response = baseAuth;
-      if(response.msg=='Akun tidak terdaftar.'){
-        Navigator.pop(context);
-      }
-
-      WidgetHelper().notifBar(context,"failed",response.msg);
-    }
-    else{
+    var baseAuth = await BaseProvider().postProvider("auth", dataLogin,context: context,callback: (){
+      print("bus");
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
+    if(baseAuth!=null){
+      Navigator.pop(context);
       var loginModel = LoginModel.fromJson(baseAuth);
       if(loginModel.result.isRegister==0){
         WidgetHelper().myPush(context, CreatePinScreen(callback: (myPin)async{
@@ -155,29 +146,13 @@ class _SignInScreenState extends State<SignInScreen> {
           Navigator.pop(context);
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         }));
-        // WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin){
-        //   String isPin=myPin;
-        //
-        //   WidgetHelper().myPushRemove(context, PinScreen(callback: (context,isTrue,myPin)async{
-        //     if(myPin==isPin){
-        //       WidgetHelper().loadingDialog(context);
-        //       await insertDb(loginModel);
-        //       await MemberProvider().updateMember({'pin':myPin}, context);
-        //       Navigator.pop(context);
-        //       WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-        //       print('sama');
-        //     }else{
-        //       WidgetHelper().showFloatingFlushbar(context,"failed","pin yang masukan tidak sama");
-        //       print('beda');
-        //     }
-        //   },param:'confirm'));
-        // },param:'create'));
       }
       else{
         await insertDb(loginModel);
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
       }
     }
+
   }
 
 

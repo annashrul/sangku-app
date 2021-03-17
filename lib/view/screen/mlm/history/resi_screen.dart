@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -41,6 +42,8 @@ class _ResiScreenState extends State<ResiScreen> {
   }
 
   Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       child: Padding(
         padding: new EdgeInsets.only(top: 0.0),
@@ -49,46 +52,43 @@ class _ResiScreenState extends State<ResiScreen> {
           children: <Widget>[
             Container(
               decoration: BoxDecoration(color:Colors.white),
-              padding:EdgeInsets.only(top: 20.0, bottom: 0.0, left: 15.0, right: 15.0),
+              padding:scaler.getPadding(1,2),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: <Widget>[
+                  WidgetHelper().textQ("Tanggal Pengiriman",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                  WidgetHelper().textQ("${DateFormat.yMMMMd().format(widget.resiModel.result.ongkir.details.waybillDate)} ${widget.resiModel.result.ongkir.details.waybillTime}",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
+                  Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("No.Resi",12.0,Constant().darkMode,FontWeight.normal),
-                      WidgetHelper().textQ(widget.resiModel.result.resi,10.0,Colors.grey,FontWeight.normal),
+                      WidgetHelper().textQ("No.Resi",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ(widget.resiModel.result.resi,scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                     ],
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Tanggal Pengiriman",12.0,Constant().darkMode,FontWeight.normal),
-                      WidgetHelper().textQ("${DateFormat.yMMMMd().format(widget.resiModel.result.ongkir.details.waybillDate)} ${widget.resiModel.result.ongkir.details.waybillTime}",10.0,Colors.grey,FontWeight.normal),
+                      WidgetHelper().textQ("Service Code",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ(widget.resiModel.result.ongkir.summary.courierName,scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                     ],
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Service Code",12.0,Constant().darkMode,FontWeight.normal),
-                      WidgetHelper().textQ(widget.resiModel.result.ongkir.summary.courierName,10.0,Colors.grey,FontWeight.normal),
+                      WidgetHelper().textQ("Pembeli",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.podReceiver,scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                     ],
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Pembeli",12.0,Constant().darkMode,FontWeight.normal),
-                      WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.podReceiver,10.0,Colors.grey,FontWeight.normal),
-                    ],
-                  ),
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      WidgetHelper().textQ("Status",12.0,Constant().darkMode,FontWeight.normal),
-                      WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.status,10.0,Colors.grey,FontWeight.normal),
+                      WidgetHelper().textQ("Status",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.status,scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                     ],
                   ),
                   SizedBox(height: 20.0),
@@ -106,6 +106,8 @@ class _ResiScreenState extends State<ResiScreen> {
 
 
   Widget _buildTasksList(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return new Expanded(
       child: Scrollbar(
           child: new AnimatedList(
@@ -118,15 +120,14 @@ class _ResiScreenState extends State<ResiScreen> {
                 child: new SizeTransition(
                   sizeFactor: animation,
                   child: new Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    padding:scaler.getPadding(1, 0),
                     child: new Row(
                       children: <Widget>[
                         new Padding(
-                          padding:
-                          new EdgeInsets.symmetric(horizontal: 32.0 - 12.0 / 2),
+                          padding:scaler.getPadding(1, 2),
                           child: new Container(
-                            height: 12.0,
-                            width: 12.0,
+                            height:scaler.getHeight(1),
+                            width: scaler.getWidth(2),
                             decoration: new BoxDecoration(shape: BoxShape.circle, color:Constant().mainColor),
                           ),
                         ),
@@ -134,14 +135,14 @@ class _ResiScreenState extends State<ResiScreen> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              WidgetHelper().textQ(DateFormat.yMMMMd().format(val.manifestDate.toLocal()), 12,Colors.grey,FontWeight.normal),
-                              WidgetHelper().textQ(val.manifestDescription.toLowerCase(), 12,Constant().darkMode,FontWeight.bold),
+                              WidgetHelper().textQ(DateFormat.yMMMMd().format(val.manifestDate.toLocal()), scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                              WidgetHelper().textQ(val.manifestDescription.toLowerCase(), scaler.getTextSize(9),Constant().mainColor,FontWeight.bold),
                             ],
                           ),
                         ),
                         new Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child:WidgetHelper().textQ(val.manifestTime, 12,Colors.grey,FontWeight.normal),
+                          padding:EdgeInsets.only(right: scaler.getWidth(2)),
+                          child:WidgetHelper().textQ(val.manifestTime, scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
                         ),
                       ],
                     ),
@@ -161,15 +162,18 @@ class _ResiScreenState extends State<ResiScreen> {
 class BuildTimeLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Positioned(
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+    return new Positioned(
       top: 0.0,
       bottom: 0.0,
-      left: 15.0,
+      left: scaler.getWidth(3),
       child: new Container(
         width: 1.0,
-        color:Constant().greyColor,
+        color: Colors.grey[300],
       ),
     );
+
   }
 }
 

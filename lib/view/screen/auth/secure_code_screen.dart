@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/secure_code_helper.dart';
-import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/auth/otp_model.dart';
-import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 
 
@@ -85,48 +83,20 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
             onPressed: ()async{
               print(widget.data);
               WidgetHelper().loadingDialog(context);
-              var res = await BaseProvider().postProvider("auth/otp", widget.data);
-              if(res==Constant().errSocket||res==Constant().errTimeout){
+              var res = await BaseProvider().postProvider("auth/otp", widget.data,context: context);
+              if(res!=null){
+                var result = OtpModel.fromJson(res);
                 Navigator.pop(context);
-                setState(() {
-                  timeUpFlag=true;
-                });
-                WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
-              }
-              else{
-                if(res is General){
+                if(timeUpFlag){
                   setState(() {
-                    timeUpFlag=true;
+                    timeUpFlag=!timeUpFlag;
+                    timeCounter=10;
+                    widget.code = result.result.otpAnying;
                   });
-                  Navigator.pop(context);
-                  General result=res;
-                  WidgetHelper().notifBar(context,"failed",result.msg);
-                }
-                else{
-                  var result = OtpModel.fromJson(res);
-                  if(result.status=='success'){
-                    Navigator.pop(context);
-                    if(timeUpFlag){
-                      setState(() {
-                        timeUpFlag=!timeUpFlag;
-                        timeCounter=10;
-                        widget.code = result.result.otpAnying;
-                      });
-                      _timerUpdate();
-                    }
-                    else{
-                      print('false');
-                    }
-                  }
-                  else{
-                    setState(() {
-                      timeUpFlag=true;
-                    });
-                    Navigator.pop(context);
-                    WidgetHelper().notifBar(context,"failed",result.msg);
-                  }
+                  _timerUpdate();
                 }
               }
+
             },
             child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter DETIK':'KIRIM ULANG OTP'}", 14,Colors.white,FontWeight.bold, letterSpacing: 3.0)
         ),

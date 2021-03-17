@@ -79,14 +79,13 @@ class _HistoryRewardScreenState extends State<HistoryRewardScreen> {
     WidgetHelper().loadingDialog(context);
     var res=await BaseProvider().putProvider('transaction/done/${FunctionHelper().decode(val['kd_trx'])}', {},context: context);
     Navigator.pop(context);
-    if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }else{
+    print(res);
+    if(res!=null){
       WidgetHelper().notifOneBtnDialog(context,"Berhasil","Selamat ... reward anda berhasil diselesaikan", (){
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
       });
     }
+
   }
   @override
   void initState() {

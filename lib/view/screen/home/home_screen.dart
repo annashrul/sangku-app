@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   }
   Future loadRedeem()async{
-    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson);
+    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson,context: context);
     if(res is ListRedeemModel){
       ListRedeemModel result=res;
       listRedeemModel = result;
@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               ),
             ),
             dataMember!=null?ChartWidgetHome1(data:dataMember):Text(''),
-            if(dataMember!=null)SizedBox(height: scaler.getHeight(0)),
+            SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
             section2(context),
             Divider(thickness:scaler.getHeight(1)),
             section6(context),

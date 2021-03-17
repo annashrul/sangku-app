@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -40,43 +41,16 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
   }
   Future upload(img)async{
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().putProvider("transaction/deposit/${widget.kdTrx}", {"bukti":img});
+    var res = await BaseProvider().putProvider("transaction/deposit/${widget.kdTrx}", {"bukti":img},context: context);
     print("REPSONSE $img");
     print("REPSONSE ${widget.kdTrx}");
-    if(res == '${Constant().errTimeout}'|| res=='${Constant().errSocket}'){
+    if(res!=null){
       Navigator.pop(context);
-      WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
+      WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+        WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+      });
     }
-    else{
-      print(res);
-      if(res is General){
-        General result = res;
-        print(result.status);
-        Navigator.pop(context);
-        if(retry>=3){
-          WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan Hubungi admin", (){
-            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-          },(){
-            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-          },titleBtn1: "kembali",titleBtn2: "home");
-        }
-        else{
-          WidgetHelper().notifDialog(context,"Terjadi Kesalahan","${result.msg}", (){
-            Navigator.pop(context);
-          },(){
-            Navigator.pop(context);
-            uploadAgain();
-          },titleBtn1: "kembali",titleBtn2: "Coba lagi");
-        }
 
-      }
-      else{
-        Navigator.pop(context);
-        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-          WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-        });
-      }
-    }
   }
   Future loadPayment()async{
     var res=await BaseProvider().getProvider("transaction/get_payment/${widget.kdTrx}", getPaymentModelFromJson);
@@ -92,42 +66,18 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
   }
   Future cancelTransaksi()async{
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider("transaction/deposit/${widget.kdTrx}", {"status":"2"});
-    if(res == '${Constant().errTimeout}'|| res=='${Constant().errSocket}'){
+    var res = await BaseProvider().postProvider("transaction/deposit/${widget.kdTrx}", {"status":"2"},context: context,callback: (){
       Navigator.pop(context);
-      WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
+    });
+    if(res!=null){
+      Navigator.pop(context);
+      WidgetHelper().notifDialog(context,"Transaksi Berhasil","Pengajuan transaksi anda berhasil dibatalkan", (){
+        WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+      },(){
+        WidgetHelper().myPush(context, FormEwalletScreen(title: 'TOP UP'));
+      },titleBtn2: "Top Up",titleBtn1: "Home");
     }
-    else{
-      print(res);
-      if(res is General){
-        General result = res;
-        print(result.status);
-        Navigator.pop(context);
-        if(retry>=3){
-          WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan Hubungi admin", (){
-            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-          },(){
-            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-          },titleBtn1: "kembali",titleBtn2: "home");
-        }
-        else{
-          WidgetHelper().notifDialog(context,"Terjadi Kesalahan","${result.msg}", (){
-            Navigator.pop(context);
-          },(){
-            Navigator.pop(context);
-            cancelTransaksi();
-          },titleBtn1: "kembali",titleBtn2: "Coba lagi");
-        }
-      }
-      else{
-        Navigator.pop(context);
-        WidgetHelper().notifDialog(context,"Transaksi Berhasil","Pengajuan transaksi anda berhasil dibatalkan", (){
-          WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-        },(){
-          WidgetHelper().myPush(context, FormEwalletScreen(title: 'TOP UP'));
-        },titleBtn2: "Top Up",titleBtn1: "Home");
-      }
-    }
+
   }
 
   var hari  = DateFormat.d().format( DateTime.now().add(Duration(days: 3)));
@@ -145,6 +95,8 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     print(widget.kdTrx);
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
@@ -165,17 +117,21 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
             if(getPaymentModel.result.paymentSlip=='-')
               WidgetHelper().myFilter((){
                 WidgetHelper().myModal(context, CameraWidget(
-                  callback: (String img)async{
+                  callback: (String img,pureImage)async{
                     setState(() {
                       image = img;
                     });
-                    upload(image);
+                    await Future.delayed(Duration(seconds: 1));
+                    WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                      upload(image);
+                    });
+                    // upload(image);
                   },
                 ));
               },icon: AntDesign.upload, iconColor:Constant().mainColor)
         ]),
-        body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
-          padding: EdgeInsets.only(top:10,bottom:10),
+        body: isLoading?WidgetHelper().loadingWidget(context):Scrollbar(child: SingleChildScrollView(
+          padding:scaler.getPadding(1, 2),
           child: Container(
             alignment: AlignmentDirectional.center,
             padding: EdgeInsets.symmetric(horizontal: 0),
@@ -187,8 +143,8 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                 Stack(
                   children: <Widget>[
                     Container(
-                      width: 150,
-                      height: 150,
+                      width: scaler.getWidth(50),
+                      height: scaler.getHeight(10),
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [
@@ -227,13 +183,13 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                     )
                   ],
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: scaler.getHeight(1)),
                 Container(
-                  padding: EdgeInsets.only(left:10,right:10),
-                  height: 50,
+                  padding:scaler.getPadding(0,0),
+                  height: scaler.getHeight(5),
                   child: WavyAnimatedTextKit(
                     textStyle: TextStyle(
-                        fontSize: 14.0,
+                        fontSize:scaler.getTextSize(10),
                         fontWeight: FontWeight.bold,
                         color: Constant().mainColor,
                         fontFamily: Constant().fontStyle
@@ -247,18 +203,18 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                 ),
                 Divider(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                  child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", 12, Colors.black, FontWeight.bold),
+                  padding:scaler.getPadding(1,0),
+                  child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", scaler.getTextSize(10), Colors.black, FontWeight.bold),
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    padding:scaler.getPadding(0,0),
                     child: Container(
-                      child:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(getPaymentModel.result.grandTotal)+getPaymentModel.result.kdUnique)} .-", 18, Constant().moneyColor, FontWeight.bold),
+                      child:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(getPaymentModel.result.grandTotal)+getPaymentModel.result.kdUnique)} .-", scaler.getTextSize(12), Constant().moneyColor, FontWeight.bold),
                     )
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                  child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, Colors.black, FontWeight.bold,textAlign: TextAlign.center),
+                  padding:scaler.getPadding(1,0),
+                  child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", scaler.getTextSize(10), Colors.black, FontWeight.bold,textAlign: TextAlign.center),
                 ),
                 Container(
                   color: Constant().secondColor,
@@ -269,10 +225,10 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                     },
                     leading: WidgetHelper().baseImage(getPaymentModel.result.logo,width: 70,height: 50),
                     // leading: Image.network(getPaymentModel.result.logo,width: 70,height: 50,),
-                    title: WidgetHelper().textQ(getPaymentModel.result.accName,12,Constant().secondDarkColor,FontWeight.bold),
+                    title: WidgetHelper().textQ(getPaymentModel.result.accName,scaler.getTextSize(10),Constant().secondDarkColor,FontWeight.bold),
                     subtitle:Row(
                       children: [
-                        WidgetHelper().textQ(getPaymentModel.result.accNo,12,Colors.grey[200],FontWeight.normal),
+                        WidgetHelper().textQ(getPaymentModel.result.accNo,scaler.getTextSize(10),Colors.grey[200],FontWeight.normal),
                         SizedBox(width: 5),
                         Icon(AntDesign.copy1, color: Colors.grey[200], size: 15,),
                       ],
@@ -280,61 +236,61 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                   ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    padding:scaler.getPadding(1,0),
                     child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child:WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', 12,Constant().blueColor, FontWeight.bold, textAlign: TextAlign.center,maxLines: 4)
+                      // padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                        child:WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', scaler.getTextSize(10),Constant().blueColor, FontWeight.bold, textAlign: TextAlign.center,maxLines: 4)
                     )
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    padding:scaler.getPadding(0,0),
                     child: Container(
                       color: const Color(0xffF4F7FA),
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                      padding:scaler.getPadding(1,2),
                       child: RichText(
                         text: TextSpan(
                             text: 'Anda dapat melakukan transfer menggunakan ATM, Mobile Banking atau SMS Banking dengan memasukan kode bank',
-                            style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
+                            style: TextStyle(fontSize:  scaler.getTextSize(10),fontFamily:Constant().fontStyle,color: Colors.black),
                             children: <TextSpan>[
-                              TextSpan(text: ' ${getPaymentModel.result.bankName} ${getPaymentModel.result.tfCode}',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
-                              TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
-                              TextSpan(text: ' ${getPaymentModel.result.accName}',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' ${getPaymentModel.result.bankName} ${getPaymentModel.result.tfCode}',style: TextStyle(color:Colors.green, fontSize:  scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize:  scaler.getTextSize(10),fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' ${getPaymentModel.result.accName}',style: TextStyle(color:Colors.green, fontSize:  scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
                             ]
                         ),
                       ),
                     )
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                    padding:scaler.getPadding(1,0),
                     child: Container(
                         color: const Color(0xffF4F7FA),
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                        child:WidgetHelper().textQ('mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi', 12, Colors.black,FontWeight.normal,textAlign:TextAlign.left)
+                        padding:scaler.getPadding(1,2),
+                        child:WidgetHelper().textQ('mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi', scaler.getTextSize(10), Colors.black,FontWeight.normal,textAlign:TextAlign.left)
                     )
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                    padding:scaler.getPadding(0,0),
                     child: Container(
                       color: const Color(0xffF4F7FA),
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      padding:scaler.getPadding(1,2),
                       child: RichText(
                         text: TextSpan(
                             text: 'Pastikan anda transfer sebelum hari ',
-                            style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
+                            style: TextStyle(fontSize: scaler.getTextSize(10),fontFamily:Constant().fontStyle,color: Colors.black),
                             children: <TextSpan>[
-                              TextSpan(text: FunctionHelper().formateDate(getPaymentModel.result.limitTf,""),style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
-                              TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: FunctionHelper().formateDate(getPaymentModel.result.limitTf,""),style: TextStyle(color:Colors.green, fontSize: scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
+                              TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini',style: TextStyle(fontSize: scaler.getTextSize(10),fontFamily:Constant().fontStyle)),
                             ]
                         ),
                       ),
                     )
                 ),
-                SizedBox(height: 25),
-                WidgetHelper().textQ("TERIMAKASIH !!!", 20,Constant().mainColor,FontWeight.bold,letterSpacing: 3.0),
+                SizedBox(height: scaler.getHeight(2)),
+                WidgetHelper().textQ("TERIMAKASIH !!!", scaler.getTextSize(12),Constant().mainColor,FontWeight.bold,letterSpacing: 3.0),
               ],
             ),
           ),
-        ),
+        )),
         bottomNavigationBar: FlatButton(
           onPressed: () {
             WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan membatalkan transaksi ?",(){
@@ -343,9 +299,9 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
               cancelTransaksi();
             });
           },
-          padding: EdgeInsets.symmetric(vertical: 20,horizontal: 10),
+          padding:scaler.getPadding(1.5,0),
           color: Constant().moneyColor,
-          child:WidgetHelper().textQ("BATALKAN", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
+          child:WidgetHelper().textQ("Batalkan", scaler.getTextSize(10),Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
         ),
         // bottomNavigationBar: Row(
         //   mainAxisAlignment: MainAxisAlignment.spaceBetween,

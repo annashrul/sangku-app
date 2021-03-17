@@ -10,9 +10,9 @@ import 'package:sangkuy/model/member/address/address_model.dart';
 import 'package:sangkuy/provider/address_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
-import '../../pages.dart';
 
 class DetailRedeem extends StatefulWidget {
   dynamic val;
@@ -53,59 +53,25 @@ class _DetailRedeemState extends State<DetailRedeem> {
     }
     else{
       WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
-        if(isTrue){
-          final data={
-            "ongkir":"0",
-            "layanan_pengiriman":"-",
-            "alamat":idAddress,
-            "id_barang":widget.val['id'].toString(),
-            "pin_member":pin.toString()
-          };
-          WidgetHelper().loadingDialog(context);
-          var res=await BaseProvider().postProvider('transaction/redeem', data);
+        final data={
+          "ongkir":"0",
+          "layanan_pengiriman":"-",
+          "alamat":idAddress,
+          "id_barang":widget.val['id'].toString(),
+          "pin_member":pin.toString()
+        };
+        WidgetHelper().loadingDialog(context);
+        var res=await BaseProvider().postProvider('transaction/redeem', data,context: context,callback:(){
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
+
+        if(res!=null){
           Navigator.pop(context);
-          if(res==Constant().errTimeout||res==Constant().errSocket){
-            WidgetHelper().notifDialog(context,"Informasi",Constant().msgConnection,(){
-              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-            },(){
-              postRedeem();
-            },titleBtn1:"Kembali",titleBtn2: "Coba Lagi");
-          }
-          else if(res==Constant().errExpToken){
-            WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken, ()async{
-              FunctionHelper().logout(context);
-            });
-          }
-          else if(res is General){
-            print('general');
-            // Anda belum menyetting pin.
-            // PIN anda tidak sesuai.
-            // PIN tidak valid
-            General result = res;
-            if(result.msg=='PIN anda tidak sesuai.'||result.msg=='PIN tidak valid'){
-              WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-            }
-            else if(result.msg=='Anda belum menyetting pin.'){
-              WidgetHelper().notifOneBtnDialog(context,"Informasi !", "Anda belum mempunyai pin. Silahkan tekan tombol oke dibawah ini untuk membuat pin", (){
-                print('pin belum punya');
-              });
-            }
-            else{
-              Navigator.pop(context);
-              WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-            }
-
-
-
-          }
-          else{
-            WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx, ()async{
-              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-            });
-
-
-
-          }
+          WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx, ()async{
+            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+          });
         }
       }));
     }

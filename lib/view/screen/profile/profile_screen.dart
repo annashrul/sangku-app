@@ -41,6 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoadingInfo=false;
     }
   }
+
+  dynamic dataUser;
+
   Future loadSite()async{
     var res = await BaseProvider().getProvider('site/landing',siteModelFromJson);
     if(res is SiteModel){
@@ -179,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: WidgetHelper().titleQ(context,"Pengaturan Umum","Atur pengaturan data anda disini",icon: AntDesign.setting),
                     padding: scaler.getPadding(1,2),
                   ),
-                  section2("Data Diri",(){},0,iconData: AntDesign.user),
+                  section2("Data Diri",(){WidgetHelper().myPush(context,FormProfileScreen(val: dataUser));},0,iconData: AntDesign.user),
                   section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},1,iconData: Entypo.location),
                   section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},0,iconData:AntDesign.bank),
                   section2("Privacy Policy",(){
@@ -204,6 +207,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
           title: 'Profile',
           callback: (data){
+            setState(() {
+              dataUser=data;
+            });
             print(data);
           },
         ),
@@ -348,21 +354,16 @@ class _RewardScreenState extends State<RewardScreen> {
         "id_barang":widget.infoTambahanModel.result.reward.id
       };
       WidgetHelper().loadingDialog(context);
-      final res=await BaseProvider().postProvider('transaction/claim/reward', data,context: context);
-      Navigator.pop(context);
-      if(res is General){
-        General result=res;
-        print(result.msg);
-        if(result.msg!='PIN anda tidak sesuai.'){
-          Navigator.pop(context);
-        }
-        WidgetHelper().showFloatingFlushbar(context,"failed", result.msg);
-      }else{
+      final res=await BaseProvider().postProvider('transaction/claim/reward', data,context: context,callback: (){
+        Navigator.of(context).pop();
+      });
+      if(res!=null){
+        Navigator.pop(context);
         WidgetHelper().notifOneBtnDialog(context,"Transaksi Berhasil","barang reward anda berhasil di claim.",(){
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         });
-        print(res);
       }
+
     }));
   }
   @override

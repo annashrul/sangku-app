@@ -131,26 +131,23 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       "ke":kdKec,
       "berat":"100",
       "kurir":"$kurir"
-    }
-    );
-    if(res == 'TimeoutException'|| res=='SocketException'){
-      WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
-    }
-    else{
+    },context: context,callback: (){});
+    if(res!=null){
       Navigator.pop(context);
-      setState(() {
-        isPostLoading = false;
-      });
-      if(res is General){
-        print('terjadi kesalahan');
+      var resLayanan = OngkirModel.fromJson(res);
+      if(resLayanan.result.ongkir.length<1){
+        print("DATA :AYANAN ${resLayanan.result.ongkir.length}");
+        return WidgetHelper().notifOneBtnDialog(context, "Terjadi Kesalahan", "maaf layanan dari $kurirTitle tidak tersedia", (){
+          Navigator.pop(context);
+          print("bus");
+          setState(() {
+            kurirTitle='';
+            kurirDeskripsi='';
+          });
+        });
       }
       else{
-        var resLayanan = OngkirModel.fromJson(res);
-        if(resLayanan.result.ongkir.length==0){
-          WidgetHelper().notifOneBtnDialog(context, "Terjadi Kesalahan", "maaf layanan dari $kurirTitle tidak tersedia", (){
-            Navigator.pop(context);
-          });
-        }
+        // Navigator.pop(context);
         setState(() {
           ongkirModel = OngkirModel.fromJson(resLayanan.toJson());
           kurirDeskripsi = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
@@ -158,9 +155,10 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           cost = resLayanan.result.ongkir[0].cost;
         });
         getGrandTotal();
-
       }
+
     }
+
   }
   Future selectedKurir(idx,param)async{
     setState(() {
@@ -168,7 +166,8 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       kurirTitle = kurirModel.result[idx].kurir;
     });
     WidgetHelper().loadingDialog(context);
-    await getOngkir( kurirModel.result[idx].kurir);
+    await getOngkir(kurirModel.result[idx].kurir);
+
     if(param==''){
       Navigator.pop(context);
     }
@@ -208,23 +207,14 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     };
 
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider("transaction/checkout", data);
-    Navigator.pop(context);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      WidgetHelper().showFloatingFlushbar(context,"failed",Constant().msgConnection);
-    }
-    else if(res==Constant().errExpToken){
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        FunctionHelper().logout(context);
-      });
-    }
-    else if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }else{
+    var res = await BaseProvider().postProvider("transaction/checkout", data,context: context,callback: (){
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
+    if(res!=null){
+      Navigator.pop(context);
       await FunctionHelper().removePackage();
       await FunctionHelper().removeSaldo();
-
       WidgetHelper().notifDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
       }, ()async{
@@ -236,6 +226,8 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
         }
       },titleBtn1: 'Kembali',titleBtn2:idBank=='-'?"Detail Pembelian":"Invoice");
     }
+
+
   }
   Future getVoucher()async{
     WidgetHelper().loadingDialog(context);
@@ -297,9 +289,15 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                   voucherFocus.requestFocus();
                   return;
                 }
-                WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,pin){
-                  postCheckout(pin);
-                }));
+                if(kurirTitle==''||kurirDeskripsi==''){
+                  WidgetHelper().showFloatingFlushbar(context,"failed","anda belum memilih jasa pengiriman");
+                }
+                else{
+                  WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,pin){
+                    postCheckout(pin);
+                  }));
+                }
+
               },
               padding: EdgeInsets.only(left: 20),
               color: Constant().moneyColor,

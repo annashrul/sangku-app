@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/provider/member_provider.dart';
+import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/widget/camera_widget.dart';
 
 class FormProfileScreen extends StatefulWidget {
-
+  dynamic val;
+  FormProfileScreen({this.val});
   @override
   _FormProfileScreenState createState() => _FormProfileScreenState();
 }
@@ -14,6 +22,55 @@ class FormProfileScreen extends StatefulWidget {
 class _FormProfileScreenState extends State<FormProfileScreen> {
   var nameController = TextEditingController();
   final FocusNode nameFocus = FocusNode();
+  var pinController = TextEditingController();
+  final FocusNode pinFocus = FocusNode();
+  var confPinController = TextEditingController();
+  final FocusNode confPinFocus = FocusNode();
+  var imageController = TextEditingController();
+  final FocusNode imageFocus = FocusNode();
+
+  Future handleStore()async{
+    Map<String, Object> data;
+    if(nameController.text==''){
+      nameFocus.requestFocus();
+      return WidgetHelper().showFloatingFlushbar(context,"failed","nama tidak boleh kosong");
+    }
+    else{
+      data={'full_name':nameController.text};
+    }
+    if(pinController.text!=''){
+      if(pinController.text!=confPinController.text){
+        confPinFocus.requestFocus();
+        return WidgetHelper().showFloatingFlushbar(context,"failed","pin yang anda masukan tidak sesuai");
+      }else{
+        data={'pin':pinController.text};
+      }
+    }
+    if(imageController.text!=''){
+      data={'picture':imageController.text};
+    }
+    print(data);
+    WidgetHelper().loadingDialog(context);
+
+    var res=await MemberProvider().updateMember(data, context);
+    Navigator.pop(context);
+    if(res=='success'){
+      WidgetHelper().notifOneBtnDialog(context, "Berhasil","Perubah data diri berhasil dilakukan",(){
+        WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 4));
+      });
+    }
+
+  }
+
+
+  File image;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameController.text=widget.val['full_name'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +79,14 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context,"Ubah Data Diri",(){Navigator.pop(context);},<Widget>[]),
       body: ListView(
+        padding: scaler.getPadding(0, 2),
         children: [
           Container(
             child:Column(
             mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: scaler.getHeight(1)),
                 WidgetHelper().textQ("Nama Lengkap", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
                 SizedBox(height: scaler.getHeight(1)),
                 Container(
@@ -53,13 +112,14 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                     focusNode: nameFocus,
-                    onFieldSubmitted: (term){
-                      // UserRepository().fieldFocusChange(context, nameFocus, nohpFocus);
+                    onFieldSubmitted: (e){
+                      WidgetHelper().fieldFocusChange(context,nameFocus,pinFocus);
                     },
 
                   ),
                 ),
-                WidgetHelper().textQ("Nama Lengkap", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
+                SizedBox(height: scaler.getHeight(1)),
+                WidgetHelper().textQ("Pin", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
                 SizedBox(height: scaler.getHeight(1)),
                 Container(
                   width: double.infinity,
@@ -70,7 +130,9 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
                   ),
                   child: TextFormField(
                     style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color: Constant().darkMode),
-                    controller: nameController,
+                    controller: pinController,
+                    focusNode: pinFocus,
+                    obscureText: true,
                     maxLines: 1,
                     autofocus: false,
                     decoration: InputDecoration(
@@ -81,20 +143,118 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
-                    focusNode: nameFocus,
-                    onFieldSubmitted: (term){
-                      // UserRepository().fieldFocusChange(context, nameFocus, nohpFocus);
+                    inputFormatters: <TextInputFormatter>[
+                      LengthLimitingTextInputFormatter(6),
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    onFieldSubmitted: (e){
+                      WidgetHelper().fieldFocusChange(context,pinFocus,confPinFocus);
                     },
 
                   ),
                 ),
+                SizedBox(height: scaler.getHeight(1)),
+                WidgetHelper().textQ("Konfirmasi Pin", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
+                SizedBox(height: scaler.getHeight(1)),
+                Container(
+                  width: double.infinity,
+                  padding: scaler.getPadding(0,2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Theme.of(context).focusColor.withOpacity(0.1),
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color: Constant().darkMode),
+                    controller: confPinController,
+                    maxLines: 1,
+                    obscureText: true,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    focusNode: confPinFocus,
+                    inputFormatters: <TextInputFormatter>[
+                      LengthLimitingTextInputFormatter(6),
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    onFieldSubmitted: (e){
+                      WidgetHelper().fieldFocusChange(context,confPinFocus,imageFocus);
+                    },
+                  ),
+                ),
+                SizedBox(height: scaler.getHeight(1)),
+                WidgetHelper().textQ("Poto", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,letterSpacing: 2.0),
+                SizedBox(height: scaler.getHeight(1)),
+                Container(
+                  width: double.infinity,
+                  padding: scaler.getPadding(0,2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Theme.of(context).focusColor.withOpacity(0.1),
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color: Constant().darkMode),
+                    maxLines: 1,
+                    autofocus: false,
+                    readOnly: true,
+                    controller: imageController,
+                    focusNode: imageFocus,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    onTap: (){
+                      WidgetHelper().myModal(context, CameraWidget(
+                        callback: (String img,pureImage)async{
+                          setState(() {
+                            imageController.text = img;
+                          });
+                          await Future.delayed(Duration(seconds: 1));
+                          WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                            // upload(image);
+                            print(pureImage);
+                            setState(() {
+                              image=pureImage;
+                              imageController.text = img;
+                            });
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          });
+                          // handleStore();
+                          // upload(image);
+                        },
+                      ));
+                    },
 
+                  ),
+                ),
+                image!=null?
+                new Image.file(image,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):Text('')
               ]
             )
           )
         ],
+      ),
+      bottomNavigationBar: FlatButton(
+        padding: scaler.getPadding(1.5, 0),
+          onPressed: (){handleStore();},
+          color: Constant().moneyColor,
+          child: WidgetHelper().textQ("Simpan",scaler.getTextSize(10),Colors.white,FontWeight.bold)
       ),
     );
   }

@@ -83,33 +83,14 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     else{
       WidgetHelper().loadingDialog(context);
       var res=await TrackingProvider().checkResi(
-        // 'JD0099164063',
           detailHistoryPembelianModel.result.resi,
-          // 'jnt',
           detailHistoryPembelianModel.result.layananPengiriman.split("|")[0],
           widget.kdTrx
       );
-      Navigator.pop(context);
-      if(res == 'error'){
-        WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){Navigator.of(context).pop();},(){Navigator.of(context).pop();});
-      }
-      else if(res =='failed'){
-        if(retry>=3){
-          WidgetHelper().notifOneBtnDialog(context, 'Terjadi Kesalahan Server', "Silahkan hubungi admin kami", (){
-            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
-          });
-        }
-        else{
-          WidgetHelper().notifDialog(context,"Terjadi Kesalahan","silahkan coba lagi", (){Navigator.pop(context);},(){
-            checkingAgain();
-          },titleBtn1: "kembali",titleBtn2: "Coba lagi");
-        }
-      }
-      else{
-        setState(() {
-          resiModel = res;
-        });
-        WidgetHelper().myPush(context,ResiScreen(resiModel: resiModel));
+      if(res is ResiModel){
+        ResiModel result=res;
+        Navigator.pop(context);
+        WidgetHelper().myPush(context,ResiScreen(resiModel: result));
       }
     }
 
@@ -122,15 +103,12 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
       WidgetHelper().loadingDialog(context);
       var res=await BaseProvider().putProvider('transaction/done/${widget.kdTrx}', {});
       Navigator.pop(context);
-      if(res is General){
-        General result=res;
-        WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-      }
-      else{
+      if(res!=null){
         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         });
       }
+
     }
 
   }

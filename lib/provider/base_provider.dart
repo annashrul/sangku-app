@@ -34,8 +34,8 @@ class BaseProvider{
           "HttpHeaders.contentTypeHeader": "application/json"
         };
         final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
-        // print("=================== GET DATA $url = ${response.statusCode} ============================");
         final jsonResponse = json.decode(response.body);
+
         if (response.statusCode == 200) {
           // print("=================== SUCCESS $url = $jsonResponse ==========================");
           if(jsonResponse['result'].length>0){
@@ -59,6 +59,7 @@ class BaseProvider{
           return General.fromJson(jsonResponse);
         }
       }on TimeoutException catch (_) {
+        print("###################################### GET TimeoutException $url ");
         if(context==null){
           return Constant().errTimeout;
         }
@@ -69,6 +70,7 @@ class BaseProvider{
           });
         }
       } on SocketException catch (_) {
+        print("###################################### GET SocketException $url ");
         if(context==null){
           return Constant().errTimeout;
         }
@@ -81,7 +83,7 @@ class BaseProvider{
       }
     }
   }
-  Future postProvider(url,Map<String, Object> data,{BuildContext context}) async {
+  Future postProvider(url,Map<String, Object> data,{BuildContext context,Function callback}) async {
     try {
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
@@ -96,21 +98,21 @@ class BaseProvider{
           headers: head,
           body:data
       ).timeout(Duration(seconds: Constant().timeout));
-      print("=================== POST DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
+        print("=================== POST DATA 200 $url = ${json.decode(request.body)} ============================");
         return json.decode(request.body);
       }
       else if(request.statusCode==400){
         final jsonResponse = json.decode(request.body);
-        // if(context!=null){
-        //   print("request.statusCode==400 ${jsonResponse['msg']}");
-        //   return WidgetHelper().showFloatingFlushbar(context,"failed", jsonResponse['msg']);
-        // }
-        // else{
-        //   return General.fromJson(json.decode(request.body));
-        // }
-        return General.fromJson(json.decode(request.body));
-
+        Navigator.pop(context);
+        print(jsonResponse['msg']);
+        if(jsonResponse['msg']=='PIN Tidak Sesuai.'||jsonResponse['msg']=='PIN anda tidak sesuai.'|| jsonResponse['msg']=='PIN tidak valid'){
+          return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],()=>Navigator.pop(context));
+        }
+        else{
+          print("error bukan pin");
+          return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],(){callback();});
+        }
       }
       else if(request.statusCode==404){
         return WidgetHelper().notifOneBtnDialog(context,"Informasi !","url not found",(){Navigator.pop(context);});
@@ -149,10 +151,17 @@ class BaseProvider{
       ).timeout(Duration(seconds: Constant().timeout));
       print("=================== PUT DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
-        return jsonDecode(request.body);
+        return {"statusCode":request.statusCode,"data":jsonDecode(request.body)};
       }
       else if(request.statusCode==400){
-        return General.fromJson(jsonDecode(request.body));
+        final jsonResponse = json.decode(request.body);
+        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],(){Navigator.pop(context);});
+      }
+      else if(request.statusCode==413){
+        Navigator.pop(context);
+        // final jsonResponse = json.decode(request.body);
+        print("jsonResponse");
+        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Silahkan hubungi admin kami",(){Navigator.pop(context);});
       }
     } on TimeoutException catch (_) {
       print("=================== TimeoutException $url = $TimeoutException ============================");

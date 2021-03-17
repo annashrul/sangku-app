@@ -84,7 +84,6 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
 
 
 
-  Completer<WebViewController> _controller = Completer<WebViewController>();
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -109,10 +108,10 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
               padding: 0.0,
             ),
           ),description:referralCode,widget: [
-            IconButton(icon: Icon(AntDesign.reload1), onPressed:(){
-              widget.homePageState.
-              // WebViewWidget().createState().handleRefresh();
-            })
+            // IconButton(icon: Icon(AntDesign.reload1), onPressed:(){
+            //   widget.homePageState.
+            //   // WebViewWidget().createState().handleRefresh();
+            // })
           ]),
 
           body:url!=''?Padding(

@@ -20,24 +20,7 @@ class _WebViewWidgetState extends State<WebViewWidget> {
   final _key = UniqueKey();
   bool isError=false;
 
-  handleRefresh(){
-    print('abus');
-    setState(() {
-      _stackToView=1;
-    });
-    return _controller.future.then((value){
-      if(_stackToView==0){
-        // widget.callback();
-        value.reload();
-        value.loadUrl(widget.val['url']);
-        setState(() {
-          isError=false;
-          _stackToView=1;
-        });
-      }
-    });
 
-  }
 
 
   @override
@@ -89,23 +72,23 @@ class _WebViewWidgetState extends State<WebViewWidget> {
           )
         ],
       ),
-      // floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
-      //   backgroundColor: Constant().mainColor,
-      //   foregroundColor: Colors.white,
-      //   // onPressed: ()=>_controller.future.then((value){
-      //   //   if(_stackToView==0){
-      //   //     // widget.callback();
-      //   //     value.reload();
-      //   //     value.loadUrl(widget.val['url']);
-      //   //     setState(() {
-      //   //       isError=false;
-      //   //       _stackToView=1;
-      //   //     });
-      //   //   }
-      //   // }),
-      //   // onPressed:widget.callback(_controller),
-      //   child: _stackToView==1?CircularProgressIndicator(backgroundColor: Colors.white,valueColor:new AlwaysStoppedAnimation<Color>(Constant().mainColor)):Icon(AntDesign.reload1),
-      // ),
+      floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
+        backgroundColor: Constant().mainColor,
+        foregroundColor: Colors.white,
+        onPressed: ()=>_controller.future.then((value){
+          if(_stackToView==0){
+            // widget.callback();
+            value.reload();
+            value.loadUrl(widget.val['url']);
+            setState(() {
+              isError=false;
+              _stackToView=1;
+            });
+          }
+        }),
+        // onPressed:widget.callback(_controller),
+        child: _stackToView==1?CircularProgressIndicator(backgroundColor: Colors.white,valueColor:new AlwaysStoppedAnimation<Color>(Constant().mainColor)):Icon(AntDesign.reload1),
+      ),
 
     );
   }

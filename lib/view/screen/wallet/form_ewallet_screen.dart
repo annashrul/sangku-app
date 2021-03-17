@@ -218,55 +218,79 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
     }
     print(val);
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider(url, val);
-    Navigator.pop(context);
-    if(res==Constant().errTimeout||res==Constant().errSocket){
-      WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi Kesalahan Koneksi");
-    }
-    else if(res==Constant().errExpToken){
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        FunctionHelper().logout(context);
-      });
-    }
-    else{
-      if(res is General){
-        General result = res;
-        WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    var res = await BaseProvider().postProvider(url, val,context: context,callback: (){
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
+    if(res!=null){
+      Navigator.pop(context);
+      String kdTrx='';
+      if(widget.title=='TOP UP'){
+        kdTrx = base64.encode(utf8.encode(res['result']['kd_trx']));
+        WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
+        await Future.delayed(Duration(seconds: 2));
+        WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
       }
-      else{
-        if(res['status']=='failed'){
-          print("RESPONSE CHECKOUT ${res['result']}");
-          WidgetHelper().notifDialog(context,"Informasi",res['msg'], (){
-            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          }, (){
-            WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          },titleBtn1: "Kembali",titleBtn2: "Detail Transksi");
-          // WidgetHelper().showFloatingFlushbar(context,"failed",res['msg']);
-        }
-        else{
-          print("RESPONSE CHECKOUT ${res['result']}");
-          String kdTrx='';
-          if(widget.title=='TOP UP'){
-            kdTrx = base64.encode(utf8.encode(res['result']['kd_trx']));
-            WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
-            await Future.delayed(Duration(seconds: 2));
-            WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
-          }
-          if(widget.title=='TRANSFER'){
-            WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+      if(widget.title=='TRANSFER'){
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
 
-            });
-          }
-          if(widget.title=='PENARIKAN'){
-            WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
-              WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-            });
-          }
-          // WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
-        }
+        });
+      }
+      if(widget.title=='PENARIKAN'){
+        WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+        });
       }
     }
+    // if(res==Constant().errTimeout||res==Constant().errSocket){
+    //   WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi Kesalahan Koneksi");
+    // }
+    // else if(res==Constant().errExpToken){
+    //   WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+    //     FunctionHelper().logout(context);
+    //   });
+    // }
+    // else{
+    //   if(res is General){
+    //     General result = res;
+    //     WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    //   }
+    //   else{
+    //     if(res['status']=='failed'){
+    //       print("RESPONSE CHECKOUT ${res['result']}");
+    //       WidgetHelper().notifDialog(context,"Informasi",res['msg'], (){
+    //         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    //       }, (){
+    //         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    //       },titleBtn1: "Kembali",titleBtn2: "Detail Transksi");
+    //       // WidgetHelper().showFloatingFlushbar(context,"failed",res['msg']);
+    //     }
+    //     else{
+    //       print("RESPONSE CHECKOUT ${res['result']}");
+    //       String kdTrx='';
+    //       if(widget.title=='TOP UP'){
+    //         kdTrx = base64.encode(utf8.encode(res['result']['kd_trx']));
+    //         WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
+    //         await Future.delayed(Duration(seconds: 2));
+    //         WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
+    //       }
+    //       if(widget.title=='TRANSFER'){
+    //         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+    //           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    //
+    //         });
+    //       }
+    //       if(widget.title=='PENARIKAN'){
+    //         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
+    //           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    //         });
+    //       }
+    //       // WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
+    //     }
+    //   }
+    // }
 
   }
   Future handleUpdate(BuildContext context)async{
@@ -490,7 +514,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
       }
       if(widget.title=='PENARIKAN'){
         if(!isHaveKtp){
-          WidgetHelper().myModal(context,CameraWidget(callback: (img){
+          WidgetHelper().myModal(context,CameraWidget(callback: (img,pureImage){
             setState(() {
               image=img;
             });

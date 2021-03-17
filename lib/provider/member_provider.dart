@@ -13,6 +13,10 @@ class MemberProvider{
     final idMember = await UserHelper().getDataUser("id_user");
     String url = 'member/get/$idMember';
     var res = await BaseProvider().getProvider(url,dataMemberModelFromJson,context: context,callback: callback);
+    print("###################################### MEMBER ###############################");
+    print(res);
+    print("###################################### MEMBER ###############################");
+
     if(res is DataMemberModel){
       DataMemberModel result=res;
       if(result.status=='success'){
@@ -27,13 +31,10 @@ class MemberProvider{
   Future updateMember(data,BuildContext context)async{
     final id=await UserHelper().getDataUser("id_user");
     var res=await BaseProvider().putProvider('member/$id', data,context: context);
-    if(res is General){
-      General result=res;
-      return result.msg;
-    }
-    else{
+    if(res!=null){
       return 'success';
     }
+
   }
 
   Future getBankMember(where)async{

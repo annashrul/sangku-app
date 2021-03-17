@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -12,6 +15,7 @@ import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/content_provider.dart';
 import 'package:sangkuy/view/screen/content/news/detail_news_screen.dart';
+import 'package:sangkuy/view/screen/content/testimoni/my_testimoni_screen.dart';
 import 'package:sangkuy/view/screen/mlm/history/resi_screen.dart';
 import 'package:sangkuy/view/widget/camera_widget.dart';
 import 'package:sangkuy/view/widget/loading/testimoni_loading.dart';
@@ -73,15 +77,8 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
     return Scaffold(
       key: _scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Testimoni",(){Navigator.pop(context);},<Widget>[
-        IconButton(icon: Icon(AntDesign.pluscircleo), onPressed: (){
-          WidgetHelper().myModal(context,ModalFormTestimoni(val: null,callback: (param){
-            if(param=='success'){
-              setState(() {
-                isLoadingTestimoni=true;
-              });
-              loadTestimoni();
-            }
-          }));
+        IconButton(icon: Icon(AntDesign.user), onPressed: (){
+          WidgetHelper().myPush(context,MyTestimoniScreen());
         })
       ]),
       body:  isLoadingTestimoni?TestimoniLoading(): RefreshWidget(
@@ -229,7 +226,8 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
 
 
 class ModalFormTestimoni extends StatefulWidget {
-  dynamic val;Function(String param) callback;
+  dynamic val;
+  Function(String param) callback;
   ModalFormTestimoni({this.val,this.callback});
   @override
   _ModalFormTestimoniState createState() => _ModalFormTestimoniState();
@@ -264,48 +262,49 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
   Future store(BuildContext context)async{
     final data={
       "title":titleController.text,
-      // "picture":img==''?,
+      "picture":img==''?'-':img,
       "video":videoController.text,
       "caption":captionController.text,
       "type":"1",
       "id_category":"7de638c6-e336-4b53-9beb-0a90f109911e"
     };
-    if(img!=''){
-      data['img']=img;
-    }
     WidgetHelper().loadingDialog(context);
     var res;
     if(widget.val==null){
-      res = await BaseProvider().postProvider('content', data,context: context);
+      res = await BaseProvider().postProvider('content', data,context: context,callback: (){
+        Navigator.pop(context);
+      });
     }else{
       res = await BaseProvider().putProvider('content/${widget.val['id']}', data,context: context);
     }
-    Navigator.pop(context);
-    if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }else{
+    print(data);
+    if(res!=null){
+      Navigator.pop(context);
       WidgetHelper().notifOneBtnDialog(context,"Berhasil","Data berhasil disimpan", (){
         widget.callback("success");
-        Navigator.pop(context);
-        Navigator.pop(context);
+        // Navigator.pop(context);
+        // Navigator.pop(context);
         if(widget.val!=null){
+          Navigator.pop(context);
           Navigator.pop(context);
         }
         // Navigator.pop(context);
       });
     }
+
   }
 
   Future handleDetail()async{
-    setState(() {
-      titleController.text=widget.val['jobs'];
-      videoController.text=widget.val['video'];
-      captionController.text=widget.val['caption'];
-      previewImage=widget.val['picture'];
-    });
+    if(widget.val!=null){
+      setState(() {
+        titleController.text=widget.val['jobs'];
+        videoController.text=widget.val['video'];
+        captionController.text=widget.val['caption'];
+        previewImage=widget.val['picture'];
+      });
+    }
   }
-
+  File pureImg;
   @override
   void initState() {
     // TODO: implement initState
@@ -442,11 +441,20 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                         InkWell(
                           onTap: (){
                             WidgetHelper().myModal(context, CameraWidget(
-                              callback: (String imgs)async{
-                                setState(() {
-                                  img = imgs;
+                              callback: (String imgs,pureImage)async{
+
+                                await Future.delayed(Duration(seconds: 1));
+                                WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                                  // upload(image);
+                                  print(pureImage);
+                                  setState(() {
+                                    pureImg=pureImage;
+                                    img = imgs;
+                                  });
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
                                 });
-                                Navigator.pop(context);
+                                // Navigator.pop(context);
                                 // upload(image);
                               },
                             ));
@@ -525,7 +533,7 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
                             ),
                           ),
                         ),
-                        if(widget.val!=null)WidgetHelper().baseImage(previewImage)
+                        pureImg!=null?new Image.file(pureImg,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):widget.val!=null?WidgetHelper().baseImage(previewImage):Text('')
                       ],
                     )
                 ),

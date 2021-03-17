@@ -15,17 +15,10 @@ class CartProvider{
     };
     print(data);
     var res = await BaseProvider().postProvider('transaction/cart', data);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      return 'error';
+    if(res!=null){
+      return 'success';
     }
-    else{
-      if(res is General){
-        General result=res;
-        return '${result.msg}';
-      }else{
-        return 'success';
-      }
-    }
+
 
   }
   Future deleteCart(id)async{

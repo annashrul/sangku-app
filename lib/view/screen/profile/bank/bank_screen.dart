@@ -218,28 +218,35 @@ class _ModalFormBankState extends State<ModalFormBank> {
     }else{
       res = await BaseProvider().putProvider("bank_member/${widget.val['id']}", data);
     }
+
     Navigator.pop(context);
-    if(res==Constant().errTimeout||res==Constant().errSocket){
-      WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
-        Navigator.pop(context);
-      },(){
-        Navigator.pop(context);
-        storeBank();
-      },titleBtn1: 'Kembali',titleBtn2: 'Coba lagi');
-    }
-    else if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }
-    else{
+    if(res!=null){
       widget.callback(1);
       // Navigator.pop(context);
       Navigator.pop(context);
       WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-      // WidgetHelper().notifOneBtnDialog(context,"Berhasil !","Tambah data bank berhasil dilakukan",(){
-      //   WidgetHelper().myPush(context,BankScreen());
-      // });
     }
+    // if(res==Constant().errTimeout||res==Constant().errSocket){
+    //   WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+    //     Navigator.pop(context);
+    //   },(){
+    //     Navigator.pop(context);
+    //     storeBank();
+    //   },titleBtn1: 'Kembali',titleBtn2: 'Coba lagi');
+    // }
+    // else if(res is General){
+    //   General result=res;
+    //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    // }
+    // else{
+    //   widget.callback(1);
+    //   // Navigator.pop(context);
+    //   Navigator.pop(context);
+    //   WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+    //   // WidgetHelper().notifOneBtnDialog(context,"Berhasil !","Tambah data bank berhasil dilakukan",(){
+    //   //   WidgetHelper().myPush(context,BankScreen());
+    //   // });
+    // }
   }
 
   int idxBank=0;

@@ -51,6 +51,7 @@ import 'package:sangkuy/view/screen/mlm/stockist/pin_aktivasi_screen.dart';
 import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';
 import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/screen/profile/bank/bank_screen.dart';
+import 'package:sangkuy/view/screen/profile/form_profile_screen.dart';
 import 'package:sangkuy/view/screen/profile/info_screen.dart';
 import 'package:sangkuy/view/screen/profile/rekapitulasi_screen.dart';
 import 'package:sangkuy/view/screen/wallet/form_ewallet_screen.dart';

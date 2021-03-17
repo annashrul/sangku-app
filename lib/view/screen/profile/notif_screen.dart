@@ -55,9 +55,12 @@ class _NotifScreenState extends State<NotifScreen> {
   
   Future handleRead(id)async{
     WidgetHelper().loadingDialog(context);
-    await BaseProvider().putProvider('site/notif',{"id":id});
-    loadData();
+    var res = await BaseProvider().putProvider('site/notif',{"id":id});
     Navigator.pop(context);
+    if(res!=null){
+      loadData();
+    }
+
   }
 
   @override

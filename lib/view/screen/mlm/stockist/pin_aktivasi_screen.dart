@@ -53,18 +53,12 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
           "id_membership":val['id']
         };
         WidgetHelper().loadingDialog(context);
-        var res=await BaseProvider().postProvider('pin/aktivasi/ro', data,context: context);
-        Navigator.pop(context);
-        if(res is General){
-          General result=res;
-          print(result.msg);
-          if(result.msg!='PIN anda tidak sesuai.'){
-            Navigator.pop(context);
-            Navigator.pop(context);
-          }
-          WidgetHelper().showFloatingFlushbar(context, "failed",result.msg);
-        }
-        else{
+        var res=await BaseProvider().postProvider('pin/aktivasi/ro', data,context: context,callback: (){
+          Navigator.pop(context);
+          Navigator.pop(context);
+        });
+        if(res!=null){
+          Navigator.pop(context);
           WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           });
@@ -72,7 +66,7 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
       }));
     }
     else{
-      Navigator.pop(context);
+      // Navigator.pop(context);
       WidgetHelper().showFloatingFlushbar(context,"failed","Maaf, anda tidak memiliki pin");
     }
   }
@@ -111,6 +105,7 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
                           WidgetHelper().notifDialog(context,"Aktivasi Pin RO","Aktivasi Pin Repeat Order ( RO ) paket ${val.title}", (){
                             Navigator.pop(context);
                           }, (){
+                            Navigator.pop(context);
                             handleSubmit(val.toJson());
                           }, titleBtn1: "Batal",titleBtn2: "Oke, Aktivasi");
                           // WidgetHelper().myModal(context,ReaktivasiPin(title: "Paket ${val.title}",id: val.id,pin: val.jumlah));
@@ -199,16 +194,14 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
           "pin_member":pin.toString(),
           "pin_reaktivasi":widget.id
         };
-        var res=await BaseProvider().postProvider('pin/reaktivasi', data);
-        Navigator.pop(context);
-        if(res is General){
-          General result=res;
-          WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-        }else{
+        var res=await BaseProvider().postProvider('pin/reaktivasi', data,context: context);
+        if(res!=null){
+          Navigator.pop(context);
           WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           });
         }
+
         print(data);
       }));
     }
@@ -408,17 +401,17 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
           "id_membership":widget.val['id'],
           "uid":availableMemberModel.result.referralCode
         };
-        var res = await BaseProvider().postProvider("pin/transfer", data,context: context);
+        var res = await BaseProvider().postProvider("pin/transfer", data,context: context,callback: (){
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+        });
         print(res);
-
-        Navigator.pop(context);
-        if(res is General){
-          General result=res;
-          return WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-        }
-        else{
+        if(res!=null){
+          Navigator.pop(context);
           WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));});
         }
+
 
       }));
     }
