@@ -87,17 +87,14 @@ class _CartScreenState extends State<CartScreen> {
   }
   Future postCart(id,qty)async{
     WidgetHelper().loadingDialog(context);
-    var res = await CartProvider().postCart(id,qty.toString(),tipe);
-    Navigator.pop(context);
-    if(res=='error'){
-      WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
+    var res = await CartProvider().postCart(id,qty.toString(),tipe,context,(){
+      Navigator.pop(context);
+    });
+    if(res!=null){
+      Navigator.pop(context);
+      await loadCart();
     }
-    else if(res=='success'){
-    await loadCart();
-    }
-    else{
-      WidgetHelper().notifBar(context,"failed",res);
-    }
+
   }
   Future deleteCart(id)async{
     WidgetHelper().loadingDialog(context);

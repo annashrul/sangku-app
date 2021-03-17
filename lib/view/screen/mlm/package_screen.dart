@@ -76,19 +76,27 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
     }
   }
   Future handleSubmit(id,qty,tipe)async{
-    var res = await CartProvider().postCart(id,qty.toString(),tipe);
-    Navigator.pop(context);
-    print(res);
-    if(res=='error'){
-      WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
-    }
-    else if(res=='success'){
+    var res = await CartProvider().postCart(id,qty.toString(),tipe,context,(){
+      Navigator.pop(context);
+
+    });
+    if(res!=null){
+      Navigator.pop(context);
       WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
       await loadCart();
     }
-    else{
-      WidgetHelper().notifBar(context,"failed",res);
-    }
+    // Navigator.pop(context);
+    // print(res);
+    // if(res=='error'){
+    //   WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
+    // }
+    // else if(res=='success'){
+    //   WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
+    //   await loadCart();
+    // }
+    // else{
+    //   WidgetHelper().notifBar(context,"failed",res);
+    // }
   }
   Future postCart(id,qty,type)async{
     final package=await FunctionHelper().isPackage();

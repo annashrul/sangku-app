@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/cart_model.dart';
@@ -5,7 +6,7 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider{
-  Future postCart(id,qty,tipe)async{
+  Future postCart(id,qty,tipe,BuildContext context,Function callback)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("packageType", tipe);
     final data={
@@ -14,7 +15,7 @@ class CartProvider{
       "qty":"-"
     };
     print(data);
-    var res = await BaseProvider().postProvider('transaction/cart', data);
+    var res = await BaseProvider().postProvider('transaction/cart', data,context: context,callback: callback);
     if(res!=null){
       return 'success';
     }

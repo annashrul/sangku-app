@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -68,10 +69,13 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
       "nopel":idPelangganController.text
     };
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider('transaction/pascabayar/tagihan', data);
-    Navigator.pop(context);
+    var res = await BaseProvider().postProvider('transaction/pascabayar/tagihan', data,context: context,callback: (){
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
 
     if(res!=null){
+      Navigator.pop(context);
       WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
 
     }
@@ -270,23 +274,12 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
       "islogin":'true'
     };
     WidgetHelper().loadingDialog(context);
-    var res = await BaseProvider().postProvider('auth/otp', data);
-    Navigator.pop(context);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){
-        Navigator.pop(context);
-      }, (){
-        Navigator.pop(context);
-        handleSubmit();
-      },titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
-
-    }
-    else if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }
-    else{
-      print(res);
+    var res = await BaseProvider().postProvider('auth/otp', data,context: context,callback: (){
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
+    if(res!=null){
+      Navigator.pop(context);
       var result = OtpModel.fromJson(res);
       WidgetHelper().myPush(context,SecureCodeScreen(
         callback:(context,isTrue)async{
@@ -299,6 +292,34 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
         data: data,
       ));
     }
+    // Navigator.pop(context);
+    // if(res==Constant().errSocket||res==Constant().errTimeout){
+    //   WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){
+    //     Navigator.pop(context);
+    //   }, (){
+    //     Navigator.pop(context);
+    //     handleSubmit();
+    //   },titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
+    //
+    // }
+    // else if(res is General){
+    //   General result=res;
+    //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    // }
+    // else{
+    //   print(res);
+    //   var result = OtpModel.fromJson(res);
+    //   WidgetHelper().myPush(context,SecureCodeScreen(
+    //     callback:(context,isTrue)async{
+    //       WidgetHelper().myPush(context,PinScreen(callback: (BuildContext context,isTrue,pin)async{
+    //         checkout(pin);
+    //       }));
+    //     },
+    //     code:result.result.otpAnying,
+    //     desc: 'WhatsApp',
+    //     data: data,
+    //   ));
+    // }
     // WidgetHelper().myPush(context,SecureCodeScreen());
   }
 
@@ -307,34 +328,47 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
     var res=await BaseProvider().postProvider('transaction/pascabayar/checkout',{
       "kd_trx":widget.val['result']['kd_trx'],
       "pin":pin.toString()
+    },context: context,callback: (){
+      print("bus");
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
     });
-    Navigator.pop(context);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){
-        Navigator.pop(context);
-      }, (){
-        Navigator.pop(context);
-        checkout(pin);
-      },titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
-
-    }
-    else if(res is General){
-      General result=res;
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    }
-    else{
+    if(res!=null){
+      Navigator.pop(context);
       WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
       });
-      print(res);
     }
+    // Navigator.pop(context);
+    // if(res==Constant().errSocket||res==Constant().errTimeout){
+    //   WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){
+    //     Navigator.pop(context);
+    //   }, (){
+    //     Navigator.pop(context);
+    //     checkout(pin);
+    //   },titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
+    //
+    // }
+    // else if(res is General){
+    //   General result=res;
+    //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+    // }
+    // else{
+    //   WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
+    //     WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
+    //   });
+    //   print(res);
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     print(widget.val);
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
+      // padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
       decoration: BoxDecoration(
           // color: Constant().secondColor,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
@@ -346,8 +380,8 @@ class _ModalDetailPascabayarState extends State<ModalDetailPascabayar> {
         children: <Widget>[
 
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor1),
+            padding:scaler.getPadding(1,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor1,iconSize: scaler.getTextSize(10)),
           ),
           desc(context,'Jenis Tagihan', widget.val['result']['produk']),
           Divider(),

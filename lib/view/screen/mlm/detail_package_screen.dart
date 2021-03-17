@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -94,18 +95,25 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   Future postCart(param)async{
     print(param);
     WidgetHelper().loadingDialog(context);
-    var res = await CartProvider().postCart(widget.id,param,widget.tipe);
-    Navigator.pop(context);
-    if(res=='error'){
-      WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
-    }
-    else if(res=='success'){
+    var res = await CartProvider().postCart(widget.id,param,widget.tipe,context,(){
+      Navigator.pop(context);
+    });
+    if(res!=null){
+      Navigator.pop(context);
       await loadCart();
       WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
     }
-    else{
-      WidgetHelper().notifBar(context,"failed",res);
-    }
+    // Navigator.pop(context);
+    // if(res=='error'){
+    //   WidgetHelper().notifBar(context,"failed",Constant().msgConnection);
+    // }
+    // else if(res=='success'){
+    //   await loadCart();
+    //   WidgetHelper().notifBar(context,"success",'berhasil dimasukan kedalam keranjang');
+    // }
+    // else{
+    //   WidgetHelper().notifBar(context,"failed",res);
+    // }
   }
   Future validate(param)async{
     if(qty<1){
@@ -196,6 +204,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       body: isLoading?WidgetHelper().loadingWidget(context):buildContent(context),
@@ -204,13 +214,13 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
           validate(param);
         },
         color: Constant().moneyColor,
-        padding: EdgeInsets.all(20.0),
+        padding:scaler.getPadding(1,0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
             SizedBox(width:10.0),
-            WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
+            WidgetHelper().textQ("Keranjang", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
           ],
         ),
       ),
@@ -218,6 +228,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     );
   }
   Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?WidgetHelper().loadingWidget(context):isError?ErrWidget(callback:(){}):RefreshWidget(
       widget: CustomScrollView(
           slivers: <Widget>[
@@ -243,7 +255,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                 }, total>0?Colors.redAccent:Colors.transparent)
               ],
               // backgroundColor: Theme.of(context).primaryColor,
-              expandedHeight: 300,
+              expandedHeight: scaler.getHeight(30),
               elevation: 0,
               flexibleSpace: sliderQ(context),
               bottom: TabBar(
@@ -259,7 +271,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(0), color:_tabIndex==0?Constant().mainColor:Constant().secondColor),
                         child: Align(
                           alignment: Alignment.center,
-                          child: WidgetHelper().myText("Deskripsi",12,color:Colors.white,fontWeight: FontWeight.bold),
+                          child: WidgetHelper().myText("Deskripsi",scaler.getTextSize(9),color:Colors.white,fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -269,7 +281,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(0), color:_tabIndex==1?Constant().mainColor:Constant().secondColor),
                         child: Align(
                           alignment: Alignment.center,
-                          child: WidgetHelper().myText("Produk",12,color:Colors.white,fontWeight: FontWeight.bold),
+                          child: WidgetHelper().myText("Produk",scaler.getTextSize(9),color:Colors.white,fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -286,7 +298,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Container(
-                          padding: EdgeInsets.all(15.0),
+                          padding:scaler.getPadding(1,2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -294,14 +306,14 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  WidgetHelper().textQ("${detailPackageModel.result.title}",14,Constant().darkMode,FontWeight.bold),
+                                  WidgetHelper().textQ("${detailPackageModel.result.title}",scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
                                   SizedBox(height: 5.0),
-                                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailPackageModel.result.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
+                                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailPackageModel.result.harga))} .-",scaler.getTextSize(10),Constant().moneyColor,FontWeight.bold),
                                 ],
                               ),
                               Container(
-                                height: 40.0,
-                                width: 40.0,
+                                height: scaler.getHeight(5),
+                                width: scaler.getWidth(5),
                                 child: Image.network(detailPackageModel.result.badge),
                               )
                             ],
@@ -313,34 +325,34 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                             padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0),
                             width: double.infinity,
                             color: Color(0xFFEEEEEE),
-                            child:WidgetHelper().textQ("${detailPackageModel.result.deskripsi}",12,Constant().darkMode,FontWeight.normal,maxLines: 100),
+                            child:WidgetHelper().textQ("${detailPackageModel.result.deskripsi}",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines: 100),
                           ),
                         ),
                         Container(
-                          padding: EdgeInsets.all(15.0),
+                          padding:scaler.getPadding(1,2),
                           child: Column(
                             children: [
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  WidgetHelper().textQ("Kategori",12,Constant().darkMode,FontWeight.normal),
-                                  WidgetHelper().textQ("${detailPackageModel.result.kategori}",12,Colors.grey,FontWeight.normal),
+                                  WidgetHelper().textQ("Kategori",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                                  WidgetHelper().textQ("${detailPackageModel.result.kategori}",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                                 ],
                               ),
                               Divider(),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  WidgetHelper().textQ("Point Volume",12,Constant().darkMode,FontWeight.normal),
-                                  WidgetHelper().textQ("${detailPackageModel.result.pointVolume}",12,Colors.grey,FontWeight.normal),
+                                  WidgetHelper().textQ("Point Volume",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                                  WidgetHelper().textQ("${detailPackageModel.result.pointVolume}",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                                 ],
                               ),
                               Divider(),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  WidgetHelper().textQ("Berat",12,Constant().darkMode,FontWeight.normal),
-                                  WidgetHelper().textQ("${detailPackageModel.result.berat}",12,Colors.grey,FontWeight.normal),
+                                  WidgetHelper().textQ("Berat",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                                  WidgetHelper().textQ("${detailPackageModel.result.berat}",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                                 ],
                               ),
                             ],
@@ -359,7 +371,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                       children: [
                         Container(
                           height: MediaQuery.of(context).size.height/1,
-                          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                          padding: scaler.getPadding(1, 2),
                           child: detailPackageModel.result.detail.length>0?ListView.separated(
                             padding:EdgeInsets.all(0.0),
                             shrinkWrap: true,
@@ -367,7 +379,7 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                             itemBuilder: (context,index){
                               var val=detailPackageModel.result.detail[index];
                               return Container(
-                                padding: EdgeInsets.all(15.0),
+                                padding:scaler.getPadding(0, 1),
                                 child: CardWidget(
                                   prefixBadge: Constant().secondColor,
                                   title: val.barang,
@@ -397,6 +409,8 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
     );
   }
   Widget sliderQ(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlexibleSpaceBar(
       stretchModes: [
         StretchMode.zoomBackground,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -407,21 +408,23 @@ class _ModalProductState extends State<ModalProduct> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      height: MediaQuery.of(context).size.height/1.5,
+      height: scaler.getHeight(80),
       // padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
       ),
       child:Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height:10.0),
+          SizedBox(height:scaler.getHeight(1)),
           Center(
             child: Container(
-              padding: EdgeInsets.only(top:10.0),
+              padding:scaler.getPadding(1,0),
               width: 50,
               height: 10.0,
               decoration: BoxDecoration(
@@ -430,15 +433,15 @@ class _ModalProductState extends State<ModalProduct> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height:scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Daftar Layanan ${widget.val['title']}'.toUpperCase(),fontSize:14,color: Constant().mainColor,img: widget.val['logo']),
+            padding:scaler.getPadding(0,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, '',fontSize:scaler.getTextSize(9),color: Constant().mainColor,img: widget.val['logo']),
           ),
           Expanded(
               flex: 18,
               child: ListView.separated(
-                padding: EdgeInsets.all(10.0),
+                padding:scaler.getPadding(0,2),
                 addRepaintBoundaries: true,
                 primary: false,
                 shrinkWrap: true,
@@ -455,7 +458,7 @@ class _ModalProductState extends State<ModalProduct> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        WidgetHelper().textQ(val.note,12,Constant().darkMode,FontWeight.bold),
+                        WidgetHelper().textQ(val.note,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                         Icon(AntDesign.checkcircleo,color: idx==index?Colors.grey:Colors.transparent)
                       ],
                     ),
@@ -466,29 +469,25 @@ class _ModalProductState extends State<ModalProduct> {
           ),
           Expanded(
             flex:2,
-            child:Padding(
-              padding: EdgeInsets.only(left:0,right:0),
-              child: FlatButton(
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+            child:FlatButton(
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                padding:scaler.getPadding(0,2),
+                color: Constant().moneyColor,
+                onPressed: (){
+                  var val = widget.productPpobPraModel.result.data[idx].toJson();
+                  WidgetHelper().myModal(context,ModalDetailPrabayar(val:val..addAll({"nohp":widget.val['nohp'],"page":widget.val['title']})));
 
-                  padding: EdgeInsets.all(15.0),
-                  color: Constant().moneyColor,
-                  onPressed: (){
-                    var val = widget.productPpobPraModel.result.data[idx].toJson();
-                    WidgetHelper().myModal(context,ModalDetailPrabayar(val:val..addAll({"nohp":widget.val['nohp'],"page":widget.val['title']})));
-
-                    // handleSubmit();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(AntDesign.checkcircleo,color: Colors.white),
-                      SizedBox(width: 10.0),
-                      WidgetHelper().textQ("LANJUT", 14,Colors.white,FontWeight.bold)
-                    ],
-                  )
-              ),
+                  // handleSubmit();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(AntDesign.checkcircleo,color: Colors.white),
+                    SizedBox(width:scaler.getWidth(2)),
+                    WidgetHelper().textQ("Lanjut", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+                  ],
+                )
             )
           )
 
@@ -517,7 +516,12 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
         "pin":pin.toString()
       };
       WidgetHelper().loadingDialog(context);
-      var res=await BaseProvider().postProvider("transaction/prabayar/checkout", data,context: context);
+      var res=await BaseProvider().postProvider("transaction/prabayar/checkout", data,context: context,callback: (){
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
+        // Navigator.pop(context);
+      });
       if(res!=null){
         Navigator.pop(context);
         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
@@ -543,10 +547,10 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      // padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
       decoration: BoxDecoration(
-          // color: Constant().secondColor,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -554,7 +558,7 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height:10.0),
+          SizedBox(height:scaler.getHeight(1)),
           Center(
             child: Container(
               padding: EdgeInsets.only(top:10.0),
@@ -566,10 +570,10 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height:scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor),
+            padding:scaler.getPadding(1,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor,iconSize: scaler.getTextSize(9)),
           ),
           desc(context,"Jenis Layanan",widget.val['provider']),
           Divider(),
@@ -583,35 +587,32 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
           // if(widget.val['page']!='PULSA ALL OPERATOR')desc(context,widget.val['note'],'',colorttl: Colors.black),
           // if(widget.val['page']!='PULSA ALL OPERATOR')Divider(),
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor),
+            padding:scaler.getPadding(1,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor,iconSize: scaler.getTextSize(9)),
           ),
+
           desc(context,"Metode Pembayaran",'Saldo',color: Colors.black),
           // Divider(),
           // desc(context,"Subtotal","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
           Divider(color: Colors.grey),
           desc(context,"Total Tagihan","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
           SizedBox(height:30.0),
-          Padding(
-            padding: EdgeInsets.only(left:0,right:0),
-            child: FlatButton(
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-
-                padding: EdgeInsets.all(15.0),
-                color: Constant().moneyColor,
-                onPressed: (){
-                  handleSubmit();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(AntDesign.checkcircleo,color: Colors.white),
-                    SizedBox(width: 10.0),
-                    WidgetHelper().textQ("BAYAR", 14,Colors.white,FontWeight.bold)
-                  ],
-                )
-            ),
+          FlatButton(
+              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+              padding:scaler.getPadding(1,0),
+              color: Constant().moneyColor,
+              onPressed: (){
+                handleSubmit();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(AntDesign.checkcircleo,color: Colors.white),
+                  SizedBox(width: 10.0),
+                  WidgetHelper().textQ("Bayar", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+                ],
+              )
           )
 
         ],
@@ -619,8 +620,10 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
     );
   }
   Widget desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Padding(
-      padding: EdgeInsets.only(left:10,right:10),
+      padding:scaler.getPadding(0.5,2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
