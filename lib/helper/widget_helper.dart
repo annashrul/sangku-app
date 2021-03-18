@@ -98,7 +98,7 @@ class WidgetHelper{
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.circle),
+                  SpinKitFadingGrid(color:Constant().mainColor, shape: BoxShape.rectangle),
                   // SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
                   // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
                 ],
@@ -129,6 +129,8 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Icon(AntDesign.unknowfile1,size: 70),
+          SizedBox(height:10),
           WidgetHelper().textQ(Constant().errNoData, 14, Constant().mainColor, FontWeight.bold)
           // Image.network('https://lh3.googleusercontent.com/proxy/27oZlO859yameGqB3FjTaLHzJ2yYh-bATvQuVhVlmYWYiMiQzcNSKBLNAuDP6EL-v7KE7r5tUUteyqNTw_lqB_EqFEwitIqWTzIfW_E')
         ],

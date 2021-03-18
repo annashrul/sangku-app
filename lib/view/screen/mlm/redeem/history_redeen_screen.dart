@@ -26,7 +26,7 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
   ScrollController controller;
   int perpage=10;
   int total=0;
-  bool isLoading=false,isLoadmore=false;
+  bool isLoading=false,isLoadmore=false,isNodata=false;
   String lbl='';
   int filterStatus=5;
   String dateFrom='',dateTo='',q='';
@@ -45,23 +45,24 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
     var res = await BaseProvider().getProvider(url,historyRedeemModelFromJson,context: context,callback: (){
 
     });
-    if(res is HistoryRedeemModel){
+    if(res==Constant().errNoData){
+      setState(() {
+        isLoading=false;
+        isNodata=true;
+      });
+    }
+    else if(res is HistoryRedeemModel){
       HistoryRedeemModel result=res;
-      if(result.status=='success'){
-        historyRedeemModel = HistoryRedeemModel.fromJson(result.toJson());
-        setState(() {
-          total = historyRedeemModel.result.total;
-          isLoading=false;
-          isLoadmore=false;
-        });
+      historyRedeemModel = HistoryRedeemModel.fromJson(result.toJson());
+      total = historyRedeemModel.result.total;
+      isLoading=false;
+      isLoadmore=false;
+      isNodata=false;
+      if(this.mounted){
+        setState(() {});
       }
-      else{
-        setState(() {
-          isLoading=false;
-          isLoadmore=false;
-          total=0;
-        });
-      }
+
+
     }
   }
   void _scrollListener() {
@@ -208,10 +209,9 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                 ],
               ),
             ),
-
             Expanded(
               flex: 19,
-              child: isLoading?HistoryPembelianLoading(tot: 10):RefreshWidget(
+              child: isLoading?HistoryPembelianLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):RefreshWidget(
                 widget: Scrollbar(child: Column(
                   children: [
                     Expanded(

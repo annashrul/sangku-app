@@ -70,6 +70,7 @@ dependencies:
   youtube_player_flutter: ^7.0.0+7
   flutter_screen_scaler: ^2.0.0
   jwt_decoder:
+  showcaseview: ^0.1.6
 
 
 #  date_strip_report: ^1.0.0

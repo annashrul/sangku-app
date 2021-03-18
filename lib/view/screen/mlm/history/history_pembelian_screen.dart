@@ -37,23 +37,8 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
     }
     var res = await BaseProvider().getProvider(url,historyPemberlianModelFromJson);
     print(res);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      setState(() {
-        isLoading=false;
-        isError=true;
-        isNodata=false;
-      });
-    }
-    else if(res==Constant().errExpToken){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isErrToken=true;
-        isNodata=false;
 
-      });
-    }
-    else if(res==Constant().errNoData){
+    if(res==Constant().errNoData){
       setState(() {
         isLoading=false;
         isError=false;
@@ -64,27 +49,14 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
     else{
       if(res is HistoryPemberlianModel){
         HistoryPemberlianModel result=res;
-        if(result.status=='success'){
-          historyPemberlianModel = result;
-          print('bus ${historyPemberlianModel.result.total}');
-          setState(() {
-            total = historyPemberlianModel.result.total;
-            isLoading=false;
-            isLoadmore=false;
-            isError=false;
-            isErrToken=false;
-            isNodata=false;
-          });
-        }
-        else{
-          setState(() {
-            isLoading=false;
-            isError=false;
-            isErrToken=false;
-            isNodata=false;
-
-          });
-        }
+        historyPemberlianModel = result;
+        total = historyPemberlianModel.result.total;
+        isLoading=false;
+        isLoadmore=false;
+        isError=false;
+        isErrToken=false;
+        isNodata=false;
+        if(this.mounted)setState(() {});
       }
     }
   }

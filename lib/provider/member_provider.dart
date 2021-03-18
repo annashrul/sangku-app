@@ -37,30 +37,21 @@ class MemberProvider{
 
   }
 
-  Future getBankMember(where)async{
+  Future getBankMember(where,BuildContext context,Function callback)async{
     String url='bank_member';
     if(where!=''){
       url+='?$where';
     }
     BankMemberModel bankMemberModel;
-    var res = await BaseProvider().getProvider(url, bankMemberModelFromJson);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      return 'error';
-    }
-    else if(res==Constant().errExpToken){
-      return Constant().errExpToken;
+    var res = await BaseProvider().getProvider(url, bankMemberModelFromJson,context: context,callback: callback);
+    if(res==Constant().errNoData){
+      return Constant().errNoData;
     }
     else{
       if(res is BankMemberModel){
         BankMemberModel result=res;
-        print('result');
-        if(result.status=='success'){
-          bankMemberModel = BankMemberModel.fromJson(result.toJson());
-          return bankMemberModel;
-        }
-        else{
-          return 'failed';
-        }
+        bankMemberModel = BankMemberModel.fromJson(result.toJson());
+        return bankMemberModel;
       }
     }
   }

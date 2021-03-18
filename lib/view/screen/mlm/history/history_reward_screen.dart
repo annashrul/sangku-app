@@ -39,23 +39,19 @@ class _HistoryRewardScreenState extends State<HistoryRewardScreen> {
     var res = await BaseProvider().getProvider(url,historyRewardModelFromJson,context: context,callback: (){
 
     });
-    if(res is HistoryRewardModel){
+    if(res==Constant().errNoData){
+      setState(() {
+        isLoading=false;
+        total=0;
+      });
+    }
+    else if(res is HistoryRewardModel){
       HistoryRewardModel result=res;
-      if(result.status=='success'){
-        historyRewardModel = HistoryRewardModel.fromJson(result.toJson());
-        setState(() {
-          total = historyRewardModel.result.total;
-          isLoading=false;
-          isLoadmore=false;
-        });
-      }
-      else{
-        setState(() {
-          isLoading=false;
-          isLoadmore=false;
-          total=0;
-        });
-      }
+      historyRewardModel = HistoryRewardModel.fromJson(result.toJson());
+      total = historyRewardModel.result.total;
+      isLoading=false;
+      isLoadmore=false;
+      if(this.mounted)setState(() {});
     }
   }
   void _scrollListener() {
@@ -196,7 +192,7 @@ class _HistoryRewardScreenState extends State<HistoryRewardScreen> {
 
             Expanded(
               flex: 19,
-              child: isLoading?HistoryPembelianLoading(tot: 10):Scrollbar(child: RefreshWidget(
+              child: isLoading?HistoryPembelianLoading(tot: 10):total<1?WidgetHelper().noDataWidget(context):Scrollbar(child: RefreshWidget(
                 widget: Column(
                   children: [
                     Expanded(

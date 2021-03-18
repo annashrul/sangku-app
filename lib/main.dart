@@ -13,6 +13,7 @@ import 'package:sangkuy/helper/user_helper.dart';
 import 'package:sangkuy/model/dynamic_link_model.dart';
 import 'package:sangkuy/view/screen/auth/sign_in_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
+import 'package:showcaseview/showcase_widget.dart';
 import 'helper/widget_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -144,6 +145,18 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // body:  ShowCaseWidget(
+      //   onStart: (index, key) {
+      //     print('onStart: $index, $key');
+      //   },
+      //   onComplete: (index, key) {
+      //     print('onComplete: $index, $key');
+      //   },
+      //   builder: Builder(builder: (context) => MailPage()),
+      //   autoPlay: true,
+      //   autoPlayDelay: Duration(seconds: 3),
+      //   autoPlayLockEnable: true,
+      // ),
       body:  WidgetHelper().loadingWidget(context),
     );
   }

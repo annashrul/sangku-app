@@ -17,23 +17,23 @@ class BankMemberWidget extends StatefulWidget {
 class _BankMemberWidgetState extends State<BankMemberWidget> {
   BankMemberModel bankModel;
   List bank=[];
-  bool  isLoadingBank=false,isError=false;
+  bool  isLoadingBank=false;
+  int total=0;
   Future loadBank()async{
-    var res=await MemberProvider().getBankMember("page=1");
-    if(res=='error'){
-      isLoadingBank=false;
-      isError=true;
-      setState(() {});
-    }
-    else if(res=='failed'){
-      isLoadingBank=false;
-      isError=true;
-      setState(() {});
+    var res=await MemberProvider().getBankMember("page=1",context,(){
+      Navigator.pop(context);
+    });
+
+    if(res==Constant().errNoData){
+      setState(() {
+        total=0;
+        isLoadingBank=false;
+      });
     }
     else{
       if(this.mounted){
+        total=1;
         isLoadingBank=false;
-        isError=false;
         bankModel = res;
         widget.callback(bankModel.result.data[0]);
         widget.id=bankModel.result.data[0].id;
@@ -55,7 +55,7 @@ class _BankMemberWidgetState extends State<BankMemberWidget> {
       height: 50,
       width: double.infinity,
       color: Colors.white,
-    )): ListView.separated(
+    )): total<1?Text('tidak ada data bank'):ListView.separated(
       addRepaintBoundaries: true,
       primary: false,
       shrinkWrap: true,

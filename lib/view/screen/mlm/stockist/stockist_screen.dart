@@ -1,413 +1,270 @@
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
-// import 'package:flutter_html/flutter_html.dart';
-// import 'package:flutter_icons/flutter_icons.dart';
-// import 'package:flutter_svg/svg.dart';
-// import 'package:html/parser.dart';
-// import 'package:sangkuy/config/constant.dart';
-// import 'package:sangkuy/helper/data_helper.dart';
-// import 'package:sangkuy/helper/function_helper.dart';
-// import 'package:sangkuy/helper/refresh_widget.dart';
-// import 'package:sangkuy/helper/user_helper.dart';
-// import 'package:sangkuy/helper/widget_helper.dart';
-// import 'package:sangkuy/model/general_model.dart';
-// import 'package:sangkuy/model/member/available_member_model.dart';
-// import 'package:sangkuy/model/mlm/package/site_package_model.dart';
-// import 'package:sangkuy/model/mlm/stockist/pin_available_model.dart';
-// import 'package:sangkuy/model/mlm/stockist/pin_model.dart';
-// import 'package:sangkuy/provider/base_provider.dart';
-// import 'package:sangkuy/provider/stockist_provider.dart';
-// import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
-// import 'package:sangkuy/view/screen/pages.dart';
-// import 'package:sangkuy/view/widget/card_widget.dart';
-// import 'package:sangkuy/view/widget/header_widget.dart';
-// import 'package:sangkuy/view/widget/stockist_widget.dart';
-//
-// class StockistScreen extends StatefulWidget {
-//   final String type;
-//   StockistScreen({this.type});
-//   @override
-//   _StockistScreenState createState() => _StockistScreenState();
-// }
-//
-// class _StockistScreenState extends State<StockistScreen> with SingleTickerProviderStateMixin {
-//   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-//   int filterStatus=0;
-//   PinModel pinModel;
-//   String kode='1';
-//   bool isLoading=false,isError=false,isLoadmore=false;
-//   bool isNodata=false;
-//   ScrollController controller;
-//   int total=0,perpage=15;
-//   Future loadData()async{
-//     print(perpage);
-//     String where='';
-//     final id=await UserHelper().getDataUser("id_user");
-//     String url='member/pin/$id?type=${widget.type}&page=1&perpage=$perpage';
-//     if(kode!=''){
-//       url+='&status=$kode';
-//     }
-//     var res = await BaseProvider().getProvider(url, pinModelFromJson);
-//     print(res);
-//     if(res is PinModel){
-//       PinModel result=res;
-//       if(result.status=='success'){
-//         if(this.mounted){
-//           setState(() {
-//             pinModel = PinModel.fromJson(result.toJson());
-//             isLoading=false;
-//             isError=false;
-//             isNodata=false;
-//             isLoadmore=false;
-//             total=pinModel.result.total;
-//           });
-//         }
-//       }
-//       else{
-//         setState(() {
-//           isLoading=false;
-//           isError=false;
-//           isNodata=false;
-//
-//         });
-//       }
-//     }
-//     else if(res==Constant().errSocket||res==Constant().errTimeout){
-//       setState(() {
-//         isLoading=false;
-//         isError=true;
-//         isNodata=false;
-//
-//       });
-//     }
-//     else if(res==Constant().errExpToken){
-//       setState(() {
-//         isLoading=false;
-//         isError=false;
-//         isNodata=false;
-//
-//       });
-//       WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-//         await FunctionHelper().logout(context);
-//       });
-//     }
-//     else if(res is General){
-//       General result=res;
-//       setState(() {
-//         isLoading=false;
-//         isError=false;
-//         isNodata=false;
-//
-//       });
-//       WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-//     }
-//     else if(res==Constant().errNoData){
-//       print("NODATA");
-//       setState(() {
-//         isLoading=false;
-//         isError=false;
-//         isNodata=true;
-//       });
-//     }
-//
-//     // return;
-//   }
-//   void _scrollListener() {
-//     if (!isLoading) {
-//       if (controller.position.pixels == controller.position.maxScrollExtent) {
-//         print('fetch data');
-//         if(perpage<total){
-//           setState((){
-//             perpage+=10;
-//             isLoadmore=true;
-//           });
-//           loadData();
-//         }
-//       }
-//     }
-//   }
-//   PinAvailableModel pinAvailableModel;
-//
-//   Future loadPin()async{
-//     var res=await BaseProvider().getProvider('transaction/pin_available', pinAvailableModelFromJson,context: context,callback: (){
-//
-//     });
-//     if(res is PinAvailableModel){
-//       PinAvailableModel result=res;
-//       setState(() {
-//         isNodata=false;
-//         isLoading=false;
-//         pinAvailableModel=result;
-//       });
-//     }
-//   }
-//
-//   @override
-//   void dispose() {
-//     controller.removeListener(_scrollListener);
-//     isLoading=false;
-//     isLoadmore=false;
-//     super.dispose();
-//
-//   }
-//
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     controller = new ScrollController()..addListener(_scrollListener);
-//     isLoading=true;
-//     loadData();
-//   }
-//   Future handleSubmit(dynamic val)async{
-//     WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
-//       final data={
-//         "pin_member":pin.toString(),
-//         "pin_aktivasi":val['kode']
-//       };
-//       WidgetHelper().loadingDialog(context);
-//       var res=await BaseProvider().postProvider('pin/aktivasi/ro', data);
-//       print(res);
-//       Navigator.pop(context);
-//       if(res is General){
-//         General result=res;
-//         WidgetHelper().showFloatingFlushbar(context, "failed",result.msg);
-//       }
-//       else{
-//         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-//           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-//         });
-//       }
-//
-//
-//     }));
-//   }
-//   @override
-//   Widget build(BuildContext context){
-//     return Scaffold(
-//       key: _scaffoldKey,
-//       appBar: WidgetHelper().appBarWithButton(context,widget.type=='1'?'PIN AKTIVASI':'PIN REPEAT ORDER',(){Navigator.pop(context);},<Widget>[
-//         FlatButton(
-//             padding: EdgeInsets.all(10.0),
-//             highlightColor:Colors.black38,
-//             splashColor:Colors.black38,
-//             onPressed:(){
-//               WidgetHelper().myModal(context, StatusStockistModal(index: filterStatus,callback:(code,idx){
-//                 setState(() {
-//                   isLoading=true;
-//                   filterStatus=idx;
-//                   kode=code;
-//                 });
-//                 loadData();
-//                 // StockistWidget(tipe: '1',status:kode).createState().loadData().then((value) => print(value));
-//               }));
-//             },
-//             child: Icon(AntDesign.filter,color: Colors.grey)
-//         )
-//       ]),
-//       body:RefreshWidget(
-//         widget: Scrollbar(
-//             child: Container(
-//               padding: EdgeInsets.only(left:10.0,right: 10.0,top:10),
-//               child: Column(
-//                 children: [
-//                   Expanded(
-//                     flex: 19,
-//                     child: isLoading?loading(context,10):isNodata?WidgetHelper().noDataWidget(context):ListView.separated(
-//                         shrinkWrap: true,
-//                         controller: controller,
-//                         itemBuilder: (context,index){
-//                           print(pinModel.result.data[index].toJson());
-//                           return Container(
-//                             color: Colors.transparent,
-//                             child: InkWell(
-//                               borderRadius:new BorderRadius.circular(4.0),
-//                               onTap: (){},
-//                               child: Card(
-//                                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-//                                 elevation: 0.0,
-//                                 color: Colors.transparent,
-//                                 child: Row(
-//                                   children: <Widget>[
-//                                     Expanded(
-//                                       flex: 1,
-//                                       child: Container(
-//                                         padding: EdgeInsets.all(10.0),
-//                                         child: Column(
-//                                           crossAxisAlignment: CrossAxisAlignment.start,
-//                                           children: <Widget>[
-//                                             Container(child:WidgetHelper().textQ(pinModel.result.data[index].kode, 14, Colors.black, FontWeight.bold)),
-//                                             SizedBox(height:10.0),
-//                                             Container(
-//                                                 child:Row(
-//                                                   children: [
-//                                                     SvgPicture.asset(
-//                                                       Constant().localIcon+'lainnya_icon.svg',
-//                                                       height: 20,
-//                                                       width: 10,
-//                                                     ),
-//                                                     SizedBox(width:10.0),
-//                                                     WidgetHelper().textQ(pinModel.result.data[index].status, 12, Constant().darkMode, FontWeight.normal)
-//                                                   ],
-//                                                 )
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ),
-//                                     Row(
-//                                       children: [
-//                                         InkWell(
-//                                           child: Container(
-//                                             padding: EdgeInsets.all(10.0),
-//                                             decoration: BoxDecoration(
-//                                                 border: Border.all(color:Constant().mainColor),
-//                                                 borderRadius: BorderRadius.all(Radius.circular(10.0))
-//                                             ),
-//                                             margin: EdgeInsets.only(right: 10.0),
-//                                             child: Padding(
-//                                               padding: EdgeInsets.all(0.0),
-//                                               child: WidgetHelper().textQ("Transfer", 10, Constant().mainColor,FontWeight.bold),
-//                                             ),
-//
-//                                           ),
-//                                           onTap: (){WidgetHelper().myModal(context,TransferPin(val: pinModel.result.data[index].toJson()));},
-//                                         ),
-//                                         if(widget.type=='ro')SizedBox(width:0.0),
-//                                         if(widget.type=='ro')InkWell(
-//                                           child: Container(
-//                                             padding: EdgeInsets.all(10.0),
-//                                             decoration: BoxDecoration(
-//                                                 border: Border.all(color:Constant().mainColor),
-//                                                 borderRadius: BorderRadius.all(Radius.circular(10.0))
-//                                             ),
-//                                             margin: EdgeInsets.only(right: 10.0),
-//                                             child: Padding(
-//                                               padding: EdgeInsets.all(0.0),
-//                                               child: WidgetHelper().textQ("Aktivasi", 10, Constant().mainColor,FontWeight.bold),
-//                                             ),
-//
-//                                           ),
-//                                           onTap: (){
-//                                             WidgetHelper().notifDialog(context,"Aktivasi Pin RO","Aktivasi Pin RO dengan kode ${pinModel.result.data[index].kode}", (){
-//                                               Navigator.pop(context);
-//                                             }, (){
-//                                               handleSubmit(pinModel.result.data[index].toJson());
-//                                             }, titleBtn1: "Batal",titleBtn2: "Oke, Aktivasi");
-//                                             // WidgetHelper().myModal(context,AktivasiRO(val:  pinModel.result.data[index].toJson(),));
-//                                           },
-//                                         ),
-//                                       ],
-//                                     )
-//                                   ],
-//                                 ),
-//                               ),
-//                             ),
-//                           );
-//                         },
-//                         separatorBuilder: (context,index){return Divider();},
-//                         itemCount: pinModel.result.data.length
-//                     ),
-//                   ),
-//                   isLoadmore?Expanded(
-//                     flex: 2,
-//                     child: loading(context,1),
-//                   ):Text('')
-//                 ],
-//               ),
-//             )
-//         ),
-//         callback: (){
-//           setState(() {
-//             isLoading=true;
-//           });
-//           loadData();
-//         },
-//       ),
-//       bottomNavigationBar:widget.type=='1'?Container(
-//         color: Constant().moneyColor,
-//         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-//         child:  FlatButton(
-//             padding: EdgeInsets.all(15.0),
-//             onPressed: (){
-//               WidgetHelper().myModal(context, ReaktivasiPin());
-//             },
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               crossAxisAlignment: CrossAxisAlignment.center,
-//               children: [
-//                 Icon(AntDesign.checkcircleo,color: Colors.white),
-//                 SizedBox(width: 10.0),
-//                 WidgetHelper().textQ("REAKTIVASI", 14,Colors.white,FontWeight.bold)
-//               ],
-//             )
-//         ),
-//       ):Text(''),
-//     );
-//   }
-//   Widget loading(BuildContext context,int idx){
-//     return ListView.separated(
-//         itemBuilder: (context,index){
-//           return WidgetHelper().baseLoading(context,Card(
-//             shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-//             elevation: 0.0,
-//             color: Colors.transparent,
-//             margin: const EdgeInsets.all(0.0),
-//             child: Row(
-//               children: <Widget>[
-//                 Container(
-//                   margin: EdgeInsets.only(right:10.0),
-//                   width: 10.0,
-//                   height: 60.0,
-//                   decoration: BoxDecoration(
-//                       color:Colors.white,
-//                       borderRadius: new BorderRadius.circular(10.0)
-//                   ),
-//                 ),
-//                 Expanded(
-//                   flex: 1,
-//                   child: Container(
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: <Widget>[
-//                         Container(
-//                           height: 10,
-//                           width: MediaQuery.of(context).size.width/2,
-//                           color:Colors.white,
-//                         ),
-//                         SizedBox(height:10.0),
-//                         Row(
-//                           children: [
-//                             Container(
-//                               height: 20,
-//                               width: 20,
-//                               decoration: BoxDecoration(
-//                                 shape:BoxShape.circle,
-//                                 color:Colors.white,
-//                               ),
-//                             ),
-//                             SizedBox(width:10.0),
-//                             Container(
-//                               height: 10,
-//                               width: MediaQuery.of(context).size.width/2,
-//                               color:Colors.white,
-//                             ),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ));
-//         },
-//         separatorBuilder: (context,index){return Divider();},
-//         itemCount: idx
-//     );
-//   }
-// }
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:html/parser.dart';
+import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/data_helper.dart';
+import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/refresh_widget.dart';
+import 'package:sangkuy/helper/user_helper.dart';
+import 'package:sangkuy/helper/widget_helper.dart';
+import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/member/available_member_model.dart';
+import 'package:sangkuy/model/mlm/package/site_package_model.dart';
+import 'package:sangkuy/model/mlm/stockist/pin_available_model.dart';
+import 'package:sangkuy/model/mlm/stockist/pin_by_category_model.dart';
+import 'package:sangkuy/model/mlm/stockist/pin_model.dart';
+import 'package:sangkuy/provider/base_provider.dart';
+import 'package:sangkuy/provider/stockist_provider.dart';
+import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/widget/card_widget.dart';
+import 'package:sangkuy/view/widget/header_widget.dart';
+import 'package:sangkuy/view/widget/stockist_widget.dart';
+
+class StockistScreen extends StatefulWidget {
+  final String type;
+  StockistScreen({this.type});
+  @override
+  _StockistScreenState createState() => _StockistScreenState();
+}
+
+class _StockistScreenState extends State<StockistScreen> with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  int filterStatus=0;
+  PinByCategoryModel pinByCategoryModel;
+  String kode='1';
+  bool isLoading=false,isError=false,isLoadmore=false;
+  bool isNodata=false;
+  ScrollController controller;
+  int total=0,perpage=15;
+  Future loadData()async{
+    print(perpage);
+    String where='';
+    final id=await UserHelper().getDataUser("id_user");
+    String url='pin/get/${widget.type}?page=1';
+    if(kode!=''){
+      url+='&status=$kode';
+    }
+    print(url);
+
+    var res = await BaseProvider().getProvider(url, pinByCategoryModelFromJson,context: context,callback: (){
+      Navigator.pop(context);
+    });
+    if(res==Constant().errNoData){
+      isLoading=false;
+      total=0;
+      setState(() {});
+    }else if(res is PinByCategoryModel){
+      PinByCategoryModel result=res;
+      if(this.mounted){
+        setState(() {
+          pinByCategoryModel = PinByCategoryModel.fromJson(result.toJson());
+          isLoading=false;
+          isError=false;
+          isNodata=false;
+          isLoadmore=false;
+          total=pinByCategoryModel.result.total;
+        });
+      }
+    }
+
+  }
+  void _scrollListener() {
+    if (!isLoading) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        print('fetch data');
+        if(perpage<total){
+          setState((){
+            perpage+=10;
+            isLoadmore=true;
+          });
+          loadData();
+        }
+      }
+    }
+  }
+
+
+  @override
+  void dispose() {
+    controller.removeListener(_scrollListener);
+    isLoading=false;
+    isLoadmore=false;
+    super.dispose();
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller = new ScrollController()..addListener(_scrollListener);
+    isLoading=true;
+    loadData();
+  }
+  @override
+  Widget build(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: WidgetHelper().appBarWithButton(context,"Pin ${widget.type}",(){Navigator.pop(context);},<Widget>[]),
+      body:RefreshWidget(
+        widget: Scrollbar(
+            child: Container(
+              padding: scaler.getPadding(0,2),
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 19,
+                    child: isLoading?loading(context,10):total<1?WidgetHelper().noDataWidget(context):ListView.separated(
+                        shrinkWrap: true,
+                        controller: controller,
+                        itemBuilder: (context,index){
+                          var val = pinByCategoryModel.result.data[index];
+                          return CardWidget(
+                              onTap:(){
+
+                              } ,
+                              prefixBadge: Constant().darkMode,
+                              title: val.kode,
+                              description: val.paket,
+                              descriptionColor: Constant().darkMode,
+                              backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
+
+                          );
+                          return Container(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:new BorderRadius.circular(4.0),
+                              onTap: (){},
+                              child: Card(
+                                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                                elevation: 0.0,
+                                color: Colors.transparent,
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 1,
+                                      child: Container(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(child:WidgetHelper().textQ(val.kode, scaler.getTextSize(9), Colors.black, FontWeight.bold)),
+                                            SizedBox(height:10.0),
+                                            Container(
+                                                child:Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      Constant().localIcon+'lainnya_icon.svg',
+                                                      height: 20,
+                                                      width: 10,
+                                                    ),
+                                                    SizedBox(width:10.0),
+                                                    WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(val.paket)), scaler.getTextSize(9), Constant().moneyColor, FontWeight.normal)
+                                                  ],
+                                                )
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context,index){return Divider();},
+                        itemCount: pinByCategoryModel.result.data.length
+                    ),
+                  ),
+                  isLoadmore?Expanded(
+                    flex: 2,
+                    child: loading(context,1),
+                  ):Text('')
+                ],
+              ),
+            )
+        ),
+        callback: (){
+          setState(() {
+            isLoading=true;
+          });
+          loadData();
+        },
+      ),
+    );
+  }
+  Widget loading(BuildContext context,int idx){
+    return ListView.separated(
+        itemBuilder: (context,index){
+          return WidgetHelper().baseLoading(context,Card(
+            shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+            elevation: 0.0,
+            color: Colors.transparent,
+            margin: const EdgeInsets.all(0.0),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(right:10.0),
+                  width: 10.0,
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                      color:Colors.white,
+                      borderRadius: new BorderRadius.circular(10.0)
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 10,
+                          width: MediaQuery.of(context).size.width/2,
+                          color:Colors.white,
+                        ),
+                        SizedBox(height:10.0),
+                        Row(
+                          children: [
+                            Container(
+                              height: 20,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                shape:BoxShape.circle,
+                                color:Colors.white,
+                              ),
+                            ),
+                            SizedBox(width:10.0),
+                            Container(
+                              height: 10,
+                              width: MediaQuery.of(context).size.width/2,
+                              color:Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ));
+        },
+        separatorBuilder: (context,index){return Divider();},
+        itemCount: idx
+    );
+  }
+}
 //
 //
 // class AktivasiRO extends StatefulWidget {

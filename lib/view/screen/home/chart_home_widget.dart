@@ -41,10 +41,9 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return widget.data['left_pv']=="0"?Text(''):Padding(
-      padding: EdgeInsets.all(0),
+      padding:scaler.getPadding(1,0),
       child: Container(
         height:scaler.getHeight(10),
-        // padding: EdgeInsets.only(right: 80,top: 0,left: 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -60,7 +60,6 @@ class Result {
     this.idCard,
     this.picture,
     this.createdAt,
-    this.address,
   });
 
   String totalrecords;
@@ -89,7 +88,6 @@ class Result {
   String idCard;
   String picture;
   DateTime createdAt;
-  Address address;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     totalrecords: json["totalrecords"],
@@ -118,7 +116,6 @@ class Result {
     idCard: json["id_card"],
     picture: json["picture"],
     createdAt: DateTime.parse(json["created_at"]),
-    address: Address.fromJson(json["address"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -148,66 +145,5 @@ class Result {
     "id_card": idCard,
     "picture": picture,
     "created_at": createdAt.toIso8601String(),
-    "address": address.toJson(),
-  };
-}
-
-class Address {
-  Address({
-    this.id,
-    this.idMember,
-    this.title,
-    this.penerima,
-    this.mainAddress,
-    this.kdProv,
-    this.kdKota,
-    this.kdKec,
-    this.noHp,
-    this.ismain,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  String id;
-  String idMember;
-  String title;
-  String penerima;
-  String mainAddress;
-  String kdProv;
-  String kdKota;
-  String kdKec;
-  String noHp;
-  int ismain;
-  DateTime createdAt;
-  DateTime updatedAt;
-
-  factory Address.fromJson(Map<String, dynamic> json) => Address(
-    id: json["id"],
-    idMember: json["id_member"],
-    title: json["title"],
-    penerima: json["penerima"],
-    mainAddress: json["main_address"],
-    kdProv: json["kd_prov"],
-    kdKota: json["kd_kota"],
-    kdKec: json["kd_kec"],
-    noHp: json["no_hp"],
-    ismain: json["ismain"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "id_member": idMember,
-    "title": title,
-    "penerima": penerima,
-    "main_address": mainAddress,
-    "kd_prov": kdProv,
-    "kd_kota": kdKota,
-    "kd_kec": kdKec,
-    "no_hp": noHp,
-    "ismain": ismain,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
   };
 }

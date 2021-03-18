@@ -11,6 +11,7 @@ import 'package:sangkuy/model/mlm/package/site_package_model.dart';
 import 'package:sangkuy/model/mlm/stockist/pin_available_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
+import 'package:sangkuy/view/screen/mlm/stockist/stockist_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 
 class PinAktivasiScreen extends StatefulWidget {
@@ -88,7 +89,9 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
             var val=pinAvailableModel.result[index];
             return FlatButton(
               // color: Constant().mainColor,
-                onPressed: (){},
+                onPressed: (){
+                  WidgetHelper().myPush(context,StockistScreen(type: val.title));
+                },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

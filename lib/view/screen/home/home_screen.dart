@@ -13,15 +13,16 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   bool get wantKeepAlive => true;
   final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
   int perpageTestimoni=6,totalTestimoni=0;
-  bool isLoadingNews=false;
-  bool isLoadingRedeem=false;
+  bool isLoadingNews=false,isNodataNews=false;
+  bool isLoadingRedeem=false,isNodataRedeem=false;
   bool isLoadingMember=false;
-  bool isLoadingTestimoni=false,isLoadmoreTestimoni=false;
+  bool isLoadingTestimoni=false,isNodataTestimoni=false;
   TestimoniModel testimoniModel;
   ContentModel contentModel;
   ListRedeemModel listRedeemModel;
-
+  int isShow=0;
   Future loadData()async{
+
     isLoadingRedeem=true;
     isLoadingNews=true;
     isLoadingTestimoni=true;
@@ -32,18 +33,30 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
   Future loadNews()async{
     var res=await BaseProvider().getProvider("content/berita?page=1&perpage=10", contentModelFromJson);
-    if(res is ContentModel){
-      ContentModel result=res;
-      contentModel = result;
+    print("#################### CONTENT LENGTH $res ##############################");
+    if(res==Constant().errNoData){
+      isNodataNews=true;
       isLoadingNews=false;
-      print("#################### TYPE OF ${result.result.data.runtimeType} ##############################");
       if(this.mounted) setState(() {});
     }
+    else{
+      if(res is ContentModel){
+        ContentModel result=res;
+        contentModel = result;
+        isLoadingNews=false;
+        if(this.mounted) setState(() {});
+      }
+    }
+
 
   }
   Future loadRedeem()async{
     var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson);
-    if(res is ListRedeemModel){
+    if(res==Constant().errNoData){
+      isNodataRedeem=true;
+      isLoadingRedeem=false;
+      if(this.mounted) setState(() {});
+    }else if(res is ListRedeemModel){
       ListRedeemModel result=res;
       listRedeemModel = result;
       isLoadingRedeem=false;
@@ -52,14 +65,22 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   }
   Future loadTestimoni()async{
     var res=await BaseProvider().getProvider("content/testimoni?page=1&perpage=$perpageTestimoni", testimoniModelFromJson);
-    if(res is TestimoniModel){
-      TestimoniModel result=res;
-      testimoniModel = result;
+    if(res==Constant().errNoData){
+      isNodataTestimoni=true;
       isLoadingTestimoni=false;
-      isLoadmoreTestimoni=false;
-      totalTestimoni=testimoniModel.result.total;
       if(this.mounted) setState(() {});
     }
+    else{
+      if(res is TestimoniModel){
+        TestimoniModel result=res;
+        testimoniModel = result;
+        isLoadingTestimoni=false;
+        isNodataTestimoni=false;
+        totalTestimoni=testimoniModel.result.total;
+        if(this.mounted) setState(() {});
+      }
+    }
+
   }
   String refer='';
   Future getLink()async{
@@ -69,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     });
   }
 
+  BuildContext myContext;
 
   @override
   void initState() {
@@ -77,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     isLoadingRedeem=true;
     isLoadingNews=true;
     isLoadingTestimoni=true;
-    FunctionHelper().checkTokenExp().then((value){
+    FunctionHelper().checkTokenExp().then((value)async{
       if(value){
         return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
           await FunctionHelper().logout(context);
@@ -89,20 +111,49 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         loadTestimoni();
       }
     });
-    // loadData();
-
-
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      firstTime().then((value){
+        print("MY BOOL $value");
+        if(value){
+          ShowCaseWidget.of(context).startShowCase([page1, page2, page3]);
+        }
+      });
+    });
   }
+
+  Future firstTime()async{
+    SharedPreferences preferences=await SharedPreferences.getInstance();
+    var isFirstTime = preferences.getBool('first_launch');
+    if (isFirstTime != null && !isFirstTime) {
+      preferences.setBool('first_launch', false);
+      return false;
+    } else {
+      preferences.setBool('first_launch', false);
+      return true;
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
   }
   dynamic dataMember;
+  GlobalKey page1 = GlobalKey();
+  GlobalKey page2 = GlobalKey();
+  GlobalKey page3 = GlobalKey();
+  GlobalKey page4 = GlobalKey();
+  GlobalKey page5 = GlobalKey();
+
+
+
   @override
   Widget build(BuildContext context) {
-    print("================================================================");
-    print(dataMember);
-    print("================================================================");
+    // if(isShow==0){
+    //   print("ABUS ANYING");
+
+
+    // }
+
     super.build(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
 
@@ -110,71 +161,86 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       child:  RefreshWidget(
         widget:WrapperPageWidget(
           children: [
-            Container(
-              child: StaggeredGridView.countBuilder(
-                padding:scaler.getPadding(1,0),
-                shrinkWrap: true,
-                primary: false,
-                crossAxisCount: 3,
-                itemCount: DataHelper.dataProfile.length,
-                itemBuilder: (context,index){
-                  IconData icon;
-                  String title='';
-                  Color color;
-                  String value='';
-                  if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
-                  if(index==1&&dataMember!=null){
-                    icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
-                    value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
-                  }
-                  if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
-                  return dataMember==null?WidgetHelper().baseLoading(context,Container(
-                    color: Colors.white,
-                    height: 50,
-                    width: double.infinity,
-                  )):Container(
-                    padding: scaler.getPadding(1,1),
-                    decoration: BoxDecoration(
-                      color:Color(0xFF732044),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            WidgetHelper().textQ(title,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
-                            SizedBox(height: scaler.getHeight(0.3)),
-                            WidgetHelper().textQ(value,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-                mainAxisSpacing: 0.0,
-                crossAxisSpacing: 1.0,
+            Showcase(
+              key: page1,
+              description: 'info grafik anda',
+              child: Container(
+                child: StaggeredGridView.countBuilder(
+                  padding:scaler.getPadding(0,0),
+                  shrinkWrap: true,
+                  primary: false,
+                  crossAxisCount: 3,
+                  itemCount: DataHelper.dataProfile.length,
+                  itemBuilder: (context,index){
+                    IconData icon;
+                    String title='';
+                    Color color;
+                    String value='';
+                    if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
+                    if(index==1&&dataMember!=null){
+                      icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
+                      value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
+                    }
+                    if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
+                    return dataMember==null?WidgetHelper().baseLoading(context,Container(
+                      color: Colors.white,
+                      height: 50,
+                      width: double.infinity,
+                    )):Container(
+                      padding: scaler.getPadding(1,1),
+                      decoration: BoxDecoration(
+                        color:Color(0xFF732044),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              WidgetHelper().textQ(title,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                              SizedBox(height: scaler.getHeight(0.3)),
+                              WidgetHelper().textQ(value,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+                  mainAxisSpacing: 0.0,
+                  crossAxisSpacing: 1.0,
+                ),
               ),
             ),
-            SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
-            dataMember!=null?ChartWidgetHome1(data:dataMember):Text(''),
-            SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
-            section2(context),
-            Divider(thickness:scaler.getHeight(1)),
-            section6(context),
+
+            // if(dataMember!=null)SizedBox(height: scaler.getHeight(1)),
+            if(dataMember!=null)ChartWidgetHome1(data:dataMember),
+            // SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
+            Showcase(
+              showArrow: true,
+              key: page2,
+              description: 'laporan pin dan transaksi',
+              child: section2(context),
+            ),
+            isLoadingRedeem||dataMember==null?Text(''):isNodataRedeem?Text(''):Divider(thickness:scaler.getHeight(1)),
+            Showcase(
+              key: page3,
+              description: 'Redeem Poin Anda Disini',
+              child: isLoadingRedeem||dataMember==null?RedeemHorizontalLoading():isNodataRedeem?Text(''):section6(context),
+            ),
             Divider(thickness:scaler.getHeight(1)),
             section3(context),
-            Divider(thickness:scaler.getHeight(1)),
-            section4(context),
-            Divider(thickness:scaler.getHeight(1)),
-            testimoni(context),
+            isLoadingNews?Text(''):isNodataNews?Text(''):Divider(thickness:scaler.getHeight(1)),
+            isLoadingNews?AddressLoading(tot: 1):isNodataNews?Text(''):section4(context),
+            isLoadingNews?Text(''):isNodataNews?Text(''):Divider(thickness:scaler.getHeight(1)),
+            isLoadingTestimoni?Text(''):isNodataTestimoni?Text(''):testimoni(context),
 
           ],
           title:'Home',
           callback: (data){
+            print("IEU DATA MEMBER $data");
             setState(() {
               dataMember=data;
             });
@@ -257,7 +323,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   Widget section4(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Container(
       padding: EdgeInsets.only(top:0),
       child: Column(
@@ -278,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
           Container(
             height: scaler.getHeight(50),
-            child: isLoadingNews?AddressLoading(tot: 1):GridView.builder(
+            child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 childAspectRatio: 2/2,
@@ -286,9 +351,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 crossAxisSpacing: spacing,
               ),
               scrollDirection: Axis.horizontal,
-              physics: AlwaysScrollableScrollPhysics(),
+              // physics: AlwaysScrollableScrollPhysics(),
               primary: true,
-              // reverse:true ,
               padding: scaler.getPadding(0,2),
               itemCount: contentModel.result.data.length,
               itemBuilder: (context, index) {
@@ -322,9 +386,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           SizedBox(height:scaler.getHeight(0.5)),
           Container(
             height: scaler.getHeight(25),
-            child: isLoadingRedeem||dataMember==null?RedeemHorizontalLoading():ListView.separated(
+            child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              physics: AlwaysScrollableScrollPhysics(),
               primary: true,
               padding: EdgeInsets.only(left: 0, right: 0, bottom: 0),
               itemCount: listRedeemModel.result.data.length,
@@ -354,15 +417,14 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             callback:(){WidgetHelper().myPush(context,TestimoniScreen());},
           ),
         ),
-        isLoadingTestimoni?TestimoniLoading():
+
         Container(
           height: scaler.getHeight(25),
           child:ListView.separated(
             scrollDirection: Axis.horizontal,
-            physics: AlwaysScrollableScrollPhysics(),
             primary: true,
             padding:scaler.getPadding(0,2),
-            shrinkWrap: true,
+            // shrinkWrap: true,
             itemCount: testimoniModel.result.data.length,
             itemBuilder: (context, index) {
               var val=testimoniModel.result.data[index];

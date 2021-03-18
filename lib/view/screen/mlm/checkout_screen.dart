@@ -68,12 +68,15 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       setState(() {});
     }
     else{
-      setState(() {
-        isLoadingCart=false;
-        isError=false;
-        cartModel = res;
-      });
-      getSubtotal();
+      if(this.mounted){
+        setState(() {
+          isLoadingCart=false;
+          isError=false;
+          cartModel = res;
+        });
+        getSubtotal();
+      }
+
     }
   }
   Future loadKurir()async{

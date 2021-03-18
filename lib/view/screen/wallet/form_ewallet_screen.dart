@@ -514,11 +514,15 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
       }
       if(widget.title=='PENARIKAN'){
         if(!isHaveKtp){
-          WidgetHelper().myModal(context,CameraWidget(callback: (img,pureImage){
+          WidgetHelper().myModal(context,CameraWidget(callback: (img,pureImage)async{
             setState(() {
               image=img;
             });
-            handleUpdate(context);
+            await Future.delayed(Duration(seconds: 1));
+            WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+              handleUpdate(context);
+            });
+            // handleUpdate(context);
           }));
         }else{
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));

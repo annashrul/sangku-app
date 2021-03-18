@@ -91,8 +91,8 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
   final PageStorageBucket bucket = PageStorageBucket();
 
 
-  String urlWeb='http://192.168.100.10:3000';
-  // String urlWeb='http://sangqu.id';
+  // String urlWeb='http://192.168.100.10:3000';
+  String urlWeb='http://sangqu.id';
 
 
   @override

@@ -35,13 +35,12 @@ class BaseProvider{
         };
         final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
         final jsonResponse = json.decode(response.body);
-
         if (response.statusCode == 200) {
-          // print("=================== SUCCESS $url = $jsonResponse ==========================");
+          print("=================== SUCCESS $url = ${response.statusCode} ==========================");
           if(jsonResponse['result'].length>0){
             return param(response.body);
           }else{
-            // print("=================== GET DATA $url = NODATA ============================");
+            print("=================== GET DATA $url = NODATA ============================");
             return Constant().errNoData;
           }
         }

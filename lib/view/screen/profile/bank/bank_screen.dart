@@ -25,17 +25,14 @@ class _BankScreenState extends State<BankScreen> {
   bool isLoading=false,isError=false,isLoadmore=false;
   int perpage=10,total=0;
   Future loadData()async{
-    var res = await MemberProvider().getBankMember("page=1&limit$perpage");
-    if(res=='error'){
-      isLoading=false;isError=true;
-      if(this.mounted)setState((){});
-    }
-    else if(res==Constant().errExpToken){
-      isLoading=true;isError=false;
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        await FunctionHelper().logout(context);
+    var res = await MemberProvider().getBankMember("page=1&limit$perpage",context,(){
+      Navigator.pop(context);
+    });
+    if(res==Constant().errNoData){
+      setState(() {
+        total=0;
+        isLoading=false;
       });
-      if(this.mounted)setState((){});
     }
     else{
       isLoading=false;isError=false;
@@ -77,7 +74,7 @@ class _BankScreenState extends State<BankScreen> {
           }));
         })
       ]),
-      body: isLoading?AddressLoading(tot: 5,):isError?ErrWidget(callback: (){loadData();}):RefreshWidget(
+      body: isLoading?AddressLoading(tot: 5,):total<1?WidgetHelper().noDataWidget(context):RefreshWidget(
         widget: Column(
           children: [
             Expanded(
