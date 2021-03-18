@@ -54,6 +54,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
   String title='';
   String desc='';
   String kdTrx='';
+  String idCard='';
   AvailableMemberModel availableMemberModel;
   Future loadConfig()async{
     final config = await BaseProvider().getProvider("transaction/wallet/config", configWalletModelFromJson);
@@ -81,6 +82,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             isLoading=false;
             isError=false;
             isHaveKtp=result.result.isHaveKtp;
+            idCard=result.result.idCard;
           });
           if(widget.title=='TOP UP'){
             saldo=int.parse(result.result.dpMin);
@@ -102,15 +104,23 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
           }
           if(widget.title=='PENARIKAN'){
             saldo=int.parse(result.result.wdMin);
-            print("###################### PENARIKAN ##########################");
+            print("###################### PENARIKAN ${result.result.toJson()} ##########################");
             setState(() {});
-            if(!isHaveKtp){
+            if(!isHaveKtp&&idCard=='-'){
               setState(() {
                 isPending=true;
                 title='Informasi';
                 desc = 'Untuk melakukan penarikan, kami harus memastikan bahwa anda bukan robot. Maka dari itu silahkan unggah foto identitas anda seperti KTP/SIM/KITAS dsb.';
               });
               print("###################### BELUM PUNYA KTP = ${result.result.isHaveKtp} ##########################");
+              return showNotif(context);
+            }
+            if(!isHaveKtp&&idCard!='-'){
+              setState(() {
+                isPending=true;
+                title='Informasi';
+                desc = 'Silahkan tunggu konfirmasi dari admin';
+              });
               return showNotif(context);
             }
             if(result.result.trxWd!='0'){
@@ -513,7 +523,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
         });
       }
       if(widget.title=='PENARIKAN'){
-        if(!isHaveKtp){
+        if(!isHaveKtp&&idCard=='-'){
           WidgetHelper().myModal(context,CameraWidget(callback: (img,pureImage)async{
             setState(() {
               image=img;
@@ -524,6 +534,8 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             });
             // handleUpdate(context);
           }));
+        }else if(!isHaveKtp&&idCard!='-'){
+          WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         }else{
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         }

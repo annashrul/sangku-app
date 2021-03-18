@@ -326,12 +326,20 @@ class _RewardScreenState extends State<RewardScreen> {
   AddressModel addressModel;
   bool isLoading=true;
   String idAddress='';
-
+  int total=0;
   Future loadAddress()async{
     var res = await BaseProvider().getProvider("alamat?page=1&perpage=10", addressModelFromJson,context: context,callback: (){
-
+      Navigator.pop(context);
     });
-    if(res is AddressModel){
+    if(res==Constant().errNoData){
+      total=0;
+      isLoading = false;
+      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat",(){Navigator.pop(context);},(){
+        WidgetHelper().myPush(context,AddressScreen());
+      },titleBtn2: "buat alamat");
+      setState(() {});
+    }
+    else if(res is AddressModel){
       if (this.mounted) {
         setState(() {
           addressModel = res;
@@ -378,7 +386,7 @@ class _RewardScreenState extends State<RewardScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       height: scaler.getHeight(70),
-      child: isLoading?WidgetHelper().loadingWidget(context):Column(
+      child: isLoading?WidgetHelper().loadingWidget(context):total<1?WidgetHelper().noDataWidget(context):Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

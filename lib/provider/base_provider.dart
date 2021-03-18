@@ -160,7 +160,7 @@ class BaseProvider{
         Navigator.pop(context);
         // final jsonResponse = json.decode(request.body);
         print("jsonResponse");
-        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Silahkan hubungi admin kami",(){Navigator.pop(context);});
+        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","File terlalu besar",(){Navigator.pop(context);});
       }
     } on TimeoutException catch (_) {
       print("=================== TimeoutException $url = $TimeoutException ============================");

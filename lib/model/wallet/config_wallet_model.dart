@@ -43,6 +43,7 @@ class Result {
     this.trxWd,
     this.trxDp,
     this.isHaveKtp,
+    this.idCard,
   });
 
   var wdCharge;
@@ -54,6 +55,7 @@ class Result {
   var trxWd;
   var trxDp;
   bool isHaveKtp;
+  var idCard;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     wdCharge: json["wd_charge"],
@@ -65,6 +67,7 @@ class Result {
     trxWd: json["trx_wd"],
     trxDp: json["trx_dp"],
     isHaveKtp: json["is_have_ktp"],
+    idCard: json["id_card"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -77,5 +80,6 @@ class Result {
     "trx_wd": trxWd,
     "trx_dp": trxDp,
     "is_have_ktp": isHaveKtp,
+    "id_card": idCard,
   };
 }

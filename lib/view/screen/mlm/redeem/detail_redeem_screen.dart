@@ -11,6 +11,7 @@ import 'package:sangkuy/provider/address_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
 import 'package:sangkuy/view/screen/pages.dart';
+import 'package:sangkuy/view/screen/profile/address/address_screen.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
 
@@ -27,14 +28,13 @@ class _DetailRedeemState extends State<DetailRedeem> {
   String idAddress='';
   Future loadData()async{
     var res = await AddressProvider().getAddress(10);
+    print(res);
     if(res==Constant().errNoData){
       isLoading=false;
       isNodata=true;
-      setState(() {});
-    }
-    else if(res is General){
-      isLoading=false;
-      isNodata=true;
+      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat",(){Navigator.pop(context);},(){
+        WidgetHelper().myPush(context,AddressScreen());
+      },titleBtn2: "buat alamat");
       setState(() {});
     }
     else{
@@ -90,7 +90,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       height: scaler.getHeight(90),
-      child: isLoading?WidgetHelper().loadingWidget(context):Column(
+      child: isLoading?WidgetHelper().loadingWidget(context):isNodata?WidgetHelper().noDataWidget(context):Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
