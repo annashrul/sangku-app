@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 
@@ -37,46 +38,41 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
     print(pvKiri);
     print(pvKanan);
     super.build(context);
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return widget.data['left_pv']=="0"?Text(''):Padding(
       padding: EdgeInsets.all(0),
       child: Container(
-        height: MediaQuery.of(context).size.height/6,
+        height:scaler.getHeight(10),
         // padding: EdgeInsets.only(right: 80,top: 0,left: 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: PieChart(
-                  PieChartData(
-                      pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-                        setState(() {
-                          if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                              pieTouchResponse.touchInput is FlPanEnd) {
-                            touchedIndex = -1;
-                          } else {
-                            touchedIndex = pieTouchResponse.touchedSectionIndex;
-                          }
-                        });
-                      }),
-                      borderData: FlBorderData(
-                        show: false,
-                      ),
-                      sectionsSpace: 0,
-                      centerSpaceRadius: 10,
-                      sections: showingSections()),
-                ),
-              ),
+            PieChart(
+              PieChartData(
+                  pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+                    setState(() {
+                      if (pieTouchResponse.touchInput is FlLongPressEnd ||
+                          pieTouchResponse.touchInput is FlPanEnd) {
+                        touchedIndex = -1;
+                      } else {
+                        touchedIndex = pieTouchResponse.touchedSectionIndex;
+                      }
+                    });
+                  }),
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 10,
+                  sections: showingSections()),
             ),
             Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-
-
                 Indicator(
                   color: Color(0xff0293ee),
                   text: 'PV Kiri : ${widget.data['left_pv']}',
@@ -94,9 +90,9 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
                 ),
               ],
             ),
-            const SizedBox(
-              width: 28,
-            ),
+            // const SizedBox(
+            //   width: 28,
+            // ),
           ],
         ),
       ),
@@ -104,11 +100,12 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
   }
 
   List<PieChartSectionData> showingSections() {
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
 
     return List.generate(2, (i) {
       final isTouched = i == touchedIndex;
-      final double fontSize = isTouched ? 25 : 16;
+      final double fontSize = isTouched ? scaler.getTextSize(12) : scaler.getTextSize(10);
       final double radius = isTouched ? 60 : 50;
       switch (i) {
         case 0:
@@ -156,11 +153,13 @@ class Indicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Row(
       children: <Widget>[
         Container(
-          width: size,
-          height: size,
+          width: scaler.getWidth(2),
+          height: scaler.getWidth(1.5),
           decoration: BoxDecoration(
             shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
             color: color,
@@ -169,7 +168,7 @@ class Indicator extends StatelessWidget {
         const SizedBox(
           width: 4,
         ),
-        WidgetHelper().textQ(text,12,textColor,FontWeight.bold)
+        WidgetHelper().textQ(text,scaler.getTextSize(9),textColor,FontWeight.bold)
 
       ],
     );

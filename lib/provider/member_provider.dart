@@ -9,10 +9,10 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberProvider{
-  Future getDataMember(BuildContext context,Function callback)async{
+  Future getDataMember()async{
     final idMember = await UserHelper().getDataUser("id_user");
     String url = 'member/get/$idMember';
-    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson,context: context,callback: callback);
+    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson);
     print("###################################### MEMBER ###############################");
     print(res);
     print("###################################### MEMBER ###############################");

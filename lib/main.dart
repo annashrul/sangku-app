@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/config/database_config.dart';
+import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/get_it_setup.dart';
 import 'package:sangkuy/helper/table_helper.dart';
@@ -15,9 +17,12 @@ import 'helper/widget_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   setUpGetIt();
+
+
   runApp(App());
 }
 
@@ -31,6 +36,8 @@ class _AppState extends State<App> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String link='';
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -41,6 +48,7 @@ class _AppState extends State<App> {
     };
     OneSignal.shared.init(Constant().oneSignalId, iOSSettings: settings);
     _db.openDB();
+    // checkTokenExp();
     super.initState();
   }
   @override
@@ -83,6 +91,17 @@ class CheckingRoutes extends StatefulWidget {
 class _CheckingRoutesState extends State<CheckingRoutes> {
   final DatabaseConfig _db = new DatabaseConfig();
   final userHelper=UserHelper();
+  // Future checkTokenExp()async{
+  //   final token = await UserHelper().getDataUser('token');
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  //   bool isTokenExpired = JwtDecoder.isExpired(token);
+  //   print("####################### PAYLOAD TOKEN $isTokenExpired ########################################");
+  //   if(isTokenExpired){
+  //     WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+  //       await FunctionHelper().logout(context);
+  //     });
+  //   }
+  // }
   Future loadData() async{
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final users = await _db.readData(UserTable.SELECT);
@@ -103,7 +122,15 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
           WidgetHelper().myPushRemove(context, SignInScreen());
         }
         else if(onBoarding=='1'&&isLogin=='1'){
-          WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+          final isToken=await FunctionHelper().checkTokenExp();
+          if(isToken){
+            WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+              await FunctionHelper().logout(context);
+            });
+          }
+          else{
+            WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));
+          }
         }
       }
     }

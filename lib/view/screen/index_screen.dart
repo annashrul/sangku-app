@@ -23,10 +23,20 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
   GlobalKey bottomNavigationKey = GlobalKey();
   PageController controller = PageController();
 
+  Future checkRoute()async{
+    final isToken=await FunctionHelper().checkTokenExp();
+    if(isToken){
+      return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+        await FunctionHelper().logout(context);
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkRoute();
     currentScreen = HomeScreen();
     if(widget.currentTab==0){
       currentScreen = RedeemPointScreen(); // if user taps on this dashboard tab will be active
@@ -58,7 +68,6 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     super.build(context);
     return WillPopScope(
         child: Scaffold(

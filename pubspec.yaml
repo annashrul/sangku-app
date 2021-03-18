@@ -19,6 +19,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
+#  sdk: ">=1.19.0-dev.68.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -68,6 +69,7 @@ dependencies:
   webview_flutter: ^0.3.17
   youtube_player_flutter: ^7.0.0+7
   flutter_screen_scaler: ^2.0.0
+  jwt_decoder:
 
 
 #  date_strip_report: ^1.0.0

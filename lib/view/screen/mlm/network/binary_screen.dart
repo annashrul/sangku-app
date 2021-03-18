@@ -58,8 +58,18 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUrl();
-    loadMember();
+
+    FunctionHelper().checkTokenExp().then((value){
+      if(value){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+          await FunctionHelper().logout(context);
+        });
+      }
+      else{
+        getUrl();
+        loadMember();
+      }
+    });
     _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
   }
@@ -81,7 +91,8 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
   final PageStorageBucket bucket = PageStorageBucket();
 
 
-
+  String urlWeb='http://192.168.100.10:3000';
+  // String urlWeb='http://sangqu.id';
 
 
   @override
@@ -122,8 +133,8 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
                   controller: _tabController,
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    WebViewWidget(val: {"url":'http://sangqu.id/web_view/binary/$url',"reload":true}),
-                    WebViewWidget(val: {"url":'http://sangqu.id/web_view/sponsor/$url',"reload":true})
+                    WebViewWidget(val: {"url":'$urlWeb/web_view/binary/$url',"reload":true}),
+                    WebViewWidget(val: {"url":'$urlWeb/web_view/sponsor/$url',"reload":true})
                   ]
               ),
             ),

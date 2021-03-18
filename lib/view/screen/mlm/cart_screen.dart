@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -126,6 +127,8 @@ class _CartScreenState extends State<CartScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Ringkasan Belanja", (){
@@ -171,22 +174,22 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: () {
                 WidgetHelper().myPushAndLoad(context,ChaeckoutScreen(), (){loadCart();});
               },
-              padding: EdgeInsets.only(left:20),
+              padding: EdgeInsets.only(left:scaler.getWidth(2)),
               color: Constant().moneyColor,
               child:Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(total)} .-", 14, Constant().secondDarkColor, FontWeight.normal),
+                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(total)} .-", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                    padding:scaler.getPadding(1,2),
                     decoration: BoxDecoration(
                       color: Constant().secondColor
                     ),
                     child: Row(
                       children: [
                         Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Checkout", 14, Constant().secondDarkColor, FontWeight.normal),
+                        SizedBox(width:scaler.getWidth(2)),
+                        WidgetHelper().textQ("Checkout",  scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
                       ],
                     ),
                   )
@@ -198,13 +201,15 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
   Widget buildContent(BuildContext context,index,id,idPaket,image,name,price,berat,qty) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     int jumlah=qty;
     return WidgetHelper().myPress((){
         WidgetHelper().myPushAndLoad(context,DetailPackageScreen(id: idPaket,tipe:tipe), ()=>loadCart());
       },
       Container(
           color: Theme.of(context).focusColor.withOpacity(0.1),
-          padding: EdgeInsets.only(top:10.0,bottom: 10.0),
+          padding:scaler.getPadding(1,0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -217,7 +222,7 @@ class _CartScreenState extends State<CartScreen> {
                     deleteCart(id);
                   });
                 },
-                iconSize: 20,
+                iconSize: scaler.getTextSize(12),
                 padding: EdgeInsets.symmetric(horizontal: 0),
                 icon: Icon(AntDesign.delete),
                 color:Constant().mainColor,
@@ -225,13 +230,13 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    WidgetHelper().baseImage(image,height: 50, width: 50),
-                    SizedBox(width: 10.0),
+                    WidgetHelper().baseImage(image,height: scaler.getHeight(5), width:  scaler.getWidth(10)),
+                    SizedBox(width: scaler.getWidth(2)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WidgetHelper().textQ(name,12,Constant().darkMode,FontWeight.bold),
-                        WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(price))} .-",12,Constant().moneyColor,FontWeight.bold),
+                        WidgetHelper().textQ(name,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                        WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(price))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
                       ],
                     )
                   ],
@@ -245,12 +250,12 @@ class _CartScreenState extends State<CartScreen> {
                   });
                   await postCart(idPaket, 'plus');
                 },
-                iconSize: 20,
+                iconSize: scaler.getTextSize(12),
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 icon: Icon(AntDesign.pluscircleo),
                 color: Constant().mainColor,
               ),
-              WidgetHelper().textQ('$jumlah',12,Constant().darkMode,FontWeight.bold),
+              WidgetHelper().textQ('$jumlah',scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
               IconButton(
                 onPressed: ()async{
                   if(jumlah>1){
@@ -261,7 +266,7 @@ class _CartScreenState extends State<CartScreen> {
                   }
 
                 },
-                iconSize: 20,
+                iconSize: scaler.getTextSize(12),
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 icon: Icon(AntDesign.minuscircleo),
                 color: Constant().mainColor,

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -257,6 +258,8 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar:WidgetHelper().appBarWithButton(context,"Checkout",(){Navigator.pop(context);},<Widget>[]),
@@ -299,22 +302,22 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 }
 
               },
-              padding: EdgeInsets.only(left: 20),
+              padding: EdgeInsets.only(left: scaler.getWidth(2)),
               color: Constant().moneyColor,
               child:Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(grandTotal-totalVoucher)} .-", 14, Constant().secondDarkColor, FontWeight.normal),
+                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(grandTotal-totalVoucher)} .-", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                    padding:scaler.getPadding(1,2),
                     decoration: BoxDecoration(
                         color: Constant().secondColor
                     ),
                     child: Row(
                       children: [
                         Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                        SizedBox(width:10.0),
-                        WidgetHelper().textQ("Bayar", 14, Constant().secondDarkColor, FontWeight.normal),
+                        SizedBox(width:scaler.getWidth(2)),
+                        WidgetHelper().textQ("Bayar", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
                       ],
                     ),
                   )
@@ -326,10 +329,12 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     );
   }
   Widget address(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ClipPath(
       clipper: WaveClipperOne(flip: true),
       child: Container(
-        padding: EdgeInsets.only(bottom:50.0,top:10.0,left:15.0,right:15.0),
+        padding: EdgeInsets.only(bottom:scaler.getHeight(3),top:scaler.getHeight(1),left:scaler.getWidth(2),right:scaler.getWidth(2)),
         width: double.infinity,
         color: Color(0xFFEEEEEE),
         child:Column(
@@ -345,14 +350,14 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(AntDesign.home,size: 20,color:Constant().mainColor),
-                      SizedBox(width:5.0),
+                      Icon(AntDesign.home,size: scaler.getTextSize(12),color:Constant().mainColor),
+                      SizedBox(width:scaler.getWidth(2)),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          WidgetHelper().textQ("Alamat Pengiriman",12,Constant().mainColor, FontWeight.bold),
-                          WidgetHelper().textQ("$title",10,Constant().darkMode, FontWeight.bold),
+                          WidgetHelper().textQ("Alamat Pengiriman",scaler.getTextSize(9),Constant().mainColor, FontWeight.bold),
+                          WidgetHelper().textQ("$title",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
                         ],
                       )
                     ],
@@ -380,12 +385,12 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                       },),
                     ));
                   }, Container(
-                      padding: EdgeInsets.all(10),
+                      padding: scaler.getPadding(0.5,2),
                       decoration: BoxDecoration(
                         color: Constant().secondColor,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      child: WidgetHelper().textQ("Pilih alamat lain",10,Constant().secondDarkColor, FontWeight.bold)
+                      child: WidgetHelper().textQ("Pilih alamat lain",scaler.getTextSize(9),Constant().secondDarkColor, FontWeight.bold)
                   ))
                 ],
               ),
@@ -395,9 +400,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  WidgetHelper().textQ("$penerima ( $noHp )",12,Constant().darkMode, FontWeight.bold),
+                  WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
                   SizedBox(height:5.0),
-                  WidgetHelper().textQ("$mainAddress",12,Constant().darkMode, FontWeight.bold),
+                  WidgetHelper().textQ("$mainAddress",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
                 ],
               ),
             ),
@@ -407,15 +412,17 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     );
   }
   Widget expedisi(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      padding: EdgeInsets.only(left:10.0,right:10.0,top:0.0,bottom: 10.0),
+      padding:scaler.getPadding(0,2),
       child:Column(
         children: [
           Row(
             children: [
-              Icon(AntDesign.car,size: 20,color:Constant().mainColor),
-              SizedBox(width:5.0),
-              WidgetHelper().textQ("Jasa Pengiriman",12,Constant().mainColor, FontWeight.bold),
+              Icon(AntDesign.car,size: scaler.getTextSize(12),color:Constant().mainColor),
+              SizedBox(width:scaler.getWidth(2)),
+              WidgetHelper().textQ("Jasa Pengiriman",scaler.getTextSize(9),Constant().mainColor, FontWeight.bold),
             ],
           ),
           Divider(),
@@ -440,7 +447,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
             backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
 
           ),
-          SizedBox(height: 5.0),
+          SizedBox(height: scaler.getHeight(1)),
           CardWidget(
             onTap:(){
               if(kurirTitle!=''){
@@ -473,10 +480,12 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     );
   }
   Widget produk(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ClipPath(
       clipper: WaveClipperOne(flip: true),
       child: Container(
-        padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0,right:15.0),
+        padding: EdgeInsets.only(bottom:scaler.getHeight(3),top:scaler.getHeight(1),left:scaler.getWidth(2),right:scaler.getWidth(2)),
         width: double.infinity,
         color: Color(0xFFEEEEEE),
         child:Column(
@@ -490,18 +499,18 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(AntDesign.shoppingcart,size: 20,color:Constant().mainColor),
-                      SizedBox(width:5.0),
-                      WidgetHelper().textQ("Ringkasan Belanja",12,Constant().mainColor, FontWeight.bold),
+                      Icon(AntDesign.shoppingcart,size: scaler.getTextSize(12),color:Constant().mainColor),
+                      SizedBox(width:scaler.getWidth(2)),
+                      WidgetHelper().textQ("Ringkasan Belanja",scaler.getTextSize(9),Constant().mainColor, FontWeight.bold),
                     ],
                   ),
                   new Container(
-                    padding: EdgeInsets.all(10.0),
+                    padding:scaler.getPadding(0.5,2),
                     decoration: new BoxDecoration(
                       color: Constant().mainColor,
                       shape: BoxShape.circle,
                     ),
-                    child:WidgetHelper().textQ("${cartModel.result.length}",10,Constant().secondDarkColor, FontWeight.bold),
+                    child:WidgetHelper().textQ("${cartModel.result.length}",scaler.getTextSize(9),Constant().secondDarkColor, FontWeight.bold),
                   ),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -528,19 +537,13 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      CachedNetworkImage(
-                                        height: 50,
-                                        imageUrl: cartModel.result[index].foto,
-                                        fit:BoxFit.fill,
-                                        placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: 50),
-                                        errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width:50),
-                                      ),
-                                      SizedBox(width: 10.0),
+                                      WidgetHelper().baseImage(cartModel.result[index].foto,height: scaler.getHeight(3)),
+                                      SizedBox(width:scaler.getWidth(2)),
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          WidgetHelper().textQ("${cartModel.result[index].title}",12,Constant().darkMode,FontWeight.normal),
-                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].harga}"))} .-",12,Constant().moneyColor,FontWeight.normal),
+                                          WidgetHelper().textQ("${cartModel.result[index].title}",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].harga}"))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.normal),
                                         ],
                                       ),
                                     ],
@@ -562,31 +565,31 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 separatorBuilder: (_,i){return(Divider());},
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: scaler.getHeight(1)),
             Container(
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      WidgetHelper().textQ("TOTAL BELANJA",10,Constant().darkMode, FontWeight.normal),
-                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(subTotal)} .-",12,Constant().moneyColor, FontWeight.normal),
+                      WidgetHelper().textQ("Total Belanja",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(subTotal)} .-",scaler.getTextSize(9),Constant().moneyColor, FontWeight.normal),
                     ],
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      WidgetHelper().textQ("TOTAL ONGKOS KIRIM",10,Constant().darkMode, FontWeight.normal),
-                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(cost)} .-",12,Constant().moneyColor, FontWeight.normal),
+                      WidgetHelper().textQ("Total Ongkos Kirim",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(cost)} .-",scaler.getTextSize(9),Constant().moneyColor, FontWeight.normal),
                     ],
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      WidgetHelper().textQ("DISKON VOUCHER",10,Constant().darkMode, FontWeight.normal),
-                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(totalVoucher)} .-",12,Constant().moneyColor, FontWeight.normal),
+                      WidgetHelper().textQ("Diskon Voucher",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(totalVoucher)} .-",scaler.getTextSize(9),Constant().moneyColor, FontWeight.normal),
                     ],
                   ),
                 ],
@@ -598,17 +601,19 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     );
   }
   Widget metode(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      padding: EdgeInsets.only(left:15.0,right:15.0),
+      padding: scaler.getPadding(0, 2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(AntDesign.wallet,size: 20,color:Constant().mainColor),
-              SizedBox(width:5.0),
-              WidgetHelper().textQ("Metode Pembayaran",12,Constant().mainColor, FontWeight.bold),
+              Icon(AntDesign.wallet,size: scaler.getTextSize(12),color:Constant().mainColor),
+              SizedBox(width:scaler.getWidth(2)),
+              WidgetHelper().textQ("Metode Pembayaran",scaler.getTextSize(9),Constant().mainColor, FontWeight.bold),
             ],
           ),
           Divider(),
@@ -624,8 +629,10 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     );
   }
   Widget voucher(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Padding(
-      padding: EdgeInsets.only(left:0,right:10,top:10),
+      padding:scaler.getPadding(1, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -643,11 +650,11 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                   });
                 },
               ),
-              WidgetHelper().textQ("Punya Voucher ?",12,Constant().mainColor,FontWeight.bold),
+              WidgetHelper().textQ("Punya Voucher ?",scaler.getTextSize(9),Constant().mainColor,FontWeight.bold),
             ],
           ),
           isVoucher?Padding(
-            padding: EdgeInsets.only(left:15,right:10),
+            padding: scaler.getPadding(0,2),
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.only(left: 10),
@@ -656,11 +663,10 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                 color: Color(0xFFEEEEEE),
               ),
               child: TextFormField(
-                style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                style: TextStyle(fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
                 controller: voucherController,
                 maxLines: 1,
                 autofocus: false,
-
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.transparent),
@@ -681,7 +687,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
                       child: Icon(AntDesign.checkcircleo,color:Colors.white),
                     ),
                   ),
-                  contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),
+                  contentPadding: EdgeInsets.only(top:scaler.getHeight(1), right: 0.0, bottom: 0.0, left: 0.0),
                 ),
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
@@ -724,8 +730,10 @@ class _ModalKurirState extends State<ModalKurir> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      height: MediaQuery.of(context).size.height/1.2,
+      height: scaler.getHeight(70),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
@@ -734,10 +742,9 @@ class _ModalKurirState extends State<ModalKurir> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height:10.0),
+          SizedBox(height:scaler.getHeight(1)),
           Center(
             child: Container(
-              padding: EdgeInsets.only(top:10.0),
               width: 50,
               height: 10.0,
               decoration: BoxDecoration(
@@ -746,22 +753,21 @@ class _ModalKurirState extends State<ModalKurir> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height:scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: scaler.getPadding(0,2),
             child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(10),
+                padding: scaler.getPadding(0.5,2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Constant().mainColor,
-                  // border: Border.all(color:SiteConfig().accentDarkColor)
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline,color: Colors.white),
-                    SizedBox(width: 5),
-                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",12,Colors.white, FontWeight.bold)
+                    Icon(Icons.info_outline,color: Colors.white,size: scaler.getTextSize(12),),
+                    SizedBox(width: scaler.getWidth(2)),
+                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",scaler.getTextSize(9),Colors.white, FontWeight.bold)
                   ],
                 )
             ),
@@ -769,7 +775,7 @@ class _ModalKurirState extends State<ModalKurir> {
           Expanded(
             child: Scrollbar(
                 child: ListView.separated(
-                  padding: EdgeInsets.zero,
+                  padding:EdgeInsets.all(0.0),
                   itemCount: widget.kurirModel.result.length,
                   itemBuilder: (context,index){
                     return ListTile(
@@ -779,19 +785,13 @@ class _ModalKurirState extends State<ModalKurir> {
                         });
                         widget.callback(index);
                       },
-                      contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
+                      contentPadding:scaler.getPadding(0,2),
                       leading: Container(
-                        height: 50,
-                        width: 50,
-                        child: CachedNetworkImage(
-                          imageUrl: widget.kurirModel.result[index].gambar,
-                          fit:BoxFit.scaleDown,
-                          placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width:50),
-                          errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width:50),
-                        ),
+                        height: scaler.getHeight(5),
+                        child: WidgetHelper().baseImage(widget.kurirModel.result[index].gambar,width: scaler.getWidth(7)),
                       ),
-                      title: WidgetHelper().textQ("${widget.kurirModel.result[index].kurir}", 14,Constant().darkMode, FontWeight.bold),
-                      subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, Constant().darkMode, FontWeight.bold),
+                      title: WidgetHelper().textQ("${widget.kurirModel.result[index].kurir}", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+                      subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}",  scaler.getTextSize(9), Constant().darkMode, FontWeight.normal),
                       trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: Constant().darkMode):Text(
                           ''
                       ),
@@ -831,6 +831,8 @@ class _ModalLayananState extends State<ModalLayanan> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     var height=MediaQuery.of(context).size.height;
     return Container(
       decoration: BoxDecoration(
@@ -843,10 +845,9 @@ class _ModalLayananState extends State<ModalLayanan> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height:10.0),
+          SizedBox(height:scaler.getHeight(1)),
           Center(
             child: Container(
-              padding: EdgeInsets.only(top:10.0),
               width: 50,
               height: 10.0,
               decoration: BoxDecoration(
@@ -855,22 +856,21 @@ class _ModalLayananState extends State<ModalLayanan> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height:scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: scaler.getPadding(0,2),
             child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(10),
+                padding: scaler.getPadding(0.5,2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Constant().mainColor,
-                  // border: Border.all(color:SiteConfig().accentDarkColor)
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline,color: Colors.white),
-                    SizedBox(width: 5),
-                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",12,Colors.white, FontWeight.bold)
+                    Icon(Icons.info_outline,color: Colors.white,size: scaler.getTextSize(12),),
+                    SizedBox(width: scaler.getWidth(2)),
+                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",scaler.getTextSize(9),Colors.white, FontWeight.bold)
                   ],
                 )
             ),
@@ -886,9 +886,9 @@ class _ModalLayananState extends State<ModalLayanan> {
                           widget.callback(index);
                         },
                         child: ListTile(
-                            contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                            title: WidgetHelper().textQ("${widget.ongkirModel.result.ongkir[index].service} | ${widget.ongkirModel.result.ongkir[index].cost} | ${widget.ongkirModel.result.ongkir[index].estimasi}", 12,Colors.black, FontWeight.bold),
-                            trailing: widget.index==index?Icon(AntDesign.checkcircleo,color:Constant().darkMode):Text('')
+                            contentPadding:scaler.getPadding(0,2),
+                            title: WidgetHelper().textQ("${widget.ongkirModel.result.ongkir[index].service} | ${widget.ongkirModel.result.ongkir[index].cost} | ${widget.ongkirModel.result.ongkir[index].estimasi}", scaler.getTextSize(9),Colors.black, FontWeight.bold),
+                            trailing: widget.index==index?Icon(AntDesign.checkcircleo,color:Constant().darkMode,size: scaler.getTextSize(12),):Text('')
                         )
                     );
                   },

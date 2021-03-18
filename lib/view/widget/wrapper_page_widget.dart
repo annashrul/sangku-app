@@ -47,11 +47,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
   }
   Future loadMember()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final res=await MemberProvider().getDataMember(context,(){
-      Navigator.pop(context);
-      isLoadingMember=true;
-      loadMember();
-    });
+    final res=await MemberProvider().getDataMember();
     dataMemberModel=res;
     isLoadingMember=false;
     prefs.setString("saldo",dataMemberModel.result.saldo);

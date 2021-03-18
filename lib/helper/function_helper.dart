@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:sangkuy/config/database_config.dart';
 import 'package:sangkuy/helper/table_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -109,5 +110,17 @@ class FunctionHelper{
     final id=await UserHelper().getDataUser("id");
     await db.update(UserTable.TABLE_NAME, {'id':"${id.toString()}","is_login":"0","onboarding":"1"});
     WidgetHelper().myPushRemove(context,SignInScreen());
+  }
+  Future checkTokenExp()async{
+    final token = await UserHelper().getDataUser('token');
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    bool isTokenExpired = JwtDecoder.isExpired(token);
+    print("####################### PAYLOAD TOKEN $isTokenExpired ########################################");
+    return isTokenExpired;
+    // if(isTokenExpired){
+    //   WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+    //     await FunctionHelper().logout(context);
+    //   });
+    // }
   }
 }

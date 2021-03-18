@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
@@ -91,6 +92,8 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?PackageLoading():isError?ErrWidget(callback:(){setState(() {
       isLoading=true;
     });loadData();}):isErrToken?Text(''):packageModel.result.data.length>0?RefreshWidget(
@@ -99,7 +102,7 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
           Expanded(
             flex: 9,
             child: ListView.separated(
-              padding: EdgeInsets.only(left:10,right:10,bottom: 10.0),
+              padding:scaler.getPadding(0, 2),
               shrinkWrap: true,
               controller: controller,
               scrollDirection: Axis.vertical,
@@ -118,17 +121,16 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
                     children: [
                       ListTile(
                         contentPadding: EdgeInsets.all(0.0),
-                        title: WidgetHelper().textQ(val.title,12,Constant().darkMode,FontWeight.bold),
-                        subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.harga))} .-",12,Constant().moneyColor,FontWeight.bold),
-                        trailing: widget.tipe=='1'? WidgetHelper().baseImage(val.badge,width: 40):Text(''),
+                        title: WidgetHelper().textQ(val.title,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                        subtitle:WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.harga))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
+                        trailing: WidgetHelper().baseImage(val.badge,width: 40)
                       ),
                       WidgetHelper().baseImage(val.foto,width: double.infinity,fit: BoxFit.cover),
-
-                      SizedBox(height:10),
-                      WidgetHelper().textQ(val.deskripsi,12,Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
-                      SizedBox(height:10),
+                      SizedBox(height:scaler.getHeight(1)),
+                      WidgetHelper().textQ(val.deskripsi,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines: 10,textAlign: TextAlign.justify),
+                      SizedBox(height:scaler.getHeight(1)),
                       FlatButton(
-                        padding: EdgeInsets.all(10.0),
+                        padding:scaler.getPadding(0,2),
                         color: Constant().moneyColor,
                         onPressed: (){
                           widget.callback(val.id,1,widget.tipe=='1'?'0':'1');
@@ -139,7 +141,7 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
                           children: [
                             Icon(AntDesign.shoppingcart,color: Constant().secondDarkColor),
                             SizedBox(width:10.0),
-                            WidgetHelper().textQ("Keranjang", 12, Constant().secondDarkColor, FontWeight.normal),
+                            WidgetHelper().textQ("Keranjang", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.normal),
                           ],
                         ),
                       )

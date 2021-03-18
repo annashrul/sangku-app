@@ -22,11 +22,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   ListRedeemModel listRedeemModel;
 
   Future loadData()async{
-    // SharedPreferences prefs=await SharedPreferences.getInstance();
-    // prefs.setString("pageHome","true");
-    // if(prefs.getString("pageHome")=="false"){
-    //
-    // }
     isLoadingRedeem=true;
     isLoadingNews=true;
     isLoadingTestimoni=true;
@@ -47,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   }
   Future loadRedeem()async{
-    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson,context: context);
+    var res=await BaseProvider().getProvider("redeem/barang?page=1&perpage=5", listRedeemModelFromJson);
     if(res is ListRedeemModel){
       ListRedeemModel result=res;
       listRedeemModel = result;
@@ -79,16 +74,23 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   void initState() {
     // TODO: implement initState
     super.initState();
-    // loadData();
     isLoadingRedeem=true;
     isLoadingNews=true;
     isLoadingTestimoni=true;
-    // print("#################### TYPE OF ${contentModel.result.data.runtimeType} ##############################");
+    FunctionHelper().checkTokenExp().then((value){
+      if(value){
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+          await FunctionHelper().logout(context);
+        });
+      }
+      else{
+        loadRedeem();
+        loadNews();
+        loadTestimoni();
+      }
+    });
+    // loadData();
 
-    // if(this.mounted) setState(() {});
-    loadRedeem();
-    loadNews();
-    loadTestimoni();
 
   }
   @override
@@ -110,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           children: [
             Container(
               child: StaggeredGridView.countBuilder(
-                padding: EdgeInsets.all(0.0),
+                padding:scaler.getPadding(1,0),
                 shrinkWrap: true,
                 primary: false,
                 crossAxisCount: 3,
@@ -157,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 crossAxisSpacing: 1.0,
               ),
             ),
+            SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
             dataMember!=null?ChartWidgetHome1(data:dataMember):Text(''),
             SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
             section2(context),
