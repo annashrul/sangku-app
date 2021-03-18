@@ -133,8 +133,8 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
                   controller: _tabController,
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    WebViewWidget(val: {"url":'$urlWeb/web_view/binary/$url',"reload":true}),
-                    WebViewWidget(val: {"url":'$urlWeb/web_view/sponsor/$url',"reload":true})
+                    WebViewWidget(val: {"url":'$urlWeb/web_view/binary/$url',"reload":false}),
+                    WebViewWidget(val: {"url":'$urlWeb/web_view/sponsor/$url',"reload":false})
                   ]
               ),
             ),

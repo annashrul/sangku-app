@@ -72,7 +72,7 @@ class _WebViewWidgetState extends State<WebViewWidget> {
           )
         ],
       ),
-      floatingActionButton: widget.val['reload']==null?Text(''):FloatingActionButton(
+      floatingActionButton: widget.val['reload']==null||!widget.val['reload']?Text(''):FloatingActionButton(
         backgroundColor: Constant().mainColor,
         foregroundColor: Colors.white,
         onPressed: ()=>_controller.future.then((value){
