@@ -22,7 +22,7 @@ class HistoryWithdrawScreen extends StatefulWidget {
 class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String filterStatus='';
-  bool isLoading=false,isLoadmore=false,isNodata=false,isError=false;
+  bool isLoading=false,isLoadmore=false;
   HistoryWithdrawModel historyWithdrawModel;
   ScrollController controller;
   int perpage=15,total=0;
@@ -31,75 +31,21 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
     if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
-    var res = await BaseProvider().getProvider(url,historyWithdrawModelFromJson);
+    var res = await BaseProvider().getProvider(url,historyWithdrawModelFromJson,context: context,callback: (){Navigator.pop(context);});
     if(res is HistoryWithdrawModel){
       HistoryWithdrawModel result=res;
-      if(result.status=='success'){
-        if(this.mounted){
-          if(result.result.data.length>0){
-            setState(() {
-              historyWithdrawModel = HistoryWithdrawModel.fromJson(result.toJson());
-              isLoading=false;
-              isError=false;
-              isNodata=false;
-              isLoadmore=false;
-              total=historyWithdrawModel.result.total;
-            });
-          }
-          else{
-            setState(() {
-              isLoading=false;
-              isError=false;
-              isNodata=true;
-            });
-          }
+      historyWithdrawModel = HistoryWithdrawModel.fromJson(result.toJson());
+      isLoading=false;
+      isLoadmore=false;
+      total=historyWithdrawModel.result.total;
+      if(this.mounted)setState(() {});
 
-        }
-      }
-      else{
-        setState(() {
-          isLoading=false;
-          isError=false;
-          isNodata=false;
-
-        });
-      }
-    }
-    else if(res==Constant().errSocket||res==Constant().errTimeout){
-      setState(() {
-        isLoading=false;
-        isError=true;
-        isNodata=false;
-
-      });
-    }
-    else if(res==Constant().errExpToken){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=false;
-
-      });
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        await FunctionHelper().logout(context);
-      });
-    }
-    else if(res is General){
-      General result=res;
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=false;
-
-      });
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
     }
     else if(res==Constant().errNoData){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=true;
-      });
+      isLoading=false;
+      total=0;
+      if(this.mounted)setState(() {});
+
     }
   }
   void _scrollListener() {
@@ -143,6 +89,7 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 10),
               Expanded(
                 flex: 1,
                 child: Padding(
@@ -159,7 +106,7 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
               Expanded(
                   flex: 19,
                   child: RefreshWidget(
-                    widget: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.builder(
+                    widget: isLoading?HistoryTransactionLoading(tot: 10):total<1?WidgetHelper().noDataWidget(context):ListView.builder(
                         controller: controller,
                         padding: EdgeInsets.only(top:10.0),
                         physics: AlwaysScrollableScrollPhysics(),

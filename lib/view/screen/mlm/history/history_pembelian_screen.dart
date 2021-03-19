@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/data_helper.dart';
@@ -26,7 +27,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   ScrollController controller;
   int perpage=10;
   int total=0;
-  bool isLoading=false,isLoadmore=false,isError=false,isErrToken,isNodata=false;
+  bool isLoading=false,isLoadmore=false;
   String lbl='';
   String filterStatus='';
 
@@ -35,29 +36,19 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
     if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
-    var res = await BaseProvider().getProvider(url,historyPemberlianModelFromJson);
-    print(res);
-
+    var res = await BaseProvider().getProvider(url,historyPemberlianModelFromJson,context: context,callback: (){Navigator.pop(context);});
     if(res==Constant().errNoData){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=true;
-      });
+      isLoading=false;
+      total=0;
+      if(this.mounted)setState(() {});
     }
-
-    else{
-      if(res is HistoryPemberlianModel){
-        HistoryPemberlianModel result=res;
-        historyPemberlianModel = result;
-        total = historyPemberlianModel.result.total;
-        isLoading=false;
-        isLoadmore=false;
-        isError=false;
-        isErrToken=false;
-        isNodata=false;
-        if(this.mounted)setState(() {});
-      }
+    else if(res is HistoryPemberlianModel){
+      HistoryPemberlianModel result=res;
+      historyPemberlianModel = result;
+      total = historyPemberlianModel.result.total;
+      isLoading=false;
+      isLoadmore=false;
+      if(this.mounted)setState(() {});
     }
   }
   void _scrollListener() {
@@ -89,18 +80,20 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context,"Laporan Pembelian", (){Navigator.pop(context);},<Widget>[]),
       body: RefreshWidget(
         widget: Container(
-          padding: EdgeInsets.only(top:10,bottom:10,left:0,right:0),
+          padding: scaler.getPadding(1,0),
           child: Column(
             children: [
               // Expanded
               Expanded(
                 flex: 1,
                 child: Padding(
-                  padding: EdgeInsets.only(left:10,right:10),
+                  padding:scaler.getPadding(0,2),
                   child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryPembelian, (val){
                     setState(() {
                       filterStatus = val['kode'];
@@ -142,7 +135,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(left:10,right:10,top:10),
+                                      padding: EdgeInsets.only(top: scaler.getHeight(1),left: scaler.getWidth(2),right: scaler.getWidth(2)),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -158,16 +151,16 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                       children: [
                                                         SvgPicture.asset(
                                                             Constant().localIcon+'lainnya_icon.svg',
-                                                            height: 10,
-                                                            width: 10,
+                                                            height: scaler.getHeight(1),
+                                                            width: scaler.getWidth(1),
                                                             color:Constant().secondColor
                                                         ),
-                                                        SizedBox(width: 5.0),
-                                                        WidgetHelper().textQ("${val.type==0?'Aktivasi':'Repeat Order'}",10,Colors.black87,FontWeight.normal),
+                                                        SizedBox(width:scaler.getWidth(1)),
+                                                        WidgetHelper().textQ("${val.type==0?'Aktivasi':'Repeat Order'}",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                                                       ],
                                                     ),
-                                                    SizedBox(height: 5.0),
-                                                    WidgetHelper().textQ("#${val.kdTrx}",10,Colors.black87,FontWeight.normal),
+                                                    SizedBox(height:scaler.getHeight(0.5)),
+                                                    WidgetHelper().textQ("#${val.kdTrx}",scaler.getTextSize(9),Constant().mainColor,FontWeight.bold),
                                                   ],
                                                 )
                                               ],
@@ -184,7 +177,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                       itemCount: valDet.length,
                                       itemBuilder: (context,key){
                                         return Padding(
-                                          padding: EdgeInsets.only(left:10,right:10,top:0),
+                                          padding: scaler.getPadding(0,2),
                                           child: Container(
                                             padding: EdgeInsets.only(right:10.0),
                                             child: Row(
@@ -192,22 +185,22 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                               children: [
                                                 Row(
                                                   children: [
-                                                    WidgetHelper().baseImage(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain),
+                                                    WidgetHelper().baseImage(valDet[key].foto,height:scaler.getHeight(3)),
                                                     // Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain,),
-                                                    SizedBox(width: 10.0),
+                                                    SizedBox(width:scaler.getWidth(2)),
                                                     Column(
                                                       children: [
                                                         Container(
-                                                          width: MediaQuery.of(context).size.width/2,
-                                                          child: WidgetHelper().textQ(valDet[key].paket,12,Colors.black87,FontWeight.normal),
+                                                          width: scaler.getWidth(70),
+                                                          child: WidgetHelper().textQ(valDet[key].paket,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                                                         ),
                                                         Row(
                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                           mainAxisAlignment: MainAxisAlignment.start,
                                                           children: [
-                                                            WidgetHelper().textQ("${valDet[key].qty} ITEM ",10,Colors.grey,FontWeight.normal),
-                                                            SizedBox(width: 20.0),
-                                                            WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",10,Constant().moneyColor,FontWeight.normal),
+                                                            WidgetHelper().textQ("${valDet[key].qty} ITEM ",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
+                                                            SizedBox(width:scaler.getWidth(2)),
+                                                            WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.normal),
                                                           ],
                                                         )
                                                       ],
@@ -223,7 +216,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                       },
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.only(left:10,right:10),
+                                      padding: scaler.getPadding(0,2),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -235,8 +228,8 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    WidgetHelper().textQ("Total Belanja",10,Colors.black87,FontWeight.normal),
-                                                    WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse('${val.grandTotal}'))} .-",10,Constant().moneyColor,FontWeight.bold),
+                                                    WidgetHelper().textQ("Total Belanja",scaler.getTextSize(9),Colors.black87,FontWeight.normal),
+                                                    WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse('${val.grandTotal}'))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
                                                   ],
                                                 )
                                               ],
@@ -249,7 +242,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.end,
                                                   children: [
-                                                    WidgetHelper().textQ(val.metodePembayaran,10,Colors.grey,FontWeight.normal),
+                                                    WidgetHelper().textQ(val.metodePembayaran,scaler.getTextSize(9),Constant().greenColor,FontWeight.bold),
                                                     WidgetHelper().baseImage(val.kurir,height: 30,width: 40,fit: BoxFit.contain)
                                                   ],
                                                 )

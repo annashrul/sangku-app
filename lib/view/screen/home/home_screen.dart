@@ -199,9 +199,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              WidgetHelper().textQ(title,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                              WidgetHelper().textQ(title,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
                               SizedBox(height: scaler.getHeight(0.3)),
-                              WidgetHelper().textQ(value,scaler.getTextSize(8),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                              WidgetHelper().textQ(value,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
                             ],
                           ),
                         ],
@@ -218,6 +218,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             // if(dataMember!=null)SizedBox(height: scaler.getHeight(1)),
             if(dataMember!=null)ChartWidgetHome1(data:dataMember),
             // SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
+            if(dataMember==null)SizedBox(height: scaler.getHeight(1)),
             Showcase(
               showArrow: true,
               key: page2,

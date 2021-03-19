@@ -65,6 +65,8 @@ class _NewsWidgetState extends State<NewsWidget> with AutomaticKeepAliveClientMi
 
 
   Widget listVertical(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         child:new StaggeredGridView.countBuilder(

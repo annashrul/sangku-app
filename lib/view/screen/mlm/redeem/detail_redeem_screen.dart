@@ -1,11 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/member/address/address_model.dart';
 import 'package:sangkuy/provider/address_provider.dart';
 import 'package:sangkuy/provider/base_provider.dart';
@@ -28,13 +26,21 @@ class _DetailRedeemState extends State<DetailRedeem> {
   String idAddress='';
   Future loadData()async{
     var res = await AddressProvider().getAddress(10);
-    print(res);
     if(res==Constant().errNoData){
       isLoading=false;
       isNodata=true;
-      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat",(){Navigator.pop(context);},(){
-        WidgetHelper().myPush(context,AddressScreen());
-      },titleBtn2: "buat alamat");
+      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat asdasdasd",(){Navigator.pop(context);},(){
+        Navigator.pop(context);
+        WidgetHelper().myModal(context, ModalForm(total:0,id:"",callback:(String par){
+          if(par=='berhasil'){
+            loadData();
+            WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+          }
+          else{
+            WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+          }
+        },));
+      },titleBtn2: "buat alamat asd");
       setState(() {});
     }
     else{
@@ -106,13 +112,12 @@ class _DetailRedeemState extends State<DetailRedeem> {
               ),
             ),
           ),
-          SizedBox(height: 20.0),
+          SizedBox(height:scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Redeem Poin',color: Constant().mainColor1),
+            padding:scaler.getPadding(0,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Redeem Poin sd',color: Constant().mainColor1,iconSize: 12),
           ),
           Container(
-            // color: Theme.of(context).focusColor.withOpacity(0.1),
             padding: scaler.getPadding(0.5,1.7),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,15 +125,16 @@ class _DetailRedeemState extends State<DetailRedeem> {
                 Expanded(
                   child: Row(
                     children: [
-                      CachedNetworkImage(
-                        height: scaler.getHeight(5),
-                        width: scaler.getWidth(10),
-                        imageUrl: widget.val['gambar'],
-                        fit:BoxFit.contain,
-                        placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                        errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
-                      ),
-                      SizedBox(width: 10.0),
+                      WidgetHelper().baseImage(widget.val['gambar'],height: scaler.getHeight(5),width: scaler.getWidth(10)),
+                      // CachedNetworkImage(
+                      //   height: scaler.getHeight(5),
+                      //   width: scaler.getWidth(10),
+                      //   imageUrl: widget.val['gambar'],
+                      //   fit:BoxFit.contain,
+                      //   placeholder: (context, url) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
+                      //   errorWidget: (context, url, error) => Image.network(Constant().noImage, fit:BoxFit.fill,width: double.infinity,),
+                      // ),
+                      SizedBox(width:scaler.getWidth(2)),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -167,10 +173,15 @@ class _DetailRedeemState extends State<DetailRedeem> {
               ],
             ),
           ),
+
           Padding(
-            padding: EdgeInsets.only(left:10,bottom: 10,top:10),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Pilih Alamat',color: Constant().mainColor1),
+            padding:scaler.getPadding(0,2),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Pilih Alamat Anda',color: Constant().mainColor1,iconSize: 12),
           ),
+          // Padding(
+          //   padding: EdgeInsets.only(left:10,bottom: 10,top:10),
+          //   child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Pilih Alamat',color: Constant().mainColor1),
+          // ),
           Expanded(
               flex: 1,
               child: ListView.separated(
@@ -188,7 +199,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
                       });
                     },
                     titleColor: Constant().darkMode,
-                    prefixBadge: Constant().mainColor,
+                    prefixBadge: Constant().darkMode,
                     // title: val.title,
                     description: val.mainAddress,
                     descriptionColor: Constant().darkMode,

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -23,7 +24,7 @@ class HistoryDepositScreen extends StatefulWidget {
 class _HistoryDepositScreenState extends State<HistoryDepositScreen> with SingleTickerProviderStateMixin  {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String filterStatus='',kode='';
-  bool isLoading=false,isLoadmore=false,isNodata=false,isError=false;
+  bool isLoading=false,isLoadmore=false;
   HistoryDepositModel historyDepositModel;
   ScrollController controller;
   int perpage=15,total=0;
@@ -32,75 +33,19 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
     if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
-    var res = await BaseProvider().getProvider(url,historyDepositModelFromJson);
+    var res = await BaseProvider().getProvider(url,historyDepositModelFromJson,context: context,callback: (){Navigator.pop(context);});
     if(res is HistoryDepositModel){
       HistoryDepositModel result=res;
-      if(result.status=='success'){
-        if(this.mounted){
-          if(result.result.data.length>0){
-            setState(() {
-              historyDepositModel = HistoryDepositModel.fromJson(result.toJson());
-              isLoading=false;
-              isError=false;
-              isNodata=false;
-              isLoadmore=false;
-              total=historyDepositModel.result.total;
-            });
-          }
-          else{
-            setState(() {
-              isLoading=false;
-              isError=false;
-              isNodata=true;
-            });
-          }
-
-        }
-      }
-      else{
-        setState(() {
-          isLoading=false;
-          isError=false;
-          isNodata=false;
-
-        });
-      }
-    }
-    else if(res==Constant().errSocket||res==Constant().errTimeout){
-      setState(() {
-        isLoading=false;
-        isError=true;
-        isNodata=false;
-
-      });
-    }
-    else if(res==Constant().errExpToken){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=false;
-
-      });
-      WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-        await FunctionHelper().logout(context);
-      });
-    }
-    else if(res is General){
-      General result=res;
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=false;
-
-      });
-      WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
+      historyDepositModel = HistoryDepositModel.fromJson(result.toJson());
+      isLoading=false;
+      isLoadmore=false;
+      total=historyDepositModel.result.total;
+      if(this.mounted)setState(() {});
     }
     else if(res==Constant().errNoData){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=true;
-      });
+      isLoading=false;
+      total=0;
+      if(this.mounted)setState(() {});
     }
   }
   void _scrollListener() {
@@ -136,6 +81,8 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Laporan Deposit", (){Navigator.pop(context);},<Widget>[]),
@@ -144,10 +91,12 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 10),
+
               Expanded(
                 flex: 1,
                 child:Padding(
-                  padding: EdgeInsets.only(left:10),
+                  padding:scaler.getPadding(0,2),
                   child:  WidgetHelper().filterStatus(context, DataHelper.filterHistoryDeposit, (val){
                     setState(() {
                       filterStatus = val['kode'];
@@ -161,8 +110,8 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
               Expanded(
                 flex: 19,
                 child: RefreshWidget(
-                  widget: isLoading?HistoryTransactionLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):ListView.builder(
-                      padding: EdgeInsets.only(top:10.0),
+                  widget: isLoading?HistoryTransactionLoading(tot: 10):total<1?WidgetHelper().noDataWidget(context):ListView.builder(
+                      padding:scaler.getPadding(1,0),
                       physics: AlwaysScrollableScrollPhysics(),
                       controller: controller,
                       itemBuilder: (context,index){
@@ -235,39 +184,43 @@ class WidgetHistoryEwallet extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlatButton(
       color: color,
-      padding: EdgeInsets.only(top:10.0,bottom: 10.0),
+      padding:scaler.getPadding(1,0),
       onPressed:callback,
       child: ListTile(
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            WidgetHelper().textQ(data['kdTrx'], 10,Constant().mainColor,FontWeight.bold),
-            SizedBox(height: 5),
+            WidgetHelper().textQ(data['kdTrx'], scaler.getTextSize(9),Constant().mainColor,FontWeight.bold),
+            SizedBox(height: scaler.getHeight(0.5)),
             buildItem(context, AntDesign.creditcard, data['bankName']),
-            SizedBox(height: 5),
+            SizedBox(height: scaler.getHeight(0.5)),
             buildItem(context, AntDesign.creditcard, data['accNo']),
-            SizedBox(height: 5),
+            SizedBox(height: scaler.getHeight(0.5)),
             buildItem(context, Entypo.credit,"Rp ${FunctionHelper().formatter.format(int.parse(data['amount']))} .-",color: Constant().moneyColor),
-            SizedBox(height: 5),
+            SizedBox(height: scaler.getHeight(0.5)),
             buildItem(context, AntDesign.calendar,FunctionHelper().formateDate(data['createdAt'], 'ymd'),color: Constant().darkMode),
           ],
         ),
         trailing:Container(
-          padding: EdgeInsets.only(top:10.0,bottom: 10),
-          height: 40,
+          // padding:scaler.getPadding(2,0),
+          height: scaler.getHeight(2),
           child: FlatButton(
               color: statusColor,
               onPressed: (){},
-              child: WidgetHelper().textQ(data['status'],10,Colors.white,FontWeight.bold)
+              child: WidgetHelper().textQ(data['status'],scaler.getTextSize(8),Colors.white,FontWeight.bold)
           ),
         ),
       ),
     );
   }
   Widget buildItem(BuildContext context,IconData iconData,String title,{Color color=Colors.black}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return WidgetHelper().titleNoButton(context, iconData, title,iconSize: 10,color: color);
     return Row(
       children: [
         Icon(iconData,size: 10),

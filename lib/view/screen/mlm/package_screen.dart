@@ -78,7 +78,6 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   Future handleSubmit(id,qty,tipe)async{
     var res = await CartProvider().postCart(id,qty.toString(),tipe,context,(){
       Navigator.pop(context);
-
     });
     if(res!=null){
       Navigator.pop(context);

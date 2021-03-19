@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
@@ -198,15 +199,26 @@ class WidgetHelper{
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return  AppBar(
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
       elevation: 1.0,
       backgroundColor: Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
-      leading: IconButton(
-        icon: new Icon(AntDesign.back,color: Colors.grey),
-        onPressed: (){
-          callback();
-        },
+      title: Padding(
+        padding: scaler.getPadding(0,1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            InkWell(
+              onTap: callback,
+              child: Icon(Ionicons.ios_arrow_back, color: Constant().darkMode),
+            ),
+            SizedBox(width: scaler.getWidth(2)),
+            textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
+            // Your widgets here
+          ],
+        ),
       ),
       actions:widget,// status bar brightness
     );
@@ -229,6 +241,8 @@ class WidgetHelper{
     );
   }
   appBarWithTab(BuildContext context,TabController tabController, title,Map<String,dynamic> lbl,String label,Function(String lbl) callback,{Widget leading,String description='', List<Widget> widget, ImageProvider<dynamic> imageProvider}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     List<Tab> tab = new List();
     lbl.forEach((key, value) {
       tab.add(Tab(
@@ -237,12 +251,11 @@ class WidgetHelper{
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(0), color:label==key?Constant().mainColor:Constant().secondColor),
             child: Align(
               alignment: Alignment.center,
-              child: WidgetHelper().myText(value,12,color:Colors.white,fontWeight: FontWeight.bold),
+              child: WidgetHelper().myText(value,scaler.getTextSize(9),color:Colors.white,fontWeight: FontWeight.bold),
             ),
           ),
         ));
     });
-    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return AppBar(
       elevation: 0.0,
@@ -252,7 +265,7 @@ class WidgetHelper{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ("$title",scaler.getTextSize(10),Colors.grey,FontWeight.bold),
+          WidgetHelper().textQ("$title",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
           if(description!='')WidgetHelper().textQ("$description",scaler.getTextSize(9),Colors.black,FontWeight.normal),
         ],
       ),
@@ -276,6 +289,74 @@ class WidgetHelper{
 
 
   }
+  appBarWithFilter(BuildContext context, title,Function callback,Function(String param) filterQ,Function(String dateFrom, String dateTo) filterDate,{double sizeTitle=14.0}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return  AppBar(
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
+      elevation: 1.0,
+      backgroundColor: Colors.white, // status bar color
+      title: Padding(
+        padding: scaler.getPadding(0,1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            InkWell(
+              onTap: callback,
+              child: Icon(Ionicons.ios_arrow_back, color: Constant().darkMode),
+            ),
+            SizedBox(width: scaler.getWidth(2)),
+            textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
+            // Your widgets here
+          ],
+        ),
+      ),
+      actions:<Widget>[
+        Container(
+            width: 30,
+            height: 30,
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(300),
+              onTap: () {
+                WidgetHelper().myModal(context,FilterSearch(callback: (param){
+                  filterQ(param);
+                }));
+              },
+              child: Icon(FontAwesome.filter,size: scaler.getTextSize(12),),
+            )
+        ),
+        Container(
+            width: 30,
+            height: 30,
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(300),
+              onTap: () {
+                DateTimeRangePicker(
+                    startText: "Dari",
+                    endText: "Sampai",
+                    doneText: "Simpan",
+                    cancelText: "Batal",
+                    interval: 5,
+                    initialStartTime: DateTime.now(),
+                    initialEndTime: DateTime.now(),
+                    mode: DateTimeRangePickerMode.date,
+                    maximumTime: DateTime.now(),
+                    onConfirm: (start, end) {
+                      String dateFrom = '${start.year}-${start.month.toString().padLeft(2, '0')}-${start.day.toString().padLeft(2, '0')}';
+                      String dateTo = '${end.year}-${end.month.toString().padLeft(2, '0')}-${end.day.toString().padLeft(2, '0')}';
+                      filterDate(dateFrom,dateTo);
+                    }).showPicker(context);
+              },
+              child: Icon(FontAwesome.calendar,size: scaler.getTextSize(12),),
+            )
+        ),
+      ],// status bar brightness
+    );
+  }
+
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
@@ -301,14 +382,16 @@ class WidgetHelper{
     );
   }
   notifOneBtnDialog(BuildContext context,title,desc,Function callback1,{titleBtn1='Oke'}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return Center(
             child: AlertDialog(
-              title:textQ(title,14,Colors.black,FontWeight.bold),
-              content:textQ(desc,12,Colors.black,FontWeight.bold,maxLines:100),
+              title:textQ(title,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+              content:textQ(desc,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines:100),
               // content:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.caption, children: [TextSpan(text:widget.wrongPassContent),],),),
               actions: <Widget>[
                 FlatButton(
@@ -322,23 +405,25 @@ class WidgetHelper{
     );
   }
   notifDialog(BuildContext context,title,desc,Function callback1, Function callback2,{titleBtn1='Batal',titleBtn2='Oke'}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return Center(
             child: AlertDialog(
-              title:textQ(title,14,Colors.black,FontWeight.bold),
-              content:textQ(desc,12,Colors.black,FontWeight.bold),
+              title:textQ(title,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+              content:textQ(desc,scaler.getTextSize(9),Constant().darkMode,FontWeight.normal,maxLines:100),
               // content:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.caption, children: [TextSpan(text:widget.wrongPassContent),],),),
               actions: <Widget>[
                 FlatButton(
                   onPressed:callback1,
-                  child:textQ(titleBtn1,12,Colors.black,FontWeight.bold),
+                  child:textQ(titleBtn1,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                 ),
                 FlatButton(
                   onPressed:callback2,
-                  child:textQ(titleBtn2,12,Colors.black,FontWeight.bold),
+                  child:textQ(titleBtn2,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                 )
               ],
             ),
@@ -377,34 +462,21 @@ class WidgetHelper{
     )..show(context);
   }
   myNotif(BuildContext context,Function callback,Color color){
-    return FlatButton(
-        padding: EdgeInsets.all(0.0),
-        highlightColor:Colors.black38,
-        splashColor:Colors.black38,
-        onPressed:callback,
-        child: Container(
-          padding: EdgeInsets.only(right: 0.0,top:0),
-          child: Stack(
-            alignment: AlignmentDirectional.topEnd,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bell_font_awesome.svg/1200px-Bell_font_awesome.svg.png',
-                  width: 28,
-                  height: 28,
-                  color:Colors.white,
-                  // colorBlendMode:BlendMode.color,
-                ),
-                // child: Icon(AntDesign.bells, color:Constant().mainColor, size: 28,),
-              ),
-              Container(
-                decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
-                constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
-              ),
-            ],
-          ),
-        )
+    return InkWell(
+      onTap: callback,
+      child: Container(
+        margin: EdgeInsets.only(right: 7,top:0),
+        child: Stack(
+          alignment: AlignmentDirectional.topEnd,
+          children: <Widget>[
+            Icon(Ionicons.ios_notifications, color:Colors.white),
+            Container(
+              decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
+              constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+            ),
+          ],
+        ),
+      ),
     );
   }
   myCart(BuildContext context,Function callback,Color color,{IconData iconData=AntDesign.shoppingcart}){
@@ -439,12 +511,12 @@ class WidgetHelper{
       child: widget,
     );
   }
-  titleNoButton(BuildContext context,IconData icon,String title,{double fontSize=10,String img='',Color color=Colors.white,double iconSize=15.0,FontWeight fontWeight=FontWeight.bold}){
+  titleNoButton(BuildContext context,IconData icon,String title,{double fontSize=9,String img='',Color color=Colors.white,double iconSize=15.0,FontWeight fontWeight=FontWeight.bold}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return  Row(
       children: [
         img==''?Icon(icon,color:color,size: scaler.getTextSize(iconSize)):Image.network(img,height: 30,fit: BoxFit.contain),
-        SizedBox(width:5.0),
+        SizedBox(width:scaler.getWidth(2)),
         WidgetHelper().textQ(title,scaler.getTextSize(fontSize),color,fontWeight),
       ],
     );
@@ -485,9 +557,10 @@ class WidgetHelper{
     );
   }
   filterStatus(BuildContext context,List data,Function(dynamic val) callback,filterStatus){
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return ListView.builder(
-      padding: EdgeInsets.only(top:10),
+      padding: EdgeInsets.only(top:0),
       scrollDirection: Axis.horizontal,
       itemCount: data.length,
       itemBuilder: (context,index){
@@ -498,7 +571,7 @@ class WidgetHelper{
             filterStatus=data[index]['kode'];
           },
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding: scaler.getPadding(0.5,2),
                 decoration: BoxDecoration(
                   color: filterStatus==data[index]['kode']?Constant().mainColor:Constant().secondColor,
                   borderRadius: BorderRadius.circular(4.0),
@@ -507,7 +580,7 @@ class WidgetHelper{
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    WidgetHelper().textQ("${data[index]['value']}", 10,Constant().secondDarkColor, FontWeight.bold),
+                    WidgetHelper().textQ("${data[index]['value']}", scaler.getTextSize(9),Constant().secondDarkColor, FontWeight.bold),
                   ],
                 ),
               )
@@ -534,61 +607,6 @@ class WidgetHelper{
         height: height,
         fit:fit,
       ),
-    );
-  }
-  appBarWithFilter(BuildContext context, title,Function callback,Function(String param) filterQ,Function(String dateFrom, String dateTo) filterDate,{double sizeTitle=14.0}){
-    return  AppBar(
-      elevation: 1.0,
-      backgroundColor: Colors.white, // status bar color
-      title:textQ(title,sizeTitle,Constant().darkMode,FontWeight.bold),
-      leading: IconButton(
-        icon: new Icon(AntDesign.back,color: Colors.grey),
-        onPressed: (){
-          callback();
-        },
-      ),
-      actions:<Widget>[
-        Container(
-            width: 30,
-            height: 30,
-            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(300),
-              onTap: () {
-                WidgetHelper().myModal(context,FilterSearch(callback: (param){
-                  filterQ(param);
-                }));
-              },
-              child: Icon(AntDesign.search1,),
-            )
-        ),
-        Container(
-            width: 30,
-            height: 30,
-            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(300),
-              onTap: () {
-                DateTimeRangePicker(
-                    startText: "Dari",
-                    endText: "Sampai",
-                    doneText: "Simpan",
-                    cancelText: "Batal",
-                    interval: 5,
-                    initialStartTime: DateTime.now(),
-                    initialEndTime: DateTime.now(),
-                    mode: DateTimeRangePickerMode.date,
-                    maximumTime: DateTime.now(),
-                    onConfirm: (start, end) {
-                      String dateFrom = '${start.year}-${start.month.toString().padLeft(2, '0')}-${start.day.toString().padLeft(2, '0')}';
-                      String dateTo = '${end.year}-${end.month.toString().padLeft(2, '0')}-${end.day.toString().padLeft(2, '0')}';
-                      filterDate(dateFrom,dateTo);
-                    }).showPicker(context);
-              },
-              child: Icon(AntDesign.calendar),
-            )
-        ),
-      ],// status bar brightness
     );
   }
 
@@ -682,6 +700,107 @@ class WidgetHelper{
 
       ),
       onTap:callback,
+    );
+  }
+
+  wrapperModal(BuildContext context,String title,Widget children,{double height=0,bool isCallack=false,Function callack}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(height),
+      padding: scaler.getPadding(1,0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
+      ),
+      // color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: scaler.getWidth(20),
+              height: scaler.getHeight(1),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          ListTile(
+            dense:true,
+            contentPadding:scaler.getPadding(0,1),
+            leading: InkWell(
+              onTap: ()=>Navigator.pop(context),
+              child:Icon(Ionicons.ios_arrow_back, color:Constant().darkMode),
+            ),
+            title: WidgetHelper().textQ(title,scaler.getTextSize(10), Constant().darkMode, FontWeight.bold),
+            trailing: isCallack?InkWell(
+                onTap:callack,
+                child: Container(
+                  padding:scaler.getPadding(0.5,2),
+                  decoration: BoxDecoration(
+                    color: Constant().moneyColor,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: WidgetHelper().textQ("Simpan",scaler.getTextSize(10),Colors.white,FontWeight.bold),
+                )
+            ):Text(''),
+          ),
+          Divider(),
+          Expanded(
+            child: children,
+          )
+        ],
+      ),
+    );
+  }
+
+
+  Widget myForm(BuildContext context,String label,TextEditingController controller,{
+    FocusNode focusNode,
+    Function(String e) onSubmit,
+    Function onTap,
+    Function(String e) onChange,
+    TextInputType textInputType= TextInputType.text,
+    TextInputAction textInputAction= TextInputAction.next,
+    List<TextInputFormatter> inputFormatters,
+    bool isRead=false,
+    int maxLine=1
+  }){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        WidgetHelper().textQ(label,scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+        SizedBox(height:scaler.getHeight(0.5)),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).focusColor.withOpacity(0.1),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          padding:scaler.getPadding(0,2),
+          child: TextFormField(
+            maxLines: maxLine,
+            readOnly: isRead,
+            textInputAction:textInputAction,
+            keyboardType:textInputType,
+            style: TextStyle(color:Constant().darkMode,fontSize:scaler.getTextSize(10),fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
+            controller: controller,
+            focusNode: focusNode,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(color:Constant().darkMode,fontSize: scaler.getTextSize(10),fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
+              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+              focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+            ),
+            onFieldSubmitted: (_)=>onSubmit(_),
+            onTap: onTap,
+            onChanged: onChange,
+            inputFormatters:inputFormatters
+          ),
+        ),
+      ],
     );
   }
 

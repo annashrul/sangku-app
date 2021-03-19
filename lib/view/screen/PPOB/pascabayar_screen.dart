@@ -101,6 +101,8 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     print(widget.val);
     return Scaffold(
       key: _scaffoldKey,

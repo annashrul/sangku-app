@@ -143,11 +143,7 @@ class BaseProvider{
         'myconnection':Constant().connection,
         "HttpHeaders.contentTypeHeader": "application/json"
       };
-      final request = await client.put(
-          "${Constant().baseUrl}$url",
-          headers:head,
-          body:data
-      ).timeout(Duration(seconds: Constant().timeout));
+      final request = await client.put("${Constant().baseUrl}$url", headers:head, body:data).timeout(Duration(seconds: Constant().timeout));
       print("=================== PUT DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
         return {"statusCode":request.statusCode,"data":jsonDecode(request.body)};
@@ -179,7 +175,6 @@ class BaseProvider{
       }
     }
   }
-
   Future deleteProvider(url,param,{BuildContext context}) async {
     try {
       final token= await userRepository.getDataUser('token');

@@ -6,7 +6,7 @@ import 'package:sangkuy/helper/widget_helper.dart';
 
 class HeaderWidget extends StatelessWidget {
   String title;
-  Widget action;
+  List<Widget> action;
   HeaderWidget({this.title,this.action});
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,9 @@ class HeaderWidget extends StatelessWidget {
               child: Container(),
               flex: 1,
             ),
-            this.action
+            Wrap(
+              children: this.action,
+            )
             // WidgetHelper().myCart(context,(){},Colors.redAccent),
 
           ],

@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/money_format_helper.dart';
@@ -254,54 +256,6 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
         });
       }
     }
-    // if(res==Constant().errTimeout||res==Constant().errSocket){
-    //   WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi Kesalahan Koneksi");
-    // }
-    // else if(res==Constant().errExpToken){
-    //   WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-    //     FunctionHelper().logout(context);
-    //   });
-    // }
-    // else{
-    //   if(res is General){
-    //     General result = res;
-    //     WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    //   }
-    //   else{
-    //     if(res['status']=='failed'){
-    //       print("RESPONSE CHECKOUT ${res['result']}");
-    //       WidgetHelper().notifDialog(context,"Informasi",res['msg'], (){
-    //         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-    //       }, (){
-    //         WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-    //       },titleBtn1: "Kembali",titleBtn2: "Detail Transksi");
-    //       // WidgetHelper().showFloatingFlushbar(context,"failed",res['msg']);
-    //     }
-    //     else{
-    //       print("RESPONSE CHECKOUT ${res['result']}");
-    //       String kdTrx='';
-    //       if(widget.title=='TOP UP'){
-    //         kdTrx = base64.encode(utf8.encode(res['result']['kd_trx']));
-    //         WidgetHelper().showFloatingFlushbar(context,"success",Constant().descMsgSuccessTrx);
-    //         await Future.delayed(Duration(seconds: 2));
-    //         WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
-    //       }
-    //       if(widget.title=='TRANSFER'){
-    //         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-    //           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-    //
-    //         });
-    //       }
-    //       if(widget.title=='PENARIKAN'){
-    //         WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,res['msg'],(){
-    //           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-    //         });
-    //       }
-    //       // WidgetHelper().myPushRemove(context, SuccessPembelianScreen(kdTrx:kdTrx));
-    //     }
-    //   }
-    // }
-
   }
   Future handleUpdate(BuildContext context)async{
     WidgetHelper().loadingDialog(context);
@@ -317,6 +271,29 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed", res);
     }
   }
+
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      penerimaController.text = barcodeScanRes;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -326,6 +303,8 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
   }
   @override
   Widget build(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       body: SafeArea(
         child: RefreshWidget(
@@ -339,7 +318,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color:Constant().darkMode),
+                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color:Constant().darkMode,iconSize:12),
                     SizedBox(height: 10.0),
                     NominalWidget(callback: (amount,index){
                       setState(() {
@@ -348,7 +327,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                       });
                     },idx:idx),
                     SizedBox(height: 10.0),
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color:Constant().darkMode),
+                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color:Constant().darkMode,iconSize:12),
                     SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,
@@ -452,14 +431,16 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
   }
 
   Widget transfer(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        WidgetHelper().titleNoButton(context,AntDesign.user,"ID Penerima",color:Constant().darkMode),
-        SizedBox(height: 10.0),
+        WidgetHelper().titleNoButton(context,AntDesign.user,"ID Penerima",color:Constant().darkMode,iconSize: 12),
+        SizedBox(height: scaler.getHeight(0.5)),
         Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          padding: EdgeInsets.only(left:10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color:Constant().greyColor
@@ -471,11 +452,27 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             autofocus: false,
             decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color:Constant().greyColor),
+                borderSide: BorderSide.none,
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide.none,
               ),
+              suffixIcon:InkWell(
+                onTap: (){
+                  penerimaFocus.unfocus();
+                  scanQR();
+                  // checkingAccount();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Constant().mainColor,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomRight: Radius.circular(10)),
+                      // color:Constant().greyColor
+                  ),
+                  child: Icon(AntDesign.qrcode,color:Colors.white),
+                ),
+              ),
+              contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),
               hintStyle: TextStyle(color:Constant().darkMode, fontSize:12,fontFamily:Constant().fontStyle),
             ),
             keyboardType: TextInputType.text,
@@ -486,6 +483,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
 
           ),
         ),
+        SizedBox(height: scaler.getHeight(0.5)),
         WidgetHelper().textQ('ID Penerima bisa dilihat melalui profil penerima yang akan di transfer',10.0,Constant().moneyColor,FontWeight.bold),
       ],
     );

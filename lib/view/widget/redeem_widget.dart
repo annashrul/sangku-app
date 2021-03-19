@@ -55,15 +55,15 @@ class RedeemWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', scaler.getTextSize(8),Color(0xFF757575),FontWeight.bold),
+                      WidgetHelper().textQ('Stok barang ${FunctionHelper().formatter.format(stock)}', scaler.getTextSize(9),Color(0xFF757575),FontWeight.bold),
                       SizedBox(height: 5),
                       WidgetHelper().textQ(this.data['title'],  scaler.getTextSize(9),Colors.black,FontWeight.bold),
                       SizedBox(height: 5),
                       Row(
                         children: [
-                          Icon(AntDesign.chrome,size:  scaler.getTextSize(8),color: Constant().mainColor2,),
+                          Icon(AntDesign.chrome,size:  scaler.getTextSize(9),color: Constant().mainColor2,),
                           SizedBox(width: 5.0,),
-                          WidgetHelper().textQ('$status',  scaler.getTextSize(8),Constant().mainColor2,FontWeight.bold),
+                          WidgetHelper().textQ('$status',  scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
                         ],
                       )
                     ],

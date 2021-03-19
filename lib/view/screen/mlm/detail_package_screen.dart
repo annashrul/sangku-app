@@ -306,9 +306,9 @@ class _DetailPackageScreenState extends State<DetailPackageScreen> with SingleTi
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  WidgetHelper().textQ("${detailPackageModel.result.title}",scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
+                                  WidgetHelper().textQ("${detailPackageModel.result.title}",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                                   SizedBox(height: 5.0),
-                                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailPackageModel.result.harga))} .-",scaler.getTextSize(10),Constant().moneyColor,FontWeight.bold),
+                                  WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailPackageModel.result.harga))} .-",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
                                 ],
                               ),
                               Container(

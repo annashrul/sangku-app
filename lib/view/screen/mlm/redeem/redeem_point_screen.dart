@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -97,6 +98,8 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
   Widget build(BuildContext context) {
     super.build(context);
     print('loading');
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
         appBar: WidgetHelper().appBarNoButton(context,"Redeem Point",<Widget>[
           FlatButton(
@@ -105,13 +108,13 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
               splashColor:Colors.black38,
               onPressed:(){},
               child: Container(
-                padding: EdgeInsets.only(right: 10.0,top:0),
+                padding: scaler.getPadding(0, 2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Icon(AntDesign.chrome, color:Constant().mainColor, size: 10,),
+                      padding: scaler.getPadding(0, 1),
+                      child: Icon(AntDesign.chrome, color:Constant().mainColor, size: scaler.getTextSize(10),),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 0),
@@ -119,7 +122,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
                         height: 10,
                         width: 100,
                         color: Colors.white,
-                      )): WidgetHelper().textQ("Poin anda : ${dataMemberModel.result.pointRo}",10,Constant().moneyColor,FontWeight.normal)
+                      )): WidgetHelper().textQ("Poin anda : ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.pointRo))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold)
                     ),
 
                   ],
@@ -128,7 +131,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
           )
         ]),
         body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: scaler.getPadding(1, 2),
             child:isLoadingRedeem||isLoadingMember?
             RedeemVerticalLoading():
             isErrorRedeem?

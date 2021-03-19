@@ -14,8 +14,8 @@ class CartProvider{
       "type":qty,
       "qty":"-"
     };
-    print(data);
     var res = await BaseProvider().postProvider('transaction/cart', data,context: context,callback: callback);
+    print(res);
     if(res!=null){
       return 'success';
     }

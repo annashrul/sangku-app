@@ -211,13 +211,15 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
 
 
   Widget buildContent1(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?WidgetHelper().loadingWidget(context):ListView(
       shrinkWrap: true,
       primary: true,
       children: [
         Padding(
-          padding: EdgeInsets.all(10.0),
-          child: WidgetHelper().textQ("No. Telepon",12,Constant().darkMode,FontWeight.bold),
+          padding: scaler.getPadding(1,2),
+          child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
         ),
         Padding(
           padding: EdgeInsets.only(left:10,right:10),
@@ -229,7 +231,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
               color: Color(0xFFEEEEEE),
             ),
             child: TextFormField(
-              style: TextStyle(letterSpacing:2.0,fontSize:18,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+              style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
               controller: nohpController,
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(
@@ -290,7 +292,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
                   children: [
                     WidgetHelper().textQ('Rp ${FunctionHelper().formatter.format(int.parse(val.price))} .-',10,Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                     SizedBox(height:5.0),
-                    WidgetHelper().textQ(val.note,10,idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 10),
+                    WidgetHelper().textQ(val.note,scaler.getTextSize(9),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 10),
                   ],
                 )
             );
@@ -303,25 +305,29 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     );
   }
   Widget buildContent2(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?WidgetHelper().loadingWidget(context):ListView(
       shrinkWrap: true,
       primary: true,
       children: [
         Padding(
-          padding: EdgeInsets.all(10.0),
-          child: WidgetHelper().textQ("No. Telepon",12,Constant().darkMode,FontWeight.bold),
+          padding: scaler.getPadding(1,2),
+          child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
         ),
         Padding(
-          padding: EdgeInsets.only(left:10,right:10),
+          padding: scaler.getPadding(0,2),
           child: Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            padding: scaler.getPadding(0,2),
+
+            // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               color: Color(0xFFEEEEEE),
             ),
             child: TextFormField(
-              style: TextStyle(letterSpacing:2.0,fontSize:18,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+              style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
               controller: nohpController,
               decoration: InputDecoration(
                 enabledBorder: UnderlineInputBorder(
@@ -331,7 +337,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
                   borderSide: BorderSide.none,
                 ),
                 suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
-                contentPadding: const EdgeInsets.only(top: 17.0, right: 30.0, bottom: 0.0, left: 5.0),
+                contentPadding:  EdgeInsets.only(top: scaler.getHeight(1), right: 0.0, bottom: 0.0, left: 0.0),
               ),
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.done,
@@ -348,7 +354,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           ),
         ),
         StaggeredGridView.countBuilder(
-          padding: EdgeInsets.all(10.0),
+          padding: scaler.getPadding(1, 2),
           shrinkWrap: true,
           primary: false,
           crossAxisCount: 2,
@@ -357,30 +363,26 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
             var val=categoryPpobModel.result.data[index];
             var logo=val.logo.split("/");
             return FlatButton(
-                padding: EdgeInsets.all(10.0),
+                padding:scaler.getPadding(0.5,1),
                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                 color: idx==index?Constant().mainColor:Color(0xFFEEEEEE),
                 onPressed: ()async{
                   handleNext(val.toJson()..addAll({"param":"2","index":index,"nohp":nohpController.text,"page":title}));
                 },
-                child:ListTile(
-                  contentPadding: EdgeInsets.all(0.0),
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: CachedNetworkImage(
-                      imageUrl:val.logo,
-                      fit:BoxFit.contain,
-                      placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.fitWidth),
-                      errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.fitWidth),
+                child: Row(
+                  children: [
+                    WidgetHelper().baseImage(val.logo,height: scaler.getHeight(3)),
+                    SizedBox(width: scaler.getWidth(1)),
+                    Expanded(
+                      child: WidgetHelper().textQ(val.title,scaler.getTextSize(9),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.left,maxLines: 10),
                     ),
-                  ),
-                  title:WidgetHelper().textQ(val.title,10,idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.left,maxLines: 10),
-                )
+                  ],
+                ),
             );
           },
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 2.0,
+          crossAxisSpacing: 2.0,
         )
       ],
     );

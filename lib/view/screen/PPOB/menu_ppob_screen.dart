@@ -32,58 +32,10 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
       MenuPpobModel result=res;
       var mergeArray = result.result.toJson();
       title.forEach((element) {
-        child.add(StaggeredGridView.countBuilder(
-          primary: true,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: mergeArray[element].length<4?3:4,
-          itemCount:  mergeArray[element].length,
-          itemBuilder: (BuildContext context, int index) {
-            var val=mergeArray[element][index];
-            var checkImg = val['logo'].split(".");
-            return FlatButton(
-                padding: EdgeInsets.all(10.0),
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                color: Color(0xFFEEEEEE),
-                onPressed: (){
-                  if(val['kategori']==0){
-                    WidgetHelper().myPush(context,PrabayarScreen(val:val));
-                  }else{
-                    WidgetHelper().myPush(context,PascabayarScreen(val:val));
-                  }
-                },
-                child: Column(
-                  children: [
-                    checkImg[2]=='svg'?SvgPicture.network(
-                      val['logo'],
-                      fit:BoxFit.contain,
-                      height: 30.0,
-                      placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
-                    ):CachedNetworkImage(
-                      imageUrl:val['logo'],
-                      width: double.infinity ,
-                      height: 30.0,
-                      fit:BoxFit.contain,
-                      placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                      errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
-                    ),
-                    SizedBox(height:5.0),
-                    WidgetHelper().textQ(val['title'].toLowerCase(),10,Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
-                  ],
-                )
-            );
-          },
-          staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 5.0,
-        ));
-
-
         mergeArray[element].forEach((val){
           listArray.add(val);
         });
       });
-
       if(this.mounted){
         setState(() {
           menuPpobModel = result;
@@ -130,8 +82,52 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
         ),
         SizedBox(height: scaler.getHeight(1),),
         Container(
-          child: isLoading?loading(context):Column(
-            children: child,
+          child: isLoading?loading(context):StaggeredGridView.countBuilder(
+            primary: true,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount:3,
+            itemCount:  listArray.length,
+            itemBuilder: (BuildContext context, int index) {
+              // var val=mergeArray[element][index];
+              var checkImg = listArray[index]['logo'].split(".");
+              ScreenScaler scaler = ScreenScaler()..init(context);
+
+              return FlatButton(
+                  padding: EdgeInsets.all(10.0),
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                  color: Color(0xFFEEEEEE),
+                  onPressed: (){
+                    if(listArray[index]['kategori']==0){
+                      WidgetHelper().myPush(context,PrabayarScreen(val:listArray[index]));
+                    }else{
+                      WidgetHelper().myPush(context,PascabayarScreen(val:listArray[index]));
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      checkImg[2]=='svg'?SvgPicture.network(
+                        listArray[index]['logo'],
+                        fit:BoxFit.contain,
+                        height: 30.0,
+                        placeholderBuilder: (BuildContext context) => Image.asset(Constant().localAssets+'logo.png', fit:BoxFit.contain),
+                      ):CachedNetworkImage(
+                        imageUrl:listArray[index]['logo'],
+                        width: double.infinity ,
+                        height: 30.0,
+                        fit:BoxFit.contain,
+                        placeholder: (context, url) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+                        errorWidget: (context, url, error) => Image.asset(Constant().localAssets+'logo.png',fit:BoxFit.contain),
+                      ),
+                      SizedBox(height:5.0),
+                      WidgetHelper().textQ(listArray[index]['title'].toLowerCase(),scaler.getTextSize(9),Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                    ],
+                  )
+              );
+            },
+            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 5.0,
           ),
         ),
       ],

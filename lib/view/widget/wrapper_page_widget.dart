@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -86,11 +87,20 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
               floating: false,
               pinned: true,
               expandedHeight: 90.0,
-              flexibleSpace: HeaderWidget(title: widget.title,action: WidgetHelper().myNotif(context,()async{
-                if(total>0){
-                  WidgetHelper().myPushAndLoad(context,NotifScreen(),(){loadNotif();});
-                }
-              },total>0?Colors.redAccent:Colors.transparent)),
+              flexibleSpace: HeaderWidget(title: widget.title,action: [
+                WidgetHelper().myNotif(context,()async{
+                  if(total>0){
+                    WidgetHelper().myPushAndLoad(context,NotifScreen(),(){loadNotif();});
+                  }
+                },total>0?Colors.redAccent:Colors.transparent),
+                InkWell(
+
+                  child:Container(
+                    margin: EdgeInsets.only(right: 7,top:0),
+                    child:  Icon(AntDesign.qrcode,color: Colors.white),
+                  ),
+                )
+              ]),
             ),
             SliverList(
                 delegate: SliverChildListDelegate([

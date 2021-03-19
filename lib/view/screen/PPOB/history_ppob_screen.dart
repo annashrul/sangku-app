@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -40,55 +41,19 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
     if(filterStatus!=5){
       url+='&status=$filterStatus';
     }
-    var res = await BaseProvider().getProvider(url,historyPpobModelFromJson);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      setState(() {
-        isLoading=false;
-        isError=true;
-        isNodata=false;
-      });
+    var res = await BaseProvider().getProvider(url,historyPpobModelFromJson,context: context,callback: (){Navigator.pop(context);});
+    if(res==Constant().errNoData){
+      isLoading=false;
+      total=0;
+      if(this.mounted)setState(() {});
     }
-    else if(res==Constant().errExpToken){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isErrToken=true;
-        isNodata=false;
-
-      });
-    }
-    else if(res==Constant().errNoData){
-      setState(() {
-        isLoading=false;
-        isError=false;
-        isNodata=true;
-      });
-    }
-
-    else{
-      if(res is HistoryPpobModel){
-        HistoryPpobModel result=res;
-        if(result.status=='success'){
-          historyPpobModel = HistoryPpobModel.fromJson(result.toJson());
-          setState(() {
-            total = historyPpobModel.result.total;
-            isLoading=false;
-            isLoadmore=false;
-            isError=false;
-            isErrToken=false;
-            isNodata=false;
-          });
-        }
-        else{
-          setState(() {
-            isLoading=false;
-            isError=false;
-            isErrToken=false;
-            isNodata=false;
-
-          });
-        }
-      }
+    else if(res is HistoryPpobModel){
+      HistoryPpobModel result=res;
+      historyPpobModel = HistoryPpobModel.fromJson(result.toJson());
+      total = historyPpobModel.result.total;
+      isLoading=false;
+      isLoadmore=false;
+      if(this.mounted)setState(() {});
     }
   }
   void _scrollListener() {
@@ -124,8 +89,11 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
     controller.removeListener(_scrollListener);
   }
   String dateFrom='',dateTo='',q='';
+
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       appBar: WidgetHelper().appBarWithFilter(context,"Laporan PPOB",  (){Navigator.pop(context);}, (param){
         setState(() {
@@ -144,13 +112,14 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
       // appBar: WidgetHelper().appBarWithButton(context,"Laporan PPOB", (){Navigator.pop(context);},<Widget>[]),
       body: RefreshWidget(
         widget: Container(
-          padding: EdgeInsets.only(top:0,bottom:10,left:0,right:0),
+          // padding: EdgeInsets.only(top:0,bottom:10,left:0,right:0),
           child: Column(
             children: [
+              SizedBox(height: 10),
               if(dateFrom!=''||dateTo!=''||q!='')Expanded(
                 flex:1,
                 child: ListView(
-                  padding: EdgeInsets.all(5.0),
+                  padding: scaler.getPadding(0,2),
                   scrollDirection: Axis.horizontal,
                   children: [
                     if(dateFrom!='')InkWell(
@@ -171,12 +140,12 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                               color: Constant().greenColor,
                               onPressed: (){},
-                              child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,8,Colors.white,FontWeight.bold),
+                              child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,scaler.getTextSize(9),Colors.white,FontWeight.bold),
                             ),
                             Positioned(
                                 right: 0,
                                 top: 0,
-                                child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                                child: Icon(AntDesign.closecircleo,size: scaler.getTextSize(9),color:Constant().greyColor)
                             )
                           ],
                         ),
@@ -199,12 +168,12 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                                 color: Constant().greenColor,
                                 onPressed: (){},
-                                child:WidgetHelper().textQ(q,8,Colors.white,FontWeight.bold)
+                                child:WidgetHelper().textQ(q,scaler.getTextSize(9),Colors.white,FontWeight.bold)
                             ),
                             Positioned(
                                 right: 0,
                                 top: 0,
-                                child: Icon(AntDesign.closecircleo,size: 10,color:Constant().greyColor)
+                                child: Icon(AntDesign.closecircleo,size:  scaler.getTextSize(9),color:Constant().greyColor)
                             )
                           ],
                         ),
@@ -213,10 +182,9 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
                   ],
                 ),
               ),
-
               Expanded(
                 flex: 19,
-                child: isLoading?HistoryPembelianLoading(tot: 10):isNodata?WidgetHelper().noDataWidget(context):Scrollbar(child: Column(
+                child: isLoading?HistoryPembelianLoading(tot: 10):total<1?WidgetHelper().noDataWidget(context):Scrollbar(child: Column(
                   children: [
                     Expanded(
                         flex:16,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -122,26 +123,10 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     initializeDateFormatting('id');
   }
   Widget btnBottom;
-  Widget btn(BuildContext context,Function callback,title,Color color,{IconData icon}){
-    return FlatButton(
-      onPressed:callback,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-        decoration: BoxDecoration(
-            color: color
-        ),
-        child: Row(
-          children: [
-            Icon(icon,color: Constant().secondDarkColor),
-            SizedBox(width:10.0),
-            WidgetHelper().textQ(title, 14, Constant().secondDarkColor, FontWeight.normal),
-          ],
-        ),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     print(widget.kdTrx);
     if(!isLoading){
       var val=detailHistoryPembelianModel.result;
@@ -153,7 +138,17 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              btn(context,(){doneTrx();},"Selesai",Constant().mainColor,icon: AntDesign.checkcircleo)
+              InkWell(
+                onTap: ()=>doneTrx(),
+                child: Container(
+                  padding:scaler.getPadding(1,2),
+                  decoration: BoxDecoration(
+                      color: Constant().secondColor
+                  ),
+                  child: WidgetHelper().titleNoButton(context, AntDesign.checkcircleo, "Selesai",iconSize: 12),
+                ),
+              )
+              // btn(context,(){doneTrx();},"Selesai",Constant().mainColor,icon: AntDesign.checkcircleo)
             ],
           ),
         );
@@ -174,33 +169,21 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
                   InkWell(
                     onTap: ()=>checkResi(),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                      padding:scaler.getPadding(1,2),
                       decoration: BoxDecoration(
                           color: Constant().secondColor
                       ),
-                      child: Row(
-                        children: [
-                          Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                          SizedBox(width:10.0),
-                          WidgetHelper().textQ("Lacak Resi", 14, Constant().secondDarkColor, FontWeight.normal),
-                        ],
-                      ),
+                      child: WidgetHelper().titleNoButton(context,Ionicons.ios_sync, "Lacak Resi",iconSize: 12),
                     ),
                   ),
                   InkWell(
                     onTap: ()=>doneTrx(),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                      padding:scaler.getPadding(1,2),
                       decoration: BoxDecoration(
                           color: Constant().secondColor
                       ),
-                      child: Row(
-                        children: [
-                          Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                          SizedBox(width:10.0),
-                          WidgetHelper().textQ("Selesai", 14, Constant().secondDarkColor, FontWeight.normal),
-                        ],
-                      ),
+                      child: WidgetHelper().titleNoButton(context, AntDesign.checkcircleo, "Selesai",iconSize: 12),
                     ),
                   )
                 ],
@@ -244,8 +227,10 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
     );
   }
   Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return  isLoading?DetailHistoryPembelianLoading():Container(
-      padding:EdgeInsets.only(top: 10.0, bottom: 0.0, left: 0.0, right: 0.0),
+      padding:scaler.getPadding(1,0),
       child: RefreshWidget(
         widget: ListView(
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -253,23 +238,23 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
           shrinkWrap: true,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left:10,right:10),
+              padding:scaler.getPadding(0,2),
               child: buildDetailPembelian(context),
             ),
             Container(
               child: Divider(color: Colors.grey[200]),
             ),
             Padding(
-              padding: EdgeInsets.only(left:10,right:10),
+              padding:scaler.getPadding(0,2),
               child: buildItem(context),
             ),
             Padding(
-              padding: EdgeInsets.only(left:10,right:10),
+              padding:scaler.getPadding(0,2),
               child: buildPengiriman(context),
             ),
             SizedBox(height:10),
             Padding(
-              padding: EdgeInsets.only(left:10,right:10),
+              padding:scaler.getPadding(0,2),
               child: buildInfoPembayaran(context),
             ),
           ],
@@ -286,6 +271,7 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
   }
 
   Widget buildDetailPembelian(BuildContext context){
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -302,9 +288,11 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
   }
 
   Widget buildItem(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Column(
       children: [
-        WidgetHelper().titleNoButton(context, AntDesign.shoppingcart, 'Ringkasan Belanja',color:  Constant().mainColor),
+        WidgetHelper().titleNoButton(context, AntDesign.shoppingcart, 'Ringkasan Belanja',color:  Constant().mainColor,iconSize: 12),
         ListView.builder(
           padding: EdgeInsets.all(0.0),
           physics: NeverScrollableScrollPhysics(),
@@ -315,13 +303,13 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
             return ListTile(
               contentPadding: EdgeInsets.all(0.0),
               leading: WidgetHelper().baseImage(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain),
-              title: WidgetHelper().textQ(valDet[key].paket,12,Constant().darkMode,FontWeight.bold),
+              title: WidgetHelper().textQ(valDet[key].paket,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
               subtitle: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  WidgetHelper().textQ("${valDet[key].qty} Item",12,Constant().darkMode,FontWeight.normal),
-                  SizedBox(width: 20.0),
-                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",12,Constant().moneyColor,FontWeight.normal),
+                  WidgetHelper().textQ("${valDet[key].qty} Item",scaler.getTextSize(9),Constant().darkMode,FontWeight.normal),
+                  SizedBox(width:scaler.getWidth(2)),
+                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.normal),
                 ],
               ),
               trailing: IconButton(icon: Icon(Icons.arrow_drop_down), onPressed: (){
@@ -338,9 +326,11 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
   }
 
   Widget buildPengiriman(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Column(
       children: [
-        WidgetHelper().titleNoButton(context, AntDesign.form, 'Detail Pengiriman',color:  Constant().mainColor),
+        WidgetHelper().titleNoButton(context, AntDesign.form, 'Detail Pengiriman',color:  Constant().mainColor,iconSize: 12),
         SizedBox(height:10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,9 +357,11 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
   }
 
   Widget buildInfoPembayaran(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Column(
       children: [
-        WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Informasi Pembayaran',color:  Constant().mainColor),
+        WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Informasi Pembayaran',color:  Constant().mainColor,iconSize:12 ),
         SizedBox(height:10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,14 +382,16 @@ class _DetailHistoryPembelianScreenState extends State<DetailHistoryPembelianScr
 
   Widget buildDesc(BuildContext context,String title, String desc,{FontWeight titleFontWeight=FontWeight.normal,Color titleColor=Colors.black,Color descColor=Colors.black,Widget widget}){
     print(widget);
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Flexible(
-            child: WidgetHelper().textQ(title,12.0,titleColor,titleFontWeight,maxLines: 3),
+            child: WidgetHelper().textQ(title,scaler.getTextSize(9),titleColor,titleFontWeight,maxLines: 3),
           ),
-          widget==null?WidgetHelper().textQ(desc,12.0,descColor,FontWeight.bold):widget,
+          widget==null?WidgetHelper().textQ(desc,scaler.getTextSize(9),descColor,FontWeight.bold):widget,
         ],
       ),
     );
@@ -427,6 +421,8 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
   
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       // height: MediaQuery.of(context).size.height/1.2,
       decoration: BoxDecoration(
@@ -451,27 +447,24 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
           ),
           SizedBox(height: 20.0),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: scaler.getPadding(0,2),
             child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(10),
+                padding: scaler.getPadding(0.5,2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(4)),
                   color: Constant().mainColor,
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline,color: Colors.white,size: 20),
-                    SizedBox(width: 5),
-                    Expanded(child: WidgetHelper().textQ("Daftar PIN ${widget.title} ( ${ widget.detailHistoryPembelianModel.result.detail[widget.idx].listPin[0].type==0?'Aktivasi':'Repeat Order'} )",10,Colors.white, FontWeight.normal))
-                  ],
-                )
+                child: WidgetHelper().titleNoButton(context, Icons.info_outline, 'Daftar PIN ${widget.title}',iconSize: 12),
+
             ),
           ),
+          SizedBox(height: scaler.getHeight(1)),
           Expanded(
             child: Scrollbar(
                 child: ListView.separated(
-                  padding: EdgeInsets.zero,
+
+                  padding: scaler.getPadding(0,2),
                   itemCount: widget.detailHistoryPembelianModel.result.detail[widget.idx].listPin.length,
                   itemBuilder: (context,index){
                     var val=widget.detailHistoryPembelianModel.result.detail[widget.idx].listPin[index];
@@ -486,16 +479,16 @@ class _ModalPinPackageState extends State<ModalPinPackage> {
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            WidgetHelper().textQ(val.kode,10,Constant().darkMode,FontWeight.bold),
+                            WidgetHelper().textQ(val.kode,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
                             SizedBox(height:5),
-                            WidgetHelper().textQ("Exp : ${DateFormat.yMMMMEEEEd('id').format(val.expDate)}",10,Constant().moneyColor,FontWeight.normal),
+                            WidgetHelper().textQ("Exp : ${DateFormat.yMMMMEEEEd('id').format(val.expDate)}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.normal),
                           ],
                         ),
                         trailing: FlatButton(
                           child: Container(
-                            padding: EdgeInsets.all(10.0),
+                            padding: scaler.getPadding(0.5,2),
                             color: color,
-                            child: WidgetHelper().textQ(status,10,Constant().secondDarkColor, FontWeight.bold),
+                            child: WidgetHelper().textQ(status,scaler.getTextSize(9),Constant().secondDarkColor, FontWeight.bold),
                           ),
                         ),
                       ),

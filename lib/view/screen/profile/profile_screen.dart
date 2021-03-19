@@ -120,9 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?1:0)
+                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)
             ),
-            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?ListTile(
+            isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?ListTile(
               contentPadding: scaler.getPadding(0,2),
               trailing: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
               leading: WidgetHelper().baseImage(infoTambahanModel.result.reward.gambar),
@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ):Text(''),
             isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id=='-'||!infoTambahanModel.result.reward.isClaimed?1:0)
+                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)
             ),
             Container(
               margin: scaler.getMargin(0,2),
@@ -229,7 +229,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget section2(String title, Function callback,int idx,{IconData iconData=AntDesign.arrowright}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
+    return FlatButton(
+      padding: scaler.getPadding(0,0),
+      onPressed:()=>callback,
+      color: idx==0?Color(0xFFEEEEEE):Colors.white,
+      child: ListTile(
+        onTap: ()async{
+          await Future.delayed(Duration(milliseconds: 90));
+          callback();
+        },
+        contentPadding:scaler.getPadding(0,2),
+        dense: true,
+        title: WidgetHelper().textQ("$title",scaler.getTextSize(9),Colors.black,FontWeight.bold,letterSpacing: 2.0),
+        trailing: Icon(iconData,color: Colors.grey,size: scaler.getTextSize(12)),
+      ),
+    );
     return Container(
       color: idx==0?Color(0xFFEEEEEE):Colors.white,
       child: ListTile(
@@ -342,6 +356,7 @@ class _RewardScreenState extends State<RewardScreen> {
     else if(res is AddressModel){
       if (this.mounted) {
         setState(() {
+          total=1;
           addressModel = res;
           isLoading = false;
         });

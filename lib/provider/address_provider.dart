@@ -7,7 +7,7 @@ class AddressProvider{
   Future getAddress(limit)async{
     AddressModel addressModel;
     var res = await BaseProvider().getProvider("alamat?page=1&perpage=$limit", addressModelFromJson);
-    print("ADREESS $res");
+    print("ADREESS sdsdsds $res");
     if(res==Constant().errNoData){
       return Constant().errNoData;
     }
