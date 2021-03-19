@@ -112,26 +112,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_){
-      firstTime().then((value){
+      FunctionHelper().firstTime('first_launch').then((value){
         print("MY BOOL $value");
         if(value){
-          ShowCaseWidget.of(context).startShowCase([page1, page2, page3]);
+          ShowCaseWidget.of(context).startShowCase([page1, page2, page3,tfKey]);
         }
       });
     });
   }
 
-  Future firstTime()async{
-    SharedPreferences preferences=await SharedPreferences.getInstance();
-    var isFirstTime = preferences.getBool('first_launch');
-    if (isFirstTime != null && !isFirstTime) {
-      preferences.setBool('first_launch', false);
-      return false;
-    } else {
-      preferences.setBool('first_launch', false);
-      return true;
-    }
-  }
 
   @override
   void dispose() {
@@ -141,22 +130,15 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   GlobalKey page1 = GlobalKey();
   GlobalKey page2 = GlobalKey();
   GlobalKey page3 = GlobalKey();
-  GlobalKey page4 = GlobalKey();
+  GlobalKey tfKey = GlobalKey();
   GlobalKey page5 = GlobalKey();
 
 
 
   @override
   Widget build(BuildContext context) {
-    // if(isShow==0){
-    //   print("ABUS ANYING");
-
-
-    // }
-
     super.build(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return SafeArea(
       child:  RefreshWidget(
         widget:WrapperPageWidget(
@@ -306,7 +288,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               mainAxisSpacing: 10.0,
               crossAxisSpacing: 0.0,
             ),
-          ),
+          )
+
         ],
       ),
     );

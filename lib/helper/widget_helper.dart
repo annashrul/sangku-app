@@ -13,12 +13,16 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/filter_date_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:sangkuy/view/screen/mlm/history/history_transaction_screen.dart';
+import 'package:sangkuy/view/screen/profile/notif_screen.dart';
+import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:qr/qr.dart';
 
 class WidgetHelper{
   myStatus(BuildContext context, int param){
@@ -461,23 +465,52 @@ class WidgetHelper{
       messageText: textQ(desc,12,Constant().secondDarkColor, FontWeight.bold),
     )..show(context);
   }
-  myNotif(BuildContext context,Function callback,Color color){
-    return InkWell(
-      onTap: callback,
-      child: Container(
-        margin: EdgeInsets.only(right: 7,top:0),
-        child: Stack(
-          alignment: AlignmentDirectional.topEnd,
-          children: <Widget>[
-            Icon(Ionicons.ios_notifications, color:Colors.white),
-            Container(
-              decoration: BoxDecoration(color:color, borderRadius: BorderRadius.all(Radius.circular(10))),
-              constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
-            ),
-          ],
+  myNotif(BuildContext context,String title,int total,reff){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+    return HeaderWidget(title: title,action: [
+      InkWell(
+        onTap: (){
+          print(reff);
+          myModal(context, Center(
+              child: PrettyQr(
+                elementColor: Constant().mainColor,
+                image: AssetImage(Constant().localAssets+'logo.png'),
+                typeNumber: 3,
+                size: scaler.getHeight(30),
+                data: reff,
+                errorCorrectLevel: QrErrorCorrectLevel.M,
+                roundEdges: true
+              )
+            )
+          );
+        },
+        child:Container(
+          margin: EdgeInsets.only(right:10,top:0),
+          child:  Icon(AntDesign.qrcode,color: Colors.white,size: scaler.getTextSize(14)),
         ),
       ),
-    );
+      InkWell(
+        onTap: (){
+          if(total>0) myPush(context,NotifScreen());
+        },
+        child: Container(
+          margin: EdgeInsets.only(right: 10,top:0),
+          child: Stack(
+            alignment: AlignmentDirectional.topEnd,
+            children: <Widget>[
+              Icon(Ionicons.ios_notifications, color:Colors.white,size: scaler.getTextSize(14)),
+              Container(
+                decoration: BoxDecoration(color:total>0?Colors.redAccent:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+              ),
+            ],
+          ),
+        ),
+      ),
+
+    ]);
+
   }
   myCart(BuildContext context,Function callback,Color color,{IconData iconData=AntDesign.shoppingcart}){
     return FlatButton(

@@ -123,4 +123,16 @@ class FunctionHelper{
     //   });
     // }
   }
+
+  Future firstTime(String name)async{
+    SharedPreferences preferences=await SharedPreferences.getInstance();
+    var isFirstTime = preferences.getBool('$name');
+    if (isFirstTime != null && !isFirstTime) {
+      preferences.setBool('$name', false);
+      return false;
+    } else {
+      preferences.setBool('$name', false);
+      return true;
+    }
+  }
 }

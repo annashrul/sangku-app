@@ -28,6 +28,7 @@ import 'package:sangkuy/view/widget/header_widget.dart';
 import 'package:sangkuy/view/widget/nominal_widget.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:sangkuy/view/widget/wrapper_page_widget.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../pages.dart';
 
@@ -271,163 +272,174 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
       WidgetHelper().showFloatingFlushbar(context,"failed", res);
     }
   }
-
-
   Future<void> scanQR() async {
     String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "Cancel", true, ScanMode.QR);
-      print(barcodeScanRes);
+
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#732044", "Batal", true, ScanMode.QR);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
-      penerimaController.text = barcodeScanRes;
+      penerimaController.text = barcodeScanRes=='-1'?'':barcodeScanRes;
     });
   }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     loadConfig();
     isLoading=true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+          FunctionHelper().firstTime("page").then((result){
+            print(result);
+            if(result)
+              ShowCaseWidget.of(myContext).startShowCase([_one]);
+          });
+        }
+    );
   }
+  GlobalKey _one = GlobalKey();
+  BuildContext myContext;
+
   @override
   Widget build(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
-    return Scaffold(
-      body: SafeArea(
-        child: RefreshWidget(
-          widget: WrapperPageWidget(
-            // dataMember: widget.dataMember,
-            children: [
-              if(isLoading)LinearProgressIndicator(),
-              Divider(thickness: 10.0),
-              Padding(
-                padding: EdgeInsets.only(left:10,right:10,top:10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color:Constant().darkMode,iconSize:12),
-                    SizedBox(height: 10.0),
-                    NominalWidget(callback: (amount,index){
-                      setState(() {
-                        nominalController.text=amount;
-                        idx=index;
-                      });
-                    },idx:idx),
-                    SizedBox(height: 10.0),
-                    WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color:Constant().darkMode,iconSize:12),
-                    SizedBox(height: 10.0),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Constant().greyColor
-                      ),
-                      child: TextFormField(
-                        style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-                        controller: nominalController,
-                        maxLines: 1,
-                        autofocus: false,
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color:Constant().greyColor),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          prefixText: 'Rp.',
-                          hintStyle: TextStyle(color:Constant().darkMode, fontSize:12,fontFamily:Constant().fontStyle),
-                        ),
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        focusNode: nominalFocus,
-                        onFieldSubmitted: (term){
-                        },
-                        inputFormatters: <TextInputFormatter>[
-                          if(widget.title=='TRANSFER'||widget.title=='PENARIKAN')LengthLimitingTextInputFormatter(10),
-                          WhitelistingTextInputFormatter.digitsOnly,
-                          BlacklistingTextInputFormatter.singleLineFormatter,
-                        ],
-                        onChanged: (e){
-                          int amount;
-                          for(int i=0;i<FunctionHelper.dataNominal.length;i++){
-                            if(FunctionHelper.dataNominal[i]==e){
-                              amount=i;
-                              break;
-                            }
-                            continue;
-                          }
-                          idx = amount!=null?amount:10;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    if(widget.title=='TRANSFER')transfer(),
-                    if(widget.title=='PENARIKAN'||widget.title=='TOP UP')WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color:Constant().darkMode),
-                    SizedBox(height: 10.0),
-                    if(widget.title=='PENARIKAN')penarikan(),
-                    if(widget.title=='TOP UP')topup(),
-                    // SizedBox(height: 70.0),
-
-                  ],
-                ),
-              )
-            ],
-            title: widget.title,
-            callback: (data){
-
-            },
-          ),
-          callback: (){
-            setState(() {
-              isLoading=true;
-            });
-            loadConfig();
-          },
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: FlatButton(
-            shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
-            onPressed: () {
-              if(!isPending){
-                handleNext();
-              }else{
-                showNotif(context);
-              }
-            },
-            padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().moneyColor,
-            child:Container(
-              padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return ShowCaseWidget(
+      // onFinish: ,
+      builder: Builder(builder: (context) {
+        myContext = context;
+        return Scaffold(
+          body: SafeArea(
+            child: RefreshWidget(
+              widget:WrapperPageWidget(
+                // dataMember: widget.dataMember,
                 children: [
-                  Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                  SizedBox(width:10.0),
-                  WidgetHelper().textQ("LANJUT", 14, Constant().secondDarkColor, FontWeight.bold),
+                  if(isLoading)LinearProgressIndicator(),
+                  Divider(thickness: 10.0),
+                  Padding(
+                    padding: EdgeInsets.only(left:10,right:10,top:10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        WidgetHelper().titleNoButton(context,AntDesign.wallet,"Pilih Nominal Cepat",color:Constant().darkMode,iconSize:12),
+                        SizedBox(height: 10.0),
+                        NominalWidget(callback: (amount,index){
+                          setState(() {
+                            nominalController.text=amount;
+                            idx=index;
+                          });
+                        },idx:idx),
+                        SizedBox(height: 10.0),
+                        WidgetHelper().titleNoButton(context,AntDesign.wallet,"Masukan Nominal",color:Constant().darkMode,iconSize:12),
+                        SizedBox(height: 10.0),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Constant().greyColor
+                          ),
+                          child: TextFormField(
+                            style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                            controller: nominalController,
+                            maxLines: 1,
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color:Constant().greyColor),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixText: 'Rp.',
+                              hintStyle: TextStyle(color:Constant().darkMode, fontSize:12,fontFamily:Constant().fontStyle),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.done,
+                            focusNode: nominalFocus,
+                            onFieldSubmitted: (term){
+                            },
+                            inputFormatters: <TextInputFormatter>[
+                              if(widget.title=='TRANSFER'||widget.title=='PENARIKAN')LengthLimitingTextInputFormatter(10),
+                              WhitelistingTextInputFormatter.digitsOnly,
+                              BlacklistingTextInputFormatter.singleLineFormatter,
+                            ],
+                            onChanged: (e){
+                              int amount;
+                              for(int i=0;i<FunctionHelper.dataNominal.length;i++){
+                                if(FunctionHelper.dataNominal[i]==e){
+                                  amount=i;
+                                  break;
+                                }
+                                continue;
+                              }
+                              idx = amount!=null?amount:10;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 10.0),
+                        if(widget.title=='TRANSFER')transfer(),
+                        if(widget.title=='PENARIKAN'||widget.title=='TOP UP')WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color:Constant().darkMode),
+                        SizedBox(height: 10.0),
+                        if(widget.title=='PENARIKAN')penarikan(),
+                        if(widget.title=='TOP UP')topup(),
+                        // SizedBox(height: 70.0),
+
+                      ],
+                    ),
+                  )
                 ],
+                title: widget.title,
+                callback: (data){
+
+                },
               ),
-            )
-          // child:Text("abus")
-        ),
-      ),
+              callback: (){
+                setState(() {
+                  isLoading=true;
+                });
+                loadConfig();
+              },
+            ),
+          ),
+          bottomNavigationBar: Container(
+            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            child: FlatButton(
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(0.0)),
+                onPressed: () {
+                  if(!isPending){
+                    handleNext();
+                  }else{
+                    showNotif(context);
+                  }
+                },
+                padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
+                color: Constant().moneyColor,
+                child:Container(
+                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
+                      SizedBox(width:10.0),
+                      WidgetHelper().textQ("LANJUT", 14, Constant().secondDarkColor, FontWeight.bold),
+                    ],
+                  ),
+                )
+              // child:Text("abus")
+            ),
+          ),
+        );
+      }),
+      autoPlay: true,
+      autoPlayDelay: Duration(seconds: 3),
+      autoPlayLockEnable: true,
     );
+
   }
 
   Widget transfer(){
@@ -442,8 +454,8 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
           width: double.infinity,
           padding: EdgeInsets.only(left:10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color:Constant().greyColor
+              borderRadius: BorderRadius.circular(10),
+              color:Constant().greyColor
           ),
           child: TextFormField(
             style: TextStyle(letterSpacing:2.0,fontSize:14,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
@@ -465,11 +477,18 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Constant().mainColor,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomRight: Radius.circular(10)),
-                      // color:Constant().greyColor
+                    color: Constant().mainColor,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomRight: Radius.circular(10)),
+                    // color:Constant().greyColor
                   ),
-                  child: Icon(AntDesign.qrcode,color:Colors.white),
+                  child: Showcase.withWidget(
+                    shapeBorder: CircleBorder(),
+                    contentPadding: scaler.getPadding(2,2),
+                    key: _one,
+                    child: Icon(AntDesign.scan1,color:Colors.white),
+                    descTextStyle: TextStyle(fontSize: scaler.getTextSize(9),fontFamily: Constant().fontStyle),
+                    description: 'gunakan fitur qr code ini untuk mempercepat proses transaksi anda',
+                  ),
                 ),
               ),
               contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),

@@ -55,6 +55,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
     widget.callback(dataMemberModel.result.toJson());
     if(this.mounted) setState(() {});
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -87,20 +88,7 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
               floating: false,
               pinned: true,
               expandedHeight: 90.0,
-              flexibleSpace: HeaderWidget(title: widget.title,action: [
-                WidgetHelper().myNotif(context,()async{
-                  if(total>0){
-                    WidgetHelper().myPushAndLoad(context,NotifScreen(),(){loadNotif();});
-                  }
-                },total>0?Colors.redAccent:Colors.transparent),
-                InkWell(
-
-                  child:Container(
-                    margin: EdgeInsets.only(right: 7,top:0),
-                    child:  Icon(AntDesign.qrcode,color: Colors.white),
-                  ),
-                )
-              ]),
+              flexibleSpace: WidgetHelper().myNotif(context,widget.title, total,isLoadingMember?'':dataMemberModel.result.referralCode),
             ),
             SliverList(
                 delegate: SliverChildListDelegate([

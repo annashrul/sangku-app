@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sangkuy/config/constant.dart';
@@ -16,14 +17,12 @@ import 'package:sangkuy/view/screen/pages.dart';
 import 'package:showcaseview/showcase_widget.dart';
 import 'helper/widget_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:async';
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   setUpGetIt();
-
-
   runApp(App());
 }
 
@@ -92,17 +91,6 @@ class CheckingRoutes extends StatefulWidget {
 class _CheckingRoutesState extends State<CheckingRoutes> {
   final DatabaseConfig _db = new DatabaseConfig();
   final userHelper=UserHelper();
-  // Future checkTokenExp()async{
-  //   final token = await UserHelper().getDataUser('token');
-  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-  //   bool isTokenExpired = JwtDecoder.isExpired(token);
-  //   print("####################### PAYLOAD TOKEN $isTokenExpired ########################################");
-  //   if(isTokenExpired){
-  //     WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-  //       await FunctionHelper().logout(context);
-  //     });
-  //   }
-  // }
   Future loadData() async{
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final users = await _db.readData(UserTable.SELECT);
@@ -145,18 +133,6 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body:  ShowCaseWidget(
-      //   onStart: (index, key) {
-      //     print('onStart: $index, $key');
-      //   },
-      //   onComplete: (index, key) {
-      //     print('onComplete: $index, $key');
-      //   },
-      //   builder: Builder(builder: (context) => MailPage()),
-      //   autoPlay: true,
-      //   autoPlayDelay: Duration(seconds: 3),
-      //   autoPlayLockEnable: true,
-      // ),
       body:  WidgetHelper().loadingWidget(context),
     );
   }
