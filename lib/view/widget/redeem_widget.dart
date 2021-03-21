@@ -63,7 +63,9 @@ class RedeemWidget extends StatelessWidget {
                         children: [
                           Icon(AntDesign.chrome,size:  scaler.getTextSize(9),color: Constant().mainColor2,),
                           SizedBox(width: 5.0,),
-                          WidgetHelper().textQ('$status',  scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
+                          Expanded(
+                            child: WidgetHelper().textQ('$status',  scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
+                          ),
                         ],
                       )
                     ],

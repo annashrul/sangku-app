@@ -9,10 +9,12 @@ import 'package:sangkuy/provider/base_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberProvider{
-  Future getDataMember()async{
+  Future getDataMember(BuildContext context,Function callback)async{
     final idMember = await UserHelper().getDataUser("id_user");
     String url = 'member/get/$idMember';
-    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson);
+    var res = await BaseProvider().getProvider(url,dataMemberModelFromJson,context: context,callback: (){
+
+    });
     print("###################################### MEMBER ###############################");
     print(res);
     print("###################################### MEMBER ###############################");
@@ -56,45 +58,31 @@ class MemberProvider{
     }
   }
 
-  Future getDataNotif(String where)async{
+  Future getDataNotif(String where,BuildContext context,Function callback)async{
     String url = 'site/notif';
     if(where!=''){
       url+='?$where';
     }
-    print("URL $url");
-    var res = await BaseProvider().getProvider(url,notifModelFromJson);
-    if(res==Constant().errSocket||res==Constant().errTimeout){
-      print("######################## error LOAD NOTIF #########################");
-      return 'error';
-    }
-    else if(res==Constant().errExpToken){
-      print("######################## errExpToken LOAD NOTIF #########################");
-      return Constant().errExpToken;
-    }
-    else if(res==Constant().errNoData){
-      print("######################## errNoData LOAD NOTIF #########################");
+    var res = await BaseProvider().getProvider(url,notifModelFromJson,context: context,callback:(){
+      Navigator.pop(context);
+    });
+
+    if(res==Constant().errNoData){
       return Constant().errNoData;
     }
-    else{
-      if(res is NotifModel){
-        NotifModel result=res;
-
-        // NotifModel notifModel;
-        if(result.status=='success'){
-          // notifModel = BankMemberModel.fromJson(result.toJson());
-          // return bankMemberModel;
-          return NotifModel.fromJson(result.toJson());
-        }
-        else{
-          print("######################## FAILED LOAD NOTIF #########################");
-          return 'failed';
-        }
+    else if(res is NotifModel){
+      NotifModel result=res;
+      if(result.status=='success'){
+        return NotifModel.fromJson(result.toJson());
+      }
+      else{
+        return 'failed';
       }
     }
   }
 
-  Future countNotif()async{
-    var res = await getDataNotif('');
+  Future countNotif(BuildContext context,Function callback)async{
+    var res = await getDataNotif('',context,callback);
     if(res is NotifModel){
       NotifModel result=res;
       return result.result.data.length;

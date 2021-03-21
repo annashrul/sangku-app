@@ -37,10 +37,8 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
   DataMemberModel dataMemberModel;
   NotifModel notifModel;
   int total=0;
-
   Future loadNotif()async{
-    var tot=await MemberProvider().countNotif();
-    // total=0;
+    var tot=await MemberProvider().countNotif(context,(){});
     total=tot;
     if(this.mounted){
       setState(() {});
@@ -48,7 +46,13 @@ class _WrapperPageWidgetState extends State<WrapperPageWidget> with AutomaticKee
   }
   Future loadMember()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final res=await MemberProvider().getDataMember();
+
+    final res=await MemberProvider().getDataMember(context,(){
+      Navigator.pop(context);
+      isLoadingMember=true;
+      setState(() {});
+      loadMember();
+    });
     dataMemberModel=res;
     isLoadingMember=false;
     prefs.setString("saldo",dataMemberModel.result.saldo);

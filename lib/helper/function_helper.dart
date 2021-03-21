@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -135,4 +137,20 @@ class FunctionHelper{
       return true;
     }
   }
+
+  Future scanQR() async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#732044", "Batal", true, ScanMode.QR);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+    return barcodeScanRes=='-1'?'':barcodeScanRes;
+    // if (!mounted) return;
+    //
+    // setState(() {
+    //   penerimaController.text = barcodeScanRes=='-1'?'':barcodeScanRes;
+    // });
+  }
+
 }

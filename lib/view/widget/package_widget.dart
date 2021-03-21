@@ -33,7 +33,13 @@ class _PackageWidgetState extends State<PackageWidget> with AutomaticKeepAliveCl
   bool isLoading=false,isError=false,isErrToken=false;
   PackageModel packageModel;
   Future loadData()async{
-    var res = await BaseProvider().getProvider("package?page=1&tipe=${widget.tipe}&perpage=$perpage",packageModelFromJson,context: context,callback: (){});
+    var res = await BaseProvider().getProvider("package?page=1&tipe=${widget.tipe}&perpage=$perpage",packageModelFromJson,context: context,callback: (){
+      Navigator.pop(context);
+      setState(() {
+        isLoading=true;
+      });
+      loadData();
+    });
     if(res is PackageModel){
       PackageModel result=res;
       if(result.status=='success'){

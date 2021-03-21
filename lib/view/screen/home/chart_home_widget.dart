@@ -33,17 +33,13 @@ class _ChartWidgetHome1State extends State<ChartWidgetHome1> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     // print(double.parse());
-    print(kiri);
-    print(kanan);
-    print(pvKiri);
-    print(pvKanan);
     super.build(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return widget.data['left_pv']=="0"?Text(''):Padding(
       padding:scaler.getPadding(1,0),
       child: Container(
-        height:scaler.getHeight(10),
+        height:scaler.getHeight(12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

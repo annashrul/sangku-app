@@ -35,7 +35,15 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
   DataMemberModel dataMemberModel;
   bool isLoadingMember=false;
   Future loadMember()async{
-    final res=await MemberProvider().getDataMember();
+    final res=await MemberProvider().getDataMember(context,(){
+      Navigator.pop(context);
+      setState(() {
+        isLoadingMember=true;
+        isLoadingRedeem=true;
+      });
+      loadMember();
+      loadRedeem();
+    });
     dataMemberModel=res;
     isLoadingMember=false;
     if(this.mounted) setState(() {});
@@ -44,12 +52,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
   }
   Future loadRedeem()async{
     var res = await ContentProvider().loadRedeem("page=1");
-    if(res=='error' || res=='failed'){
-      isLoadingRedeem=false;
-      isErrorRedeem=true;
-      if(this.mounted) setState(() {});
-    }
-    else if(res==Constant().errExpToken){
+    if(res==Constant().errNoData){
         isLoadingRedeem=false;
         isErrorRedeem=false;
         isTokenExpRedeem=true;
@@ -85,12 +88,6 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
     isLoadingRedeem=true;
     loadRedeem();
     loadMember();
-  }
-  @override
-  void onReady() {
-    // Implement your code inside here
-
-    print('############################ HomeScreen is ready! ############################');
   }
 
 

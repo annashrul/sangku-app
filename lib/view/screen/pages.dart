@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:global_network/global_network.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';

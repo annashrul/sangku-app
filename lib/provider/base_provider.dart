@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' show Client;
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -16,70 +18,65 @@ class BaseProvider{
   Client client = Client();
   final userRepository = UserHelper();
   Future getProvider(url,param,{BuildContext context,Function callback})async{
-    int onRetry=0;
-    if(onRetry>2){
-      return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+    try{
+      final token= await userRepository.getDataUser('token');
+      Map<String, String> head={
+        'Authorization':token,
+        'username': Constant().username,
+        'password': Constant().password,
+        'myconnection':Constant().connection,
+        "HttpHeaders.contentTypeHeader": "application/json"
+      };
+      final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
+      final jsonResponse = json.decode(response.body);
+      if (response.statusCode == 200) {
+        print("=================== SUCCESS $url = ${response.statusCode} ==========================");
+        if(jsonResponse['result'].length>0){
+          return param(response.body);
+        }else{
+          print("=================== GET DATA $url = NODATA ============================");
+          return Constant().errNoData;
+        }
+      }
+      else if(response.statusCode == 400){
+        if(jsonResponse['msg']=='Invalid Token.'){
+          if(context==null){
+            return Constant().errExpToken;
+          }else{
+            return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
+              Navigator.pop(context);
+              await FunctionHelper().logout(context);
+            });
+          }
+        }
+        return General.fromJson(jsonResponse);
+      }
+    }on TimeoutException catch (_) {
+      if(context==null){
+        return Constant().errTimeout;
+      }
+      else{
+        print("###################################### GET TimeoutException $url ");
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+          callback();
+        });
+      }
+    } on SocketException catch (_) {
+      if(context==null){
+        return Constant().errTimeout;
+      }
+      else{
+        return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
+          print("###################################### GET SocketException $url ");
+          callback();
+        });
+      }
+    } on Error catch (e) {
+      return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan Syntax","Mohon segera hubungi admin kami",()async{
         Navigator.pop(context);
         await FunctionHelper().logout(context);
       });
-    }
-    else{
-      try{
-        final token= await userRepository.getDataUser('token');
-        Map<String, String> head={
-          'Authorization':token,
-          'username': Constant().username,
-          'password': Constant().password,
-          'myconnection':Constant().connection,
-          "HttpHeaders.contentTypeHeader": "application/json"
-        };
-        final response = await client.get("${Constant().baseUrl}$url", headers:head).timeout(Duration(seconds: Constant().timeout));
-        final jsonResponse = json.decode(response.body);
-        if (response.statusCode == 200) {
-          print("=================== SUCCESS $url = ${response.statusCode} ==========================");
-          if(jsonResponse['result'].length>0){
-            return param(response.body);
-          }else{
-            print("=================== GET DATA $url = NODATA ============================");
-            return Constant().errNoData;
-          }
-        }
-        else if(response.statusCode == 400){
-          if(jsonResponse['msg']=='Invalid Token.'){
-            if(context==null){
-              return Constant().errExpToken;
-            }else{
-              return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrToken,Constant().descErrToken,()async{
-                Navigator.pop(context);
-                await FunctionHelper().logout(context);
-              });
-            }
-          }
-          return General.fromJson(jsonResponse);
-        }
-      }on TimeoutException catch (_) {
-        print("###################################### GET TimeoutException $url ");
-        if(context==null){
-          return Constant().errTimeout;
-        }
-        else{
-          return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
-            callback();
-            onRetry+=1;
-          });
-        }
-      } on SocketException catch (_) {
-        print("###################################### GET SocketException $url ");
-        if(context==null){
-          return Constant().errTimeout;
-        }
-        else{
-          return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){
-            callback();
-            onRetry+=1;
-          });
-        }
-      }
+      // print('General Error: $e');
     }
   }
   Future postProvider(url,Map<String, Object> data,{BuildContext context,Function callback}) async {

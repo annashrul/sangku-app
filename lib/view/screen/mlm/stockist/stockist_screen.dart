@@ -46,12 +46,10 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
     print(perpage);
     String where='';
     final id=await UserHelper().getDataUser("id_user");
-    String url='pin/get/${widget.type}?page=1';
+    String url='pin/get/${widget.type}?page=1&perpage=$perpage';
     if(kode!=''){
       url+='&status=$kode';
     }
-    print(url);
-
     var res = await BaseProvider().getProvider(url, pinByCategoryModelFromJson,context: context,callback: (){
       Navigator.pop(context);
     });
@@ -80,7 +78,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
         print('fetch data');
         if(perpage<total){
           setState((){
-            perpage+=10;
+            perpage+=15;
             isLoadmore=true;
           });
           loadData();
@@ -117,7 +115,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
       body:RefreshWidget(
         widget: Scrollbar(
             child: Container(
-              padding: scaler.getPadding(0,2),
+              padding: scaler.getPadding(1,2),
               child: Column(
                 children: [
                   Expanded(
@@ -133,54 +131,12 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
                               } ,
                               prefixBadge: Constant().darkMode,
                               title: val.kode,
-                              description: val.paket,
-                              descriptionColor: Constant().darkMode,
+                              description: "${FunctionHelper().formatter.format(int.parse(val.paket))}",
+                              descriptionColor: Constant().moneyColor,
                               backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
 
                           );
-                          return Container(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius:new BorderRadius.circular(4.0),
-                              onTap: (){},
-                              child: Card(
-                                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                                elevation: 0.0,
-                                color: Colors.transparent,
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        padding: EdgeInsets.all(10.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Container(child:WidgetHelper().textQ(val.kode, scaler.getTextSize(9), Colors.black, FontWeight.bold)),
-                                            SizedBox(height:10.0),
-                                            Container(
-                                                child:Row(
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      Constant().localIcon+'lainnya_icon.svg',
-                                                      height: 20,
-                                                      width: 10,
-                                                    ),
-                                                    SizedBox(width:10.0),
-                                                    WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(val.paket)), scaler.getTextSize(9), Constant().moneyColor, FontWeight.normal)
-                                                  ],
-                                                )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
 
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
                         },
                         separatorBuilder: (context,index){return Divider();},
                         itemCount: pinByCategoryModel.result.data.length

@@ -273,17 +273,9 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
     }
   }
   Future<void> scanQR() async {
-    String barcodeScanRes;
-    try {
-
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#732044", "Batal", true, ScanMode.QR);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
-    }
-    if (!mounted) return;
-
+    final qr = await FunctionHelper().scanQR();
     setState(() {
-      penerimaController.text = barcodeScanRes=='-1'?'':barcodeScanRes;
+      penerimaController.text = qr;
     });
   }
   @override

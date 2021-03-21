@@ -83,13 +83,12 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context,"Laporan Pembelian", (){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithButton(context,"Laporan Pembelian", (){Navigator.pop(context);},<Widget>[ ]),
       body: RefreshWidget(
         widget: Container(
           padding: scaler.getPadding(1,0),
           child: Column(
             children: [
-              // Expanded
               Expanded(
                 flex: 1,
                 child: Padding(
@@ -171,7 +170,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                       ),
                                     ),
                                     Divider(),
-                                    ListView.builder(
+                                    ListView.separated(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
                                       itemCount: valDet.length,
@@ -185,7 +184,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                               children: [
                                                 Row(
                                                   children: [
-                                                    WidgetHelper().baseImage(valDet[key].foto,height:scaler.getHeight(3)),
+                                                    WidgetHelper().baseImage(valDet[key].foto,height:scaler.getHeight(3),width:scaler.getWidth(10)),
                                                     // Image.network(valDet[key].foto,height:50,width: 50,fit: BoxFit.contain,),
                                                     SizedBox(width:scaler.getWidth(2)),
                                                     Column(
@@ -198,7 +197,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                           mainAxisAlignment: MainAxisAlignment.start,
                                                           children: [
-                                                            WidgetHelper().textQ("${valDet[key].qty} ITEM ",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
+                                                            WidgetHelper().textQ("${valDet[key].qty} Item ",scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                                                             SizedBox(width:scaler.getWidth(2)),
                                                             WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse('${valDet[key].price}'))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.normal),
                                                           ],
@@ -214,6 +213,7 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
                                           ),
                                         );
                                       },
+                                      separatorBuilder: (context,index){return SizedBox(height: 1);},
                                     ),
                                     Padding(
                                       padding: scaler.getPadding(0,2),
@@ -280,5 +280,35 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
         },
       ),
     );
+  }
+}
+
+
+class FilterHistory extends StatefulWidget {
+  @override
+  _FilterHistoryState createState() => _FilterHistoryState();
+}
+
+class _FilterHistoryState extends State<FilterHistory> {
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+    return WidgetHelper().wrapperModal(context,"Filter Laporan Pembelian",Container(
+      child: Column(
+        children: [
+          Container(
+            height: scaler.getHeight(3),
+            child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryPembelian, (val){
+              setState(() {
+                // filterStatus = val['kode'];
+                // isLoading=true;
+              });
+              // loadData();
+            },1),
+          )
+        ],
+      ),
+    ),height: 90);
   }
 }

@@ -167,12 +167,12 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                             shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                             color: Constant().greenColor,
                             onPressed: (){},
-                            child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,scaler.getTextSize(8),Colors.white,FontWeight.bold),
+                            child:WidgetHelper().textQ(dateFrom+' s/d '+dateTo,scaler.getTextSize(9),Colors.white,FontWeight.bold),
                           ),
                           Positioned(
                               right: 0,
                               top: 0,
-                              child: Icon(AntDesign.closecircleo,size: scaler.getTextSize(8),color:Constant().greyColor)
+                              child: Icon(AntDesign.closecircleo,size: scaler.getTextSize(9),color:Constant().greyColor)
                           )
                         ],
                       ),
@@ -195,12 +195,12 @@ class _HistoryRedeemScreenState extends State<HistoryRedeemScreen> {
                               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                               color: Constant().greenColor,
                               onPressed: (){},
-                              child:WidgetHelper().textQ(q,scaler.getTextSize(8),Colors.white,FontWeight.bold)
+                              child:WidgetHelper().textQ(q,scaler.getTextSize(9),Colors.white,FontWeight.bold)
                           ),
                           Positioned(
                               right: 0,
                               top: 0,
-                              child: Icon(AntDesign.closecircleo,size: scaler.getTextSize(8),color:Constant().greyColor)
+                              child: Icon(AntDesign.closecircleo,size: scaler.getTextSize(9),color:Constant().greyColor)
                           )
                         ],
                       ),

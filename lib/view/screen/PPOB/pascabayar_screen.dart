@@ -31,25 +31,27 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
   final FocusNode nohpFocus = FocusNode();
   var nohpController = TextEditingController();
   ProductPpobPraModel productPpobPraModel;
-  bool isLoading=false,isLoadingProduct=false,isNodata=false;
+  int perpage=10,total=0;
+  bool isLoading=false,isLoadingProduct=false,isLoadmore=false;
   String code='';
   CekTagihanModel cekTagihanModel;
   Future loadProduct()async{
-    var res=await BaseProvider().getProvider("transaction/produk/list?kategori=${widget.val['code']}",productPpobPraModelFromJson);
+    var res=await BaseProvider().getProvider("transaction/produk/list?kategori=${widget.val['code']}&perpage=$perpage",productPpobPraModelFromJson);
     if(res is ProductPpobPraModel){
       ProductPpobPraModel result=res;
       print(result.toJson());
       if(this.mounted){
         setState(() {
+          isLoadmore=false;
           productPpobPraModel=result;
           isLoadingProduct=false;
-          isNodata=false;
+          total = productPpobPraModel.result.total;
         });
       }
     }else if(res==Constant().errNoData){
       setState(() {
         isLoadingProduct=false;
-        isNodata=true;
+        total=0;
       });
     }
   }
@@ -90,15 +92,39 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
     //   WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
     // }
   }
+  ScrollController controller;
+
+  void _scrollListener() {
+    if (!isLoading) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        print('fetch data');
+        if(perpage<total){
+          setState((){
+            perpage+=10;
+            isLoadmore=true;
+          });
+          loadProduct();
+        }
+      }
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    controller = new ScrollController()..addListener(_scrollListener);
     isLoadingProduct=true;
     loadProduct();
   }
+  @override
+  void dispose() {
+    controller.removeListener(_scrollListener);
+    isLoading=false;
+    isLoadmore=false;
+    super.dispose();
 
+  }
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
@@ -109,16 +135,17 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
       appBar: WidgetHelper().appBarWithButton(context,widget.val['title'],(){Navigator.pop(context);},<Widget>[]),
       body: isLoadingProduct?WidgetHelper().loadingWidget(context):ListView(
         // padding: EdgeInsets.all(10.0),
+        controller: controller,
         children: [
           Container(
-            padding: EdgeInsets.only(bottom:50.0,top:10.0,left:10.0,right:15.0),
+            padding:scaler.getPadding(1,2),
             width: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().textQ("No. Telepon", 12, Constant().darkMode,FontWeight.bold),
-                SizedBox(height:10),
+                WidgetHelper().textQ("No. Telepon", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
+                SizedBox(height:scaler.getHeight(1)),
                 Padding(
                   padding: EdgeInsets.only(left:0,right:0),
                   child: Container(
@@ -129,7 +156,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                       color:Constant().greyColor,
                     ),
                     child: TextFormField(
-                      style: TextStyle(letterSpacing:2.0,fontSize:16,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                      style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
                       controller: nohpController,
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
@@ -155,9 +182,9 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                     ),
                   ),
                 ),
-                SizedBox(height:10),
-                WidgetHelper().textQ("ID Pelanggan", 12, Constant().darkMode,FontWeight.bold),
-                SizedBox(height:10),
+                SizedBox(height:scaler.getHeight(1)),
+                WidgetHelper().textQ("ID Pelanggan", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
+                SizedBox(height:scaler.getHeight(1)),
                 Padding(
                   padding: EdgeInsets.only(left:0,right:0),
                   child: Container(
@@ -168,7 +195,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                       color:Constant().greyColor
                     ),
                     child: TextFormField(
-                      style: TextStyle(letterSpacing:2.0,fontSize:16,fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                      style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
                       controller: idPelangganController,
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
@@ -194,12 +221,13 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                     ),
                   ),
                 ),
-                SizedBox(height:10),
-                WidgetHelper().textQ("Jenis Tagihan", 12, Constant().darkMode,FontWeight.bold),
-                SizedBox(height:10),
+                SizedBox(height:scaler.getHeight(1)),
+                WidgetHelper().textQ("Jenis Tagihan", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
+                SizedBox(height:scaler.getHeight(1)),
                 Container(
                     child: ListView.builder(
                         shrinkWrap: true,
+                        primary: false,
                         scrollDirection: Axis.vertical,
                         itemCount: productPpobPraModel.result.data.length,
                         itemBuilder: (context,index){
@@ -224,6 +252,10 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                         }
                     )
                 ),
+                if(isLoadmore)Container(
+                  alignment: Alignment.center,
+                  child: CupertinoActivityIndicator(),
+                )
               ],
             ),
           )
@@ -237,7 +269,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
               handleProses();
             },
             padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().mainColor,
+            color: Constant().moneyColor,
             child:Container(
               padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
               child: Row(

@@ -18,7 +18,7 @@ class _NotifScreenState extends State<NotifScreen> {
   int perpage=10,total=0;
   NotifModel notifModel;
   Future loadData()async{
-    var res=await MemberProvider().getDataNotif("page=1&perpage=$perpage");
+    var res=await MemberProvider().getDataNotif("page=1&perpage=$perpage",context,(){});
     if(res is NotifModel){
       NotifModel result=res;
       notifModel = result;

@@ -4,6 +4,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:html/parser.dart';
 import 'package:sangkuy/config/constant.dart';
+import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/member/available_member_model.dart';
@@ -25,6 +26,7 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   PinAvailableModel pinAvailableModel;
   bool isLoading=true;
+  int perpage=15,total=0;
   Future loadPin()async{
     var res=await BaseProvider().getProvider('transaction/pin_available?type=${widget.type}', pinAvailableModelFromJson,context: context,callback: (){
 
@@ -35,6 +37,7 @@ class _PinAktivasiScreenState extends State<PinAktivasiScreen> {
       setState(() {
         isLoading=false;
         pinAvailableModel=result;
+        // total=pinAvailableModel.result
       });
     }
     else{
@@ -157,8 +160,6 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
     if(res is SitePackageModel){
       SitePackageModel result=res;
       result.result.forEach((element) {
-        print("PROPS ${element.title}");
-        print("STATE ${widget.title}");
         if(element.title==widget.title){
           sitePackage={
             "id":element.id,
@@ -171,17 +172,12 @@ class _ReaktivasiPinState extends State<ReaktivasiPin> {
           var htmlToparse=_parseHtmlString(rplc);
           toArray = htmlToparse.split("|");
           toArray.remove(" ");
-
         }
       });
-      print("CIK1 $sitePackage");
-      print("CIK2 $toArray");
       isLoading=false;
-      // String rplc = '${sitePackage['deskripsi']}'.replaceAll("</li>","|");
-      // var htmlToparse=_parseHtmlString(rplc);
-      // toArray = htmlToparse.split("|");
-      // toArray.remove("");
       setState(() {});
+
+
     }
   }
   String _parseHtmlString(String htmlString) {
@@ -487,13 +483,20 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
                   borderSide: BorderSide.none,
                 ),
                 suffixIcon:InkWell(
-                  onTap: (){
+                  onTap: ()async{
                     penerimaFocus.unfocus();
-                    checkingAccount();
+                    final qr = await FunctionHelper().scanQR();
+                    penerimaController.text = qr;
+                    setState(() {});
+                    // penerimaFocus.unfocus();
+                    // checkingAccount();
                   },
                   child: Container(
-                    color: Constant().mainColor,
-                    child: Icon(AntDesign.user,color:Colors.white),
+                    decoration: BoxDecoration(
+                      color: Constant().mainColor,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomRight: Radius.circular(10)),
+                    ),
+                    child: Icon(AntDesign.scan1,color:Colors.white),
                   ),
                 ),
                 contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),

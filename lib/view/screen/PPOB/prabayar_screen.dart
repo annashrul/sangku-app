@@ -30,7 +30,7 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
   final FocusNode nohpFocus = FocusNode();
   var nohpController = TextEditingController();
   int idx=10000000;
-  bool isLoading=false,isLoadingProduct=false,isNodata=false;
+  bool isLoading=false,isLoadingProduct=false,isNodata=false,isWidget=true;
   dynamic provider;
   String title='';
   CategoryPpobModel categoryPpobModel;
@@ -125,12 +125,10 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     await loadCategory();
     await loadUser();
     if(checkParam()==false){
-      print('handle cnahe');
       setState(() {
         isLoadingProduct=true;
       });
       loadProduct('nohp=${nohpController.text}&kategori=${widget.val['code']}');
-      // await handleChange(nohpController.text);
     }
     setState(() {
       isLoading=false;
@@ -171,16 +169,19 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
     // this.checkParam()?buildContent2(context):buildContent1(context)
     if(title=='VOUCHER GAME' || title=='E-MONEY'||title=='VOUCHER WIFI.ID'||title=='E-TOLL'){
       setState(() {
-        child=buildContent2(context);
+        isWidget=true;
+        // child=buildContent2(context);
       });
-      print('true');
-      return true;
-    }else{
+      // print('true');
+      // return true;
+    }
+    else{
       setState(() {
-        child=buildContent1(context);
+        isWidget=false;
+        // child=buildContent1(context);
       });
       print('false');
-      return false;
+      return isWidget;
     }
   }
 
@@ -212,7 +213,6 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
 
   Widget buildContent1(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return isLoading?WidgetHelper().loadingWidget(context):ListView(
       shrinkWrap: true,
       primary: true,
@@ -290,9 +290,9 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
                 },
                 child: Column(
                   children: [
-                    WidgetHelper().textQ('Rp ${FunctionHelper().formatter.format(int.parse(val.price))} .-',10,Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
+                    WidgetHelper().textQ('Rp ${FunctionHelper().formatter.format(int.parse(val.price))} .-',scaler.getTextSize(9),Constant().moneyColor, FontWeight.bold,textAlign: TextAlign.center,maxLines: 1),
                     SizedBox(height:5.0),
-                    WidgetHelper().textQ(val.note,scaler.getTextSize(9),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 10),
+                    WidgetHelper().textQ(val.note,scaler.getTextSize(7),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.center,maxLines: 10),
                   ],
                 )
             );

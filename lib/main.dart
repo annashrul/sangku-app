@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:global_network/global_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -81,6 +81,7 @@ class _AppState extends State<App> {
 
 
 
+
 class CheckingRoutes extends StatefulWidget {
   static const String routeName = '/start';
 
@@ -132,6 +133,7 @@ class _CheckingRoutesState extends State<CheckingRoutes> {
   }
   @override
   Widget build(BuildContext context) {
+    // return CekPage();
     return Scaffold(
       body:  WidgetHelper().loadingWidget(context),
     );
