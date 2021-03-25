@@ -191,7 +191,11 @@ class BaseProvider{
         return param(request.body);
       }
       else{
-        return General.fromJson(jsonDecode(request.body));
+        if(context!=null){
+          return WidgetHelper().notifOneBtnDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout,(){Navigator.pop(context);});
+        }else{
+          return General.fromJson(jsonDecode(request.body));
+        }
       }
     } on TimeoutException catch (_) {
       if(context!=null){

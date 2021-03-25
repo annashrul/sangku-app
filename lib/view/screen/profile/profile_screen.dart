@@ -119,9 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)
-            ),
+            isLoadingInfo?Text(''):SizedBox(height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)),
             isLoadingInfo?Text(''):infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?ListTile(
               contentPadding: scaler.getPadding(0,2),
               trailing: Icon(Ionicons.md_arrow_dropright_circle,color: Constant().mainColor,size: scaler.getTextSize(12)),
@@ -138,9 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 WidgetHelper().myModal(context,RewardScreen(infoTambahanModel: infoTambahanModel));
               },
             ):Text(''),
-            isLoadingInfo?Text(''):SizedBox(
-                height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)
-            ),
+            isLoadingInfo?Text(''):SizedBox(height:scaler.getHeight(infoTambahanModel.result.reward.id!='-'&&!infoTambahanModel.result.reward.isClaimed?1:0)),
             Container(
               margin: scaler.getMargin(0,2),
               decoration: BoxDecoration(
@@ -156,14 +152,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: WidgetHelper().titleQ(context,"Laporan","Lihat riwayat transaksi anda disini",icon: AntDesign.barschart),
                     padding: scaler.getPadding(1,2),
                   ),
-                  section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},0,iconData: AntDesign.trademark),
-                  section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},1,iconData: AntDesign.shoppingcart),
-                  section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},0,iconData: AntDesign.wallet),
-                  section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},1,iconData: AntDesign.swapleft),
-                  section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},0,iconData: AntDesign.swapright),
-                  section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},1,iconData: AntDesign.folder1),
-                  section2("Redeem",(){WidgetHelper().myPush(context,HistoryRedeemScreen());},0,iconData:Ionicons.ios_gift),
-                  section2("Reward",(){WidgetHelper().myPush(context,HistoryRewardScreen());},1,iconData:Ionicons.ios_medal),
+                  section2("SangQuota",(){WidgetHelper().myPush(context,HistoryPlafonScreen());},0,iconData: AntDesign.linechart),
+                  section2("Rekapitulasi",(){WidgetHelper().myPush(context,RekapitulasiScreen());},1,iconData: AntDesign.trademark),
+                  section2("Pembelian",(){WidgetHelper().myPush(context,HistoryPembelianScreen());},0,iconData: AntDesign.shoppingcart),
+                  section2("Transaksi",(){WidgetHelper().myPush(context,HistoryTransactionScreen());},1,iconData: AntDesign.wallet),
+                  section2("Deposit",(){WidgetHelper().myPush(context,HistoryDepositScreen());},0,iconData: AntDesign.swapleft),
+                  section2("Penarikan",(){WidgetHelper().myPush(context,HistoryWithdrawScreen());},1,iconData: AntDesign.swapright),
+                  section2("PPOB",(){WidgetHelper().myPush(context,HistoryPPOBScreen());},0,iconData: AntDesign.folder1),
+                  section2("Redeem",(){WidgetHelper().myPush(context,HistoryRedeemScreen());},1,iconData:Ionicons.ios_gift),
+                  section2("Reward",(){WidgetHelper().myPush(context,HistoryRewardScreen());},0,iconData:Ionicons.ios_medal),
                 ],
               ),
             ),
@@ -183,23 +180,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: scaler.getPadding(1,2),
                   ),
                   section2("Data Diri",(){WidgetHelper().myPush(context,FormProfileScreen(val: dataUser));},0,iconData: AntDesign.user),
-                  section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},1,iconData: Entypo.location),
-                  section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},0,iconData:AntDesign.bank),
+                  section2("Testimoni",(){WidgetHelper().myPush(context,MyTestimoniScreen());},1,iconData:AntDesign.star),
+                  section2("Alamat",(){WidgetHelper().myPush(context,AddressScreen());},0,iconData: Entypo.location),
+                  section2("Bank",(){WidgetHelper().myPush(context,BankScreen());},1,iconData:AntDesign.bank),
                   section2("Privacy Policy",(){
                     if(!isLoading){
                       WidgetHelper().myPush(context,InfoScreen(siteModel:siteModel,title: 'Privacy Policy',));
                     }
-                  },1,iconData: AntDesign.infocirlceo),
+                  },0,iconData:AntDesign.lock),
                   section2("Terms and Conditions",(){
                     if(!isLoading){
                       WidgetHelper().myPush(context,InfoScreen(siteModel:siteModel,title: 'Terms and Conditions',));
                     }
-                  },0,iconData: AntDesign.infocirlceo),
+                  },1,iconData: AntDesign.infocirlceo),
                   section2("Keluar",()async{
                     WidgetHelper().notifDialog(context,"Informasi !","Kamu yakin akan keluar dari aplikasi ?", (){Navigator.pop(context);}, ()async{
                       await FunctionHelper().logout(context);
                     });
-                  },1,iconData: AntDesign.logout),
+                  },0,iconData: AntDesign.logout),
                 ],
               ),
             ),

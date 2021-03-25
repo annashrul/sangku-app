@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -115,38 +116,27 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
       body:RefreshWidget(
         widget: Scrollbar(
             child: Container(
-              padding: scaler.getPadding(1,2),
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 19,
-                    child: isLoading?loading(context,10):total<1?WidgetHelper().noDataWidget(context):ListView.separated(
-                        shrinkWrap: true,
-                        controller: controller,
-                        itemBuilder: (context,index){
-                          var val = pinByCategoryModel.result.data[index];
-                          return CardWidget(
-                              onTap:(){
+              padding: scaler.getPadding(0.5,2),
+              child: isLoading?loading(context,10):total<1?WidgetHelper().noDataWidget(context):ListView.separated(
+                  shrinkWrap: true,
+                  controller: controller,
+                  itemBuilder: (context,index){
+                    var val = pinByCategoryModel.result.data[index];
+                    return CardWidget(
+                        onTap:(){
 
-                              } ,
-                              prefixBadge: Constant().darkMode,
-                              title: val.kode,
-                              description: "${FunctionHelper().formatter.format(int.parse(val.paket))}",
-                              descriptionColor: Constant().moneyColor,
-                              backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
+                        } ,
+                        prefixBadge: Constant().darkMode,
+                        title: val.kode,
+                        description: "${FunctionHelper().formatter.format(int.parse(val.paket))}",
+                        descriptionColor: Constant().moneyColor,
+                        backgroundColor: Theme.of(context).focusColor.withOpacity(0.0)
 
-                          );
+                    );
 
-                        },
-                        separatorBuilder: (context,index){return Divider();},
-                        itemCount: pinByCategoryModel.result.data.length
-                    ),
-                  ),
-                  isLoadmore?Expanded(
-                    flex: 2,
-                    child: loading(context,1),
-                  ):Text('')
-                ],
+                  },
+                  separatorBuilder: (context,index){return Divider();},
+                  itemCount: pinByCategoryModel.result.data.length
               ),
             )
         ),
@@ -157,6 +147,7 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
           loadData();
         },
       ),
+      bottomNavigationBar: isLoadmore?CupertinoActivityIndicator():Text(''),
     );
   }
   Widget loading(BuildContext context,int idx){

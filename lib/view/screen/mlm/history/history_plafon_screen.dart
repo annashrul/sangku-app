@@ -1,49 +1,45 @@
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:sangkuy/config/constant.dart';
-import 'package:sangkuy/helper/filter_date_helper.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/refresh_widget.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
-import 'package:sangkuy/model/general_model.dart';
+import 'package:sangkuy/model/mlm/history/history_plafon_model.dart';
 import 'package:sangkuy/model/mlm/history/history_transaction_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
 
-class HistoryTransactionScreen extends StatefulWidget {
+class HistoryPlafonScreen extends StatefulWidget {
   @override
-  _HistoryTransactionScreenState createState() => _HistoryTransactionScreenState();
+  _HistoryPlafonScreenState createState() => _HistoryPlafonScreenState();
 }
 
-class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> with SingleTickerProviderStateMixin {
+class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController controller;
-  HistoryTransactionModel historyTransactionModel;
+  HistoryPlafonModel historyPlafonModel;
   bool isLoading=false,isLoadmore=false;
   int perpage=20,total=0;
   String dateFrom='',dateTo='',q='';
   bool isSelected=false;
   Future loadData()async{
-    String url='transaction/history?page=1&perpage=$perpage';
+    String url='transaction/history/plafon?perpage=1&perpage=$perpage';
     if(dateFrom!=''&&dateTo!=''){
       url+='&datefrom=$dateFrom&dateto=$dateTo';
     }
     if(q!=''){
       url+='&q=$q';
     }
-    var res = await BaseProvider().getProvider(url,historyTransactionModelFromJson,context: context,callback: (){Navigator.pop(context);});
+    var res = await BaseProvider().getProvider(url,historyPlafonModelFromJson,context: context,callback: (){Navigator.pop(context);});
     print(res);
-    if(res is HistoryTransactionModel){
-      HistoryTransactionModel result=res;
-      historyTransactionModel = HistoryTransactionModel.fromJson(result.toJson());
+    if(res is HistoryPlafonModel){
+      HistoryPlafonModel result=res;
+      historyPlafonModel = HistoryPlafonModel.fromJson(result.toJson());
       isLoading=false;
       isLoadmore=false;
-      total=historyTransactionModel.result.total;
+      total=historyPlafonModel.result.total;
       if(this.mounted)setState(() {});
     }
     else if(res==Constant().errNoData){
@@ -55,6 +51,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   void _scrollListener() {
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
+        print('fetch data');
         if(perpage<total){
           setState((){
             perpage+=10;
@@ -85,13 +82,12 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     initializeDateFormatting('id');
 
   }
-
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithFilter(context,"Laporan transaksi",  (){Navigator.pop(context);}, (param){
+      appBar: WidgetHelper().appBarWithFilter(context,"Laporan SangQuota",  (){Navigator.pop(context);}, (param){
         setState(() {
           q=param;
           isLoading=true;
@@ -105,7 +101,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
         });
         loadData();
       }),
-      body:Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -180,7 +176,51 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
           Expanded(
               flex: 20,
               child: isLoading?HistoryTransactionLoading(tot: 10):total<1?WidgetHelper().noDataWidget(context):RefreshWidget(
-                widget: buildItem(context),
+                widget: ListView.builder(
+                  padding: scaler.getPadding(0,0),
+                  controller: controller,
+                  itemBuilder: (context,index){
+                    var val=historyPlafonModel.result.data[index];
+                    return FlatButton(
+                      onPressed: (){},
+                      padding: scaler.getPadding(0,0),
+                      color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                      child: ListTile(
+                        contentPadding: scaler.getPadding(0.5,2),
+                        onTap: (){},
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                WidgetHelper().titleNoButton(context, AntDesign.codepen, val.kdTrx,iconSize: 10,color: Constant().darkMode,fontWeight: FontWeight.normal),
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.plafonIn))} .- ( + )", scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
+                              ],
+                            ),
+                            SizedBox(height: scaler.getHeight(0.5)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                WidgetHelper().titleNoButton(context, AntDesign.calendar,FunctionHelper().formateDate(val.createdAt,"ymd"),iconSize: 10,color: Constant().darkMode,fontWeight: FontWeight.normal),
+                                WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.plafonOut))} .- ( - )", scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),                                ],
+                            ),
+                            SizedBox(height: scaler.getHeight(0.5)),
+                            Container(
+                              width: double.infinity,
+                              child: WidgetHelper().textQ(val.note, scaler.getTextSize(9), Constant().darkMode, FontWeight.normal),
+                            )
+                            // WidgetHelper().titleNoButton(context, AntDesign.paperclip, val.note,iconSize: 10,color: Constant().darkMode),
+
+                          ],
+                        ),
+
+                      ),
+                    );
+                  },
+                  itemCount: historyPlafonModel.result.data.length,
+                ),
                 callback: (){
                   setState(() {
                     isLoading=true;
@@ -189,128 +229,11 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                 },
               )
           ),
+
         ],
       ),
       bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
-    );
-  }
-  
-  Widget buildItem(BuildContext context){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return ListView.builder(
-      padding: scaler.getPadding(0,0),
-      controller: controller,
-      itemBuilder: (context,index){
-        var val=historyTransactionModel.result.data[index];
-        return FlatButton(
-          onPressed: (){},
-          padding: scaler.getPadding(0,0),
-          color: index%2==0?Color(0xFFEEEEEE):Colors.white,
-          child: ListTile(
-            contentPadding: scaler.getPadding(0.5,2),
-            onTap: (){},
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    WidgetHelper().titleNoButton(context, AntDesign.codepen, val.kdTrx,iconSize: 10,color: Constant().darkMode,fontWeight: FontWeight.normal),
-                    WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxIn))} .- ( + )", scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),
-                  ],
-                ),
-                SizedBox(height: scaler.getHeight(0.5)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    WidgetHelper().titleNoButton(context, AntDesign.calendar,FunctionHelper().formateDate(val.createdAt,"ymd"),iconSize: 10,color: Constant().darkMode,fontWeight: FontWeight.normal),
-                    WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.trxOut.split(".")[0]))} .- ( - )", scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold),                                ],
-                ),
-                SizedBox(height: scaler.getHeight(0.5)),
-                Container(
-                  width: double.infinity,
-                  child: WidgetHelper().textQ(val.note, scaler.getTextSize(9), Constant().darkMode, FontWeight.normal),
-                )
-                // WidgetHelper().titleNoButton(context, AntDesign.paperclip, val.note,iconSize: 10,color: Constant().darkMode),
 
-              ],
-            ),
-
-          ),
-        );
-      },
-      itemCount: historyTransactionModel.result.data.length,
-    );
-  }
-
-
-
-}
-
-
-class FilterSearch extends StatefulWidget {
-  Function(String q) callback;
-  FilterSearch({this.callback});
-  @override
-  _FilterSearchState createState() => _FilterSearchState();
-}
-
-class _FilterSearchState extends State<FilterSearch> {
-  var qController = TextEditingController();
-  final FocusNode qFocus = FocusNode();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    qFocus.requestFocus();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // height: MediaQuery.of(context).size.height/2,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-      ),
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height:10.0),
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:10.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left:10.0,top:0.0,right:10,bottom: 5),
-            child:TextFormField(
-              textInputAction: TextInputAction.search,
-              // keyboardType: Keyboard,
-              decoration: InputDecoration(
-                hintText: 'Tulis sesuatu disini ...'
-              ),
-              maxLines: 3,
-              controller: qController,
-              focusNode: qFocus,
-              onFieldSubmitted: (e){
-                widget.callback(e);
-                Navigator.pop(context);
-              },
-            ),
-          )
-
-        ],
-      ),
     );
   }
 }

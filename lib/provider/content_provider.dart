@@ -60,5 +60,9 @@ class ContentProvider{
       TestimoniModel result=res;
       return TestimoniModel.fromJson(result.toJson());
     }
+    else{
+      return Constant().errNoData;
+    }
+
   }
 }

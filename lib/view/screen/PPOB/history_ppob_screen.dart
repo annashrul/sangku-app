@@ -115,7 +115,7 @@ class _HistoryPPOBScreenState extends State<HistoryPPOBScreen> with SingleTicker
           // padding: EdgeInsets.only(top:0,bottom:10,left:0,right:0),
           child: Column(
             children: [
-              SizedBox(height: 10),
+              SizedBox(height: scaler.getHeight(1)),
               if(dateFrom!=''||dateTo!=''||q!='')Expanded(
                 flex:1,
                 child: ListView(

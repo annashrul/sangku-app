@@ -25,12 +25,21 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
   Future loadTestimoni()async{
     final id_member=await UserHelper().getDataUser('id_user');
     var res = await ContentProvider().loadTestimoni("perpage=$perpage&id_member=$id_member");
-    if(this.mounted) setState(() {
-      testimoniModel = res;
+    if(res==Constant().errNoData){
+      total=0;
       isLoadingTestimoni=false;
       isLoadmore=false;
-      total=testimoniModel.result.total;
-    });
+      setState(() {});
+    }
+    else{
+      if(this.mounted) setState(() {
+        testimoniModel = res;
+        isLoadingTestimoni=false;
+        isLoadmore=false;
+        total=testimoniModel.result.total;
+      });
+    }
+    
   }
   ScrollController controller;
   void _scrollListener() {
@@ -64,7 +73,7 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Daftar Testimoni Saya",(){Navigator.pop(context);},<Widget>[
+      appBar: WidgetHelper().appBarWithButton(context,"Testimoni Saya",(){Navigator.pop(context);},<Widget>[
         IconButton(icon: Icon(AntDesign.pluscircleo), onPressed: (){
           WidgetHelper().myModal(context,ModalFormTestimoni(val: null,callback: (param){
             if(param=='success'){
@@ -76,8 +85,8 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
           }));
         })
       ]),
-      body:  isLoadingTestimoni?TestimoniLoading(): RefreshWidget(
-        widget: buildContent(context),
+      body:  isLoadingTestimoni?TestimoniLoading():RefreshWidget(
+        widget:total>0?buildContent(context):WidgetHelper().noDataWidget(context),
         callback: (){
           isLoadingTestimoni=true;
           setState(() {});
@@ -101,7 +110,8 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
         int lng=100;
         if(testimoniModel.result.data[index].caption.length>lng){
           desc=testimoniModel.result.data[index].caption.substring(0,lng)+' ..';
-        }else{
+        }
+        else{
           desc=testimoniModel.result.data[index].caption;
         }
         return Container(
@@ -192,17 +202,25 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
                   ],
                 ),
                 onPressed: (){
-                  WidgetHelper().myModal(context,Container(
-                      height: MediaQuery.of(context).size.height/1.2,
-                      child: ModalFormTestimoni(val: val.toJson(),callback: (String param){
-                        if(param=='success'){
-                          setState(() {
-                            isLoadingTestimoni=true;
-                          });
-                          loadTestimoni();
-                        }
-                      })
-                  ));
+                  WidgetHelper().myModal(context,ModalOptionTestimoni(val: val.toJson(),callback: (String param){
+                    if(param=='success'){
+                      setState(() {
+                        isLoadingTestimoni=true;
+                      });
+                      loadTestimoni();
+                    }
+                  }));
+                  // WidgetHelper().myModal(context,Container(
+                  //     height: MediaQuery.of(context).size.height/1.2,
+                  //     child: ModalFormTestimoni(val: val.toJson(),callback: (String param){
+                  //       if(param=='success'){
+                  //         setState(() {
+                  //           isLoadingTestimoni=true;
+                  //         });
+                  //         loadTestimoni();
+                  //       }
+                  //     })
+                  // ));
                   // WidgetHelper().myPush(context,DetailNewsScreen(contentModel:contentModel,idx:index));
                 },
                 padding: EdgeInsets.all(10.0),
@@ -225,3 +243,5 @@ class _MyTestimoniScreenState extends State<MyTestimoniScreen> with SingleTicker
     );
   }
 }
+
+

@@ -26,7 +26,6 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
   MenuPpobModel menuPpobModel;
   bool isLoading=false;
   Future loadData()async{
-
     var res=await BaseProvider().getProvider('transaction/produk/kategori', menuPpobModelFromJson);
     if(res is MenuPpobModel){
       MenuPpobModel result=res;
@@ -65,36 +64,38 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
   Widget builds(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: scaler.getPadding(0,0),
-          child: WidgetHelper().titleQ(
-            context,
-            'Produk PPOB',
-            "Beli pulsa,paket data, bayar tagihan dll",
-            icon: AntDesign.wallet,
-            param: '',
-            callback:(){},
+    return Container(
+      padding: scaler.getPadding(0,2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: scaler.getHeight(1),),
+          Padding(
+            padding: scaler.getPadding(0,0),
+            child: WidgetHelper().titleQ(
+              context,
+              'Produk PPOB',
+              "Beli pulsa,paket data, bayar tagihan dll",
+              icon: AntDesign.wallet,
+              param: '',
+              callback:(){},
+            ),
           ),
-        ),
-        SizedBox(height: scaler.getHeight(1),),
-        Container(
-          child: isLoading?loading(context):StaggeredGridView.countBuilder(
+          SizedBox(height: scaler.getHeight(1),),
+          isLoading?loading(context):StaggeredGridView.countBuilder(
+            padding: EdgeInsets.all(0),
+            addAutomaticKeepAlives: true,
             primary: true,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount:3,
             itemCount:  listArray.length,
             itemBuilder: (BuildContext context, int index) {
-              // var val=mergeArray[element][index];
               var checkImg = listArray[index]['logo'].split(".");
               ScreenScaler scaler = ScreenScaler()..init(context);
-
               return FlatButton(
-                  padding: EdgeInsets.all(10.0),
+                  padding:scaler.getPadding(1,1),
                   shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
                   color: Color(0xFFEEEEEE),
                   onPressed: (){
@@ -126,11 +127,11 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
               );
             },
             staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-            mainAxisSpacing: 10.0,
+            mainAxisSpacing: 5.0,
             crossAxisSpacing: 5.0,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -138,11 +139,13 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
 
   Widget loading(BuildContext context){
     return StaggeredGridView.countBuilder(
-      padding: EdgeInsets.all(0.0),
+      padding: EdgeInsets.all(0),
+      addAutomaticKeepAlives: true,
+      primary: true,
       shrinkWrap: true,
-      primary: false,
-      crossAxisCount: 5,
-      itemCount: 5,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      itemCount: 8,
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().baseLoading(context,Column(
           children: [
@@ -152,7 +155,7 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
                 color: Colors.white,
               ),
               height: 70,
-              width: 50,
+              width: 100,
             ),
             SizedBox(height:5.0),
             Container(
@@ -164,8 +167,8 @@ class _MenuPPOBScreenState extends State<MenuPPOBScreen> with AutomaticKeepAlive
         ));
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-      mainAxisSpacing: 20.0,
-      crossAxisSpacing: 20.0,
+      mainAxisSpacing: 10.0,
+      crossAxisSpacing: 10.0,
     );
   }
 }

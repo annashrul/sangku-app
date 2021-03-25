@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
@@ -35,14 +36,21 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future loadTestimoni()async{
-    final id_member=await UserHelper().getDataUser('id_user');
     var res = await ContentProvider().loadTestimoni("perpage=$perpage");
-    if(this.mounted) setState(() {
-      testimoniModel = res;
+    if(res==Constant().errNoData){
       isLoadingTestimoni=false;
       isLoadmore=false;
-      total=testimoniModel.result.total;
-    });
+      total=0;
+    }
+    else{
+      if(this.mounted) setState(() {
+        testimoniModel = res;
+        isLoadingTestimoni=false;
+        isLoadmore=false;
+        total=testimoniModel.result.total;
+      });
+    }
+    
   }
   ScrollController controller;
   void _scrollListener() {
@@ -81,14 +89,14 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
           WidgetHelper().myPush(context,MyTestimoniScreen());
         })
       ]),
-      body:  isLoadingTestimoni?TestimoniLoading(): RefreshWidget(
+      body:  isLoadingTestimoni?TestimoniLoading():total>0? RefreshWidget(
         widget: buildContent(context),
         callback: (){
           isLoadingTestimoni=true;
           setState(() {});
           loadTestimoni();
         },
-      ),
+      ):WidgetHelper().noDataWidget(context),
       bottomNavigationBar: isLoadmore?TestimoniLoading(total: 1):Text(''),
     );
   }
@@ -225,6 +233,8 @@ class _TestimoniScreenState extends State<TestimoniScreen> with SingleTickerProv
 }
 
 
+
+
 class ModalFormTestimoni extends StatefulWidget {
   dynamic val;
   Function(String param) callback;
@@ -240,6 +250,8 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
   final FocusNode videoFocus = FocusNode();
   var captionController = TextEditingController();
   final FocusNode captionFocus = FocusNode();
+  var imgController = TextEditingController();
+
   String img='';
   String previewImage='';
 
@@ -277,18 +289,12 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
     }else{
       res = await BaseProvider().putProvider('content/${widget.val['id']}', data,context: context);
     }
-    print(data);
     if(res!=null){
       Navigator.pop(context);
       WidgetHelper().notifOneBtnDialog(context,"Berhasil","Data berhasil disimpan", (){
         widget.callback("success");
-        // Navigator.pop(context);
-        // Navigator.pop(context);
-        if(widget.val!=null){
-          Navigator.pop(context);
-          Navigator.pop(context);
-        }
-        // Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
       });
     }
 
@@ -315,7 +321,91 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
 
   @override
   Widget build(BuildContext context) {
-    return  buildContent(context);
+    return  buildItem(context);
+  }
+
+  Widget buildItem(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return WidgetHelper().wrapperModal(context,"${widget.val==null?'Tambah':'Ubah'} Testimoni",Scrollbar(
+        child: ListView(
+          padding: scaler.getPadding(0,2),
+          children: [
+            WidgetHelper().myForm(
+                context,
+                "Pekerjaan",
+                titleController,
+                focusNode: titleFocus,
+                onSubmit: (_){WidgetHelper().fieldFocusChange(context, titleFocus,captionFocus);}
+            ),
+            SizedBox(height: scaler.getHeight(1)),
+            WidgetHelper().myForm(
+              context,
+              "Testimoni",
+              captionController,
+              focusNode: captionFocus,
+              maxLine: 8,
+            ),
+            SizedBox(height: scaler.getHeight(1)),
+            WidgetHelper().myForm(
+                context,
+                "Gambar",
+                imgController,
+                isRead: true,
+                onTap: (){
+                  WidgetHelper().myModal(context, CameraWidget(
+                    callback: (String imgs,pureImage)async{
+                      await Future.delayed(Duration(seconds: 1));
+                      WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                        setState(() {
+                          pureImg=pureImage;
+                          imgController.text = imgs;
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      });
+                      // Navigator.pop(context);
+                      // upload(image);
+                    },
+                  ));
+                }
+            ),
+            SizedBox(height: scaler.getHeight(1)),
+            WidgetHelper().myForm(
+              context,
+              "Video",
+              videoController,
+              focusNode: videoFocus,
+              textInputAction: TextInputAction.done,
+            ),
+            SizedBox(height: scaler.getHeight(0.5)),
+            RichText(
+              text: TextSpan(
+                  text: 'Isi dengan URL video, apabila URL tersebut diambil dari YouTube, pastikan URL tersebut merupakan',
+                  style: TextStyle(fontSize: scaler.getTextSize(8),fontFamily:Constant().fontStyle,color: Colors.black),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: ' embed URL . \n',style: TextStyle(color:Colors.green, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
+                        recognizer:  TapGestureRecognizer()..onTap  = () {
+                          WidgetHelper().myPush(context,Scaffold(
+                              appBar: WidgetHelper().appBarWithButton(context,'Cara memasukan link youtube', (){Navigator.pop(context);},<Widget>[]),
+                              body: WebViewWidget(val: {"url":'https://support.google.com/youtube/answer/171780?hl=id'})
+                          ));
+
+                          // WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
+                        }
+                    ),
+                    TextSpan(
+                      text: 'Biarkan kosong atau isi dengan tanda (-) jika tidak akan mengikutsertakan video',style: TextStyle(color:Colors.red, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
+                    ),
+                  ]
+              ),
+            ),
+            SizedBox(height: scaler.getHeight(1)),
+            pureImg!=null?new Image.file(pureImg,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):widget.val!=null?WidgetHelper().baseImage(previewImage):Text('')
+
+          ],
+        )
+    ),height: 90,isCallack: true,callack: (){validate(context);});
   }
 
   Widget buildContent(BuildContext context) {
@@ -638,4 +728,72 @@ class _ModalDetailTestimoniState extends State<ModalDetailTestimoni> {
 
 
 
+}
+
+
+class ModalOptionTestimoni extends StatefulWidget {
+  dynamic val;
+  Function(String param) callback;
+  ModalOptionTestimoni({this.val,this.callback});
+  @override
+  _ModalOptionTestimoniState createState() => _ModalOptionTestimoniState();
+}
+
+class _ModalOptionTestimoniState extends State<ModalOptionTestimoni> {
+  Future delete(BuildContext context)async{
+    print(widget.val);
+    WidgetHelper().loadingDialog(context);
+    var res=await BaseProvider().deleteProvider("content/${widget.val['id']}",generalFromJson,context: context);
+    Navigator.pop(context);
+    print(res);
+    if(res!=null){
+      WidgetHelper().notifOneBtnDialog(context,"Berhasil","Data berhasil dihapus", (){
+        widget.callback("success");
+        Navigator.pop(context);
+        Navigator.pop(context);
+      });
+      // Navigator.pop(context);
+      // widget.callback('success');
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return WidgetHelper().wrapperModal(context,"",ListView(
+      padding: scaler.getPadding(0,2),
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.all(0),
+          onTap: (){
+            WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan menghapus data ini ?",(){
+              Navigator.pop(context);
+            },(){
+              Navigator.pop(context);
+              delete(context);
+            });
+            // widget.callback('success');
+          },
+          leading: Icon(Ionicons.ios_trash),
+          title: WidgetHelper().textQ("Hapus", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.all(0),
+          onTap: (){
+
+            WidgetHelper().myModal(context,Container(
+                height: MediaQuery.of(context).size.height/1.2,
+                child: ModalFormTestimoni(val: widget.val,callback: (String param){
+                  if(param=='success'){
+                    widget.callback('success');
+                    Navigator.pop(context);
+                  }
+                })
+            ));
+          },
+          leading: Icon(AntDesign.edit),
+          title: WidgetHelper().textQ("Edit", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+        )
+      ],
+    ),height: 20);
+  }
 }

@@ -146,57 +146,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             Showcase(
               key: page1,
               description: 'info grafik anda',
-              child: Container(
-                child: StaggeredGridView.countBuilder(
-                  padding:scaler.getPadding(0,0),
-                  shrinkWrap: true,
-                  primary: false,
-                  crossAxisCount: 3,
-                  itemCount: DataHelper.dataProfile.length,
-                  itemBuilder: (context,index){
-                    IconData icon;
-                    String title='';
-                    Color color;
-                    String value='';
-                    if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
-                    if(index==1&&dataMember!=null){
-                      icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
-                      value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
-                    }
-                    if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
-                    return dataMember==null?WidgetHelper().baseLoading(context,Container(
-                      color: Colors.white,
-                      height: 50,
-                      width: double.infinity,
-                    )):Container(
-                      padding: scaler.getPadding(1,1),
-                      decoration: BoxDecoration(
-                        color:Color(0xFF732044),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              WidgetHelper().textQ(title,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
-                              SizedBox(height: scaler.getHeight(0.3)),
-                              WidgetHelper().textQ(value,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-                  mainAxisSpacing: 0.0,
-                  crossAxisSpacing: 1.0,
-                ),
-              ),
+              child: section1(context),
             ),
-
             // if(dataMember!=null)SizedBox(height: scaler.getHeight(1)),
             if(dataMember!=null)ChartWidgetHome1(data:dataMember),
             // SizedBox(height: scaler.getHeight(dataMember!=null?1:0)),
@@ -214,10 +165,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
               child: isLoadingRedeem||dataMember==null?RedeemHorizontalLoading():isNodataRedeem?Text(''):section6(context),
             ),
             Divider(thickness:scaler.getHeight(1)),
-            section3(context),
+            MenuPPOBScreen(),
             isLoadingNews?Text(''):isNodataNews?Text(''):Divider(thickness:scaler.getHeight(1)),
-            isLoadingNews?AddressLoading(tot: 1):isNodataNews?Text(''):section4(context),
-            isLoadingNews?Text(''):isNodataNews?Text(''):Divider(thickness:scaler.getHeight(1)),
+            isLoadingNews?Text(''):isNodataNews?Text(''):section4(context),
+            isLoadingTestimoni?Text(''):isNodataTestimoni?Text(''):Divider(thickness:scaler.getHeight(1)),
             isLoadingTestimoni?Text(''):isNodataTestimoni?Text(''):testimoni(context),
 
           ],
@@ -236,6 +187,60 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
+  
+  Widget section1(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      child: StaggeredGridView.countBuilder(
+        padding:scaler.getPadding(0,0),
+        shrinkWrap: true,
+        primary: false,
+        crossAxisCount: 3,
+        itemCount: DataHelper.dataProfile.length,
+        itemBuilder: (context,index){
+          IconData icon;
+          String title='';
+          Color color;
+          String value='';
+          if(index==0&&dataMember!=null){icon=AntDesign.team;title='Sponsor';color=Color(0xFF007bff);value=dataMember['sponsor'];}
+          if(index==1&&dataMember!=null){
+            icon=AntDesign.pptfile1;title='SangQuota';color=Color(0xFFffc107);
+            value='Rp '+FunctionHelper().formatter.format(int.parse('${dataMember['plafon']}'.split(".")[0]))+' .-';
+          }
+          if(index==2&&dataMember!=null){icon=AntDesign.leftcircleo;title='Reward';color=Color(0xFF28a745);value='kiri ${dataMember['left_reward_point']} | kanan ${dataMember['right_reward_point']}';}
+          return dataMember==null?WidgetHelper().baseLoading(context,Container(
+            color: Colors.white,
+            height: 50,
+            width: double.infinity,
+          )):Container(
+            padding: scaler.getPadding(1,1),
+            decoration: BoxDecoration(
+              color:Color(0xFF732044),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    WidgetHelper().textQ(title,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.normal,textAlign: TextAlign.left),
+                    SizedBox(height: scaler.getHeight(0.3)),
+                    WidgetHelper().textQ(value,scaler.getTextSize(9),Color(0xFFffc107), FontWeight.bold,textAlign: TextAlign.left),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        mainAxisSpacing: 0.0,
+        crossAxisSpacing: 1.0,
+      ),
+    );
+  }
+  
   Widget section2(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
@@ -294,13 +299,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
     );
   }
-  Widget section3(BuildContext context){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return Container(
-      padding: scaler.getPadding(1,2),
-      child: MenuPPOBScreen(),
-    );
-  }
+  
   static const double padding = 16;
   static const double spacing = 8;
   static const int crossAxisCount = 2;

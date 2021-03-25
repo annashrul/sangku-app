@@ -221,40 +221,40 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           padding: scaler.getPadding(1,2),
           child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
         ),
-        Padding(
-          padding: EdgeInsets.only(left:10,right:10),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: Color(0xFFEEEEEE),
-            ),
-            child: TextFormField(
-              style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-              controller: nohpController,
-              decoration: InputDecoration(
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
-                contentPadding: const EdgeInsets.only(top: 17.0, right: 30.0, bottom: 0.0, left: 5.0),
+        Container(
+          margin: scaler.getMargin(0,2),
+          width: double.infinity,
+          padding: scaler.getPadding(0,2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Color(0xFFEEEEEE),
+          ),
+          child: TextFormField(
+            style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+            controller: nohpController,
+            maxLines: 1,
+            autofocus: false,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
               ),
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              focusNode: nohpFocus ,
-              inputFormatters: <TextInputFormatter>[
-                LengthLimitingTextInputFormatter(14),
-
-                WhitelistingTextInputFormatter.digitsOnly
-              ],
-              onChanged: (e){
-                handleChange(e);
-              },
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
+              contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
             ),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            focusNode: nohpFocus,
+            inputFormatters: <TextInputFormatter>[
+              LengthLimitingTextInputFormatter(14),
+              WhitelistingTextInputFormatter.digitsOnly
+            ],
+            onChanged: (e){
+              handleChange(e);
+            },
+
           ),
         ),
         isLoadingProduct?StaggeredGridView.countBuilder(
@@ -273,8 +273,11 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 10.0,
           crossAxisSpacing: 10.0,
-        ):isNodata?WidgetHelper().noDataWidget(context):StaggeredGridView.countBuilder(
-          padding: EdgeInsets.all(10.0),
+        ):isNodata?Container(
+          padding: scaler.getPadding(1, 2),
+          child: WidgetHelper().textQ("No data.",scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
+        ):StaggeredGridView.countBuilder(
+          padding: scaler.getPadding(1, 2),
           shrinkWrap: true,
           primary: false,
           crossAxisCount: 2,
@@ -282,8 +285,8 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           itemBuilder: (BuildContext context, int index) {
             var val=productPpobPraModel.result.data[index];
             return FlatButton(
-                padding: EdgeInsets.all(10.0),
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                padding:scaler.getPadding(1,1),
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
                 color: idx==index?Constant().mainColor:Color(0xFFEEEEEE),
                 onPressed: (){
                   handleNext(val.toJson()..addAll({"param":"1","index":index,"nohp":nohpController.text,"page":title}));
@@ -298,8 +301,8 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
             );
           },
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-          mainAxisSpacing: 10.0,
-          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 5.0,
+          crossAxisSpacing: 5.0,
         )
       ],
     );
@@ -315,42 +318,41 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           padding: scaler.getPadding(1,2),
           child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
         ),
-        Padding(
+        Container(
+          margin: scaler.getMargin(0,2),
+          width: double.infinity,
           padding: scaler.getPadding(0,2),
-          child: Container(
-            width: double.infinity,
-            padding: scaler.getPadding(0,2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Color(0xFFEEEEEE),
+          ),
+          child: TextFormField(
+            style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+            controller: nohpController,
+            maxLines: 1,
+            autofocus: false,
+            decoration: InputDecoration(
 
-            // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: Color(0xFFEEEEEE),
-            ),
-            child: TextFormField(
-              style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-              controller: nohpController,
-              decoration: InputDecoration(
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
-                contentPadding:  EdgeInsets.only(top: scaler.getHeight(1), right: 0.0, bottom: 0.0, left: 0.0),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
               ),
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              focusNode: nohpFocus ,
-              inputFormatters: <TextInputFormatter>[
-                LengthLimitingTextInputFormatter(14),
-
-                WhitelistingTextInputFormatter.digitsOnly
-              ],
-              onChanged: (e){
-                handleChange(e);
-              },
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide.none,
+              ),
+              suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
+              contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
             ),
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            focusNode: nohpFocus,
+            inputFormatters: <TextInputFormatter>[
+              LengthLimitingTextInputFormatter(14),
+              WhitelistingTextInputFormatter.digitsOnly
+            ],
+            onChanged: (e){
+              handleChange(e);
+            },
+
           ),
         ),
         StaggeredGridView.countBuilder(
@@ -363,26 +365,26 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
             var val=categoryPpobModel.result.data[index];
             var logo=val.logo.split("/");
             return FlatButton(
-                padding:scaler.getPadding(0.5,1),
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
+                padding:scaler.getPadding(1,1),
+                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
                 color: idx==index?Constant().mainColor:Color(0xFFEEEEEE),
                 onPressed: ()async{
                   handleNext(val.toJson()..addAll({"param":"2","index":index,"nohp":nohpController.text,"page":title}));
                 },
                 child: Row(
                   children: [
-                    WidgetHelper().baseImage(val.logo,height: scaler.getHeight(3)),
+                    WidgetHelper().baseImage(val.logo,height: scaler.getHeight(3),width: scaler.getWidth(7),fit: BoxFit.contain),
                     SizedBox(width: scaler.getWidth(1)),
                     Expanded(
-                      child: WidgetHelper().textQ(val.title,scaler.getTextSize(9),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.bold,textAlign: TextAlign.left,maxLines: 10),
+                      child: WidgetHelper().textQ(val.title.toLowerCase(),scaler.getTextSize(9),idx==index?Constant().secondDarkColor:Constant().darkMode, FontWeight.normal,textAlign: TextAlign.left,maxLines: 10),
                     ),
                   ],
                 ),
             );
           },
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-          mainAxisSpacing: 2.0,
-          crossAxisSpacing: 2.0,
+          mainAxisSpacing: 5,
+          crossAxisSpacing: 5.0,
         )
       ],
     );
@@ -442,7 +444,8 @@ class _ModalProductState extends State<ModalProduct> {
           ),
           Expanded(
               flex: 18,
-              child: ListView.separated(
+              child: ListView.builder(
+
                 padding:scaler.getPadding(0,2),
                 addRepaintBoundaries: true,
                 primary: false,
@@ -451,7 +454,8 @@ class _ModalProductState extends State<ModalProduct> {
                 itemBuilder: (context,index){
                   var val=widget.productPpobPraModel.result.data[index];
                   return FlatButton(
-                    padding: EdgeInsets.all(0.0),
+                    color: index%2==0?Color(0xFFEEEEEE):Colors.transparent,
+                    padding:scaler.getPadding(0,2),
                     onPressed: (){
                       setState(() {
                         idx=index;
@@ -461,12 +465,11 @@ class _ModalProductState extends State<ModalProduct> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         WidgetHelper().textQ(val.note,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-                        Icon(AntDesign.checkcircleo,color: idx==index?Colors.grey:Colors.transparent)
+                        Icon(AntDesign.checkcircleo,color: idx==index?Constant().darkMode:Colors.transparent,size: scaler.getTextSize(12),)
                       ],
                     ),
                   );
                 },
-                separatorBuilder: (_,i){return(Divider());},
               )
           ),
           Expanded(

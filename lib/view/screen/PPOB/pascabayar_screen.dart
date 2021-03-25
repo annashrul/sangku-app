@@ -138,7 +138,8 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
         controller: controller,
         children: [
           Container(
-            padding:scaler.getPadding(1,2),
+            margin: scaler.getMargin(1,0),
+            padding:scaler.getPadding(0,2),
             width: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -146,79 +147,69 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
               children: [
                 WidgetHelper().textQ("No. Telepon", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
                 SizedBox(height:scaler.getHeight(1)),
-                Padding(
-                  padding: EdgeInsets.only(left:0,right:0),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.only(left:10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color:Constant().greyColor,
-                    ),
-                    child: TextFormField(
-                      style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-                      controller: nohpController,
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        suffixIcon:Icon(AntDesign.phone,color:Constant().mainColor1),
-                        contentPadding: const EdgeInsets.only(top: 17.0, right: 30.0, bottom: 0.0, left: 5.0),
+                Container(
+                  width: double.infinity,
+                  padding: scaler.getPadding(0,2),
+                  // width: double.infinity,
+                  // padding: EdgeInsets.only(left:10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color:Constant().greyColor,
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                    controller: nohpController,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
                       ),
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      focusNode: nohpFocus ,
-                      inputFormatters: <TextInputFormatter>[
-                        LengthLimitingTextInputFormatter(14),
-
-                        WhitelistingTextInputFormatter.digitsOnly
-                      ],
-                      onChanged: (e){
-                        // handleChange(e);
-                      },
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon:Icon(AntDesign.phone,color:Constant().mainColor1,size: scaler.getTextSize(12),),
+                      contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
                     ),
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    focusNode: nohpFocus ,
+                    inputFormatters: <TextInputFormatter>[
+                      LengthLimitingTextInputFormatter(14),
+
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+
+                    onFieldSubmitted: (e){
+                      WidgetHelper().fieldFocusChange(context,nohpFocus,idPelangganFocus);
+                      // handleChange(e);
+                    },
                   ),
                 ),
                 SizedBox(height:scaler.getHeight(1)),
                 WidgetHelper().textQ("ID Pelanggan", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
                 SizedBox(height:scaler.getHeight(1)),
-                Padding(
-                  padding: EdgeInsets.only(left:0,right:0),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.only(left:10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(left:10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
                       color:Constant().greyColor
-                    ),
-                    child: TextFormField(
-                      style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-                      controller: idPelangganController,
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                        ),
-                        suffixIcon:Icon(AntDesign.link,color:Constant().mainColor1),
-                        contentPadding: const EdgeInsets.only(top: 17.0, right: 30.0, bottom: 0.0, left: 5.0),
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                    controller: idPelangganController,
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
                       ),
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      focusNode: idPelangganFocus ,
-                      inputFormatters: <TextInputFormatter>[
-                        LengthLimitingTextInputFormatter(14),
-
-                        WhitelistingTextInputFormatter.digitsOnly
-                      ],
-                      onChanged: (e){
-                        // handleChange(e);
-                      },
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon:Icon(AntDesign.link,color:Constant().mainColor1,size: scaler.getTextSize(12),),
+                      contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
                     ),
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    focusNode: idPelangganFocus ,
                   ),
                 ),
                 SizedBox(height:scaler.getHeight(1)),
@@ -232,6 +223,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                         itemCount: productPpobPraModel.result.data.length,
                         itemBuilder: (context,index){
                           var val=productPpobPraModel.result.data[index];
+
                           return Padding(
                             padding: EdgeInsets.only(bottom: 10),
                             child: CardWidget(
@@ -242,8 +234,8 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                                   print(code);
                                 },
                                 titleColor:  Constant().darkMode,
-                                prefixBadge: Constant().mainColor1,
-                                title: val.note,
+                                prefixBadge: Constant().darkMode,
+                                title: val.note.toLowerCase(),
                                 suffixIcon:AntDesign.checkcircleo,
                                 suffixIconColor: code==val.code?Constant().mainColor1:Colors.transparent,
                                 backgroundColor:Constant().greyColor

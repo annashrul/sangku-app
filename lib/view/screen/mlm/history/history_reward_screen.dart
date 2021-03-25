@@ -123,6 +123,7 @@ class _HistoryRewardScreenState extends State<HistoryRewardScreen> {
         padding: scaler.getPadding(0,2),
         child: Column(
           children: [
+            SizedBox(height: scaler.getHeight(1)),
             if(dateFrom!=''||dateTo!=''||q!='')Expanded(
               flex:1,
               child: ListView(

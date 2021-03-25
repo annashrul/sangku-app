@@ -106,7 +106,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
           floatingActionButton: FloatingActionButton(
             splashColor:Colors.black38,
             backgroundColor: widget.currentTab == 2 ? Constant().mainColor : Colors.white,
-            child:Icon(AntDesign.home,color: widget.currentTab == 2?Colors.white:Constant().secondColor,size: scaler.getTextSize(15)),
+            child:Icon(AntDesign.home,color: widget.currentTab == 2?Constant().mainColor2:Constant().mainColor,size: scaler.getTextSize(15)),
             onPressed: () {
               setState(() {
                 currentScreen = HomeScreen();
@@ -117,7 +117,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
-            notchMargin: 10,
+            // notchMargin: 10,
             child: Container(
               height: 60,
               child: Row(
@@ -127,6 +127,8 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       MaterialButton(
+                        elevation: 0,
+                        color: widget.currentTab == 0?Constant().mainColor:Colors.white,
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
                         minWidth: scaler.getWidth(10),
@@ -140,11 +142,14 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.gift,color: widget.currentTab == 0?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
+                            Icon(AntDesign.gift,color: widget.currentTab == 0?Constant().mainColor2:Constant().mainColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       ),
                       MaterialButton(
+                        elevation: 0,
+
+                        color: widget.currentTab == 1?Constant().mainColor:Colors.white,
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
                         minWidth: scaler.getWidth(10),
@@ -158,7 +163,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.shoppingcart,color: widget.currentTab == 1?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
+                            Icon(AntDesign.shoppingcart,color: widget.currentTab == 1?Constant().mainColor2:Constant().mainColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       )
@@ -169,9 +174,11 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       MaterialButton(
+                        color: widget.currentTab == 3?Constant().mainColor:Colors.white,
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
                         minWidth: scaler.getWidth(10),
+                        elevation: 0,
 
                         onPressed: () {
                           setState(() {
@@ -182,11 +189,14 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.addusergroup,color: widget.currentTab == 3?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
+                            Icon(AntDesign.addusergroup,color: widget.currentTab == 3?Constant().mainColor2:Constant().mainColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       ),
                       MaterialButton(
+                        elevation: 0,
+                        color: widget.currentTab == 4?Constant().mainColor:Colors.white,
+
                         highlightColor:Colors.black38,
                         splashColor:Colors.black38,
                         minWidth: scaler.getWidth(10),
@@ -200,7 +210,7 @@ class _IndexScreenState extends State<IndexScreen> with TickerProviderStateMixin
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(AntDesign.user,color: widget.currentTab == 4?Constant().mainColor:Constant().secondColor,size:scaler.getTextSize(15)),
+                            Icon(AntDesign.user,color: widget.currentTab == 4?Constant().mainColor2:Constant().mainColor,size:scaler.getTextSize(15)),
                           ],
                         ),
                       )

@@ -169,7 +169,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
             setState(() {lbl = idx;});
           },leading:Padding(
             padding: EdgeInsets.all(8.0),
-            child:  CircleImage(
+            child: CircleImage(
               param: 'network',
               key: Key("packageScreen"),
               image: picture,
