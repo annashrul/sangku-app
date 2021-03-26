@@ -401,6 +401,9 @@ class _ModalFormState extends State<ModalForm> {
         titleController.text = result.result.title;
         receiverController.text = result.result.penerima;
         telpController.text=result.result.noHp;
+        prov=result.result.kdProv;
+        city=result.result.kdKota;
+        district=result.result.kdKec;
         if(mainAdd.length>3){
           provController.text = mainAdd[mainAdd.length-1];
           kotaController.text = mainAdd[mainAdd.length-2];
@@ -448,177 +451,183 @@ class _ModalFormState extends State<ModalForm> {
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
     List findProv = mainAddressController.text.split(",");
-    return WidgetHelper().wrapperModal(context,"${widget.id==''?'Tambah':'Ubah'} Alamat", isLoading?WidgetHelper().loadingWidget(context):ListView(
-      children: [
-        Container(
-            padding:scaler.getPadding(0,2),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                WidgetHelper().myForm(
-                  context,
-                  "Simpan Alamat Sebagai (Contoh:Alamat rumah, Alamat kantor, Alamat pacar)",
-                  titleController,
-                  focusNode: titleFocus,
-                  onSubmit: (e){WidgetHelper().fieldFocusChange(context, titleFocus,receiverFocus);}
-                ),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().myForm(
-                  context,
-                  "Penerima",
-                  receiverController,
-                  focusNode: receiverFocus,
-                  onSubmit: (e){WidgetHelper().fieldFocusChange(context, receiverFocus,telpFocus);}
-                ),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().myForm(
-                  context,
-                  "No.Telepon",
-                  telpController,
-                  focusNode: telpFocus,
-                  textInputType:TextInputType.number,
-                  textInputAction: TextInputAction.done,
-                  inputFormatters: <TextInputFormatter>[
-                    WhitelistingTextInputFormatter.digitsOnly
-                  ],
-                ),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().animShakeWidget(context,WidgetHelper().myForm(
+    return Container(
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context,"${widget.id==''?'Tambah':'Ubah'} Alamat", isLoading?WidgetHelper().loadingWidget(context):ListView(
+        children: [
+          Container(
+              padding:scaler.getPadding(0,2),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WidgetHelper().myForm(
+                      context,
+                      "Simpan Alamat Sebagai (Contoh:Alamat rumah, Alamat kantor, Alamat pacar)",
+                      titleController,
+                      focusNode: titleFocus,
+                      onSubmit: (e){WidgetHelper().fieldFocusChange(context, titleFocus,receiverFocus);}
+                  ),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().myForm(
+                      context,
+                      "Penerima",
+                      receiverController,
+                      focusNode: receiverFocus,
+                      onSubmit: (e){WidgetHelper().fieldFocusChange(context, receiverFocus,telpFocus);}
+                  ),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().myForm(
                     context,
-                    "Provinsi",
-                    provController,
-                    focusNode: provFocus,
-                    onTap:(){
-                      FocusScope.of(context).unfocus();
-                      WidgetHelper().myModal(context,ModalProvinsi(
-                        callback:(id,name,idx){
-                          findProv[findProv.length-1] = name;
-                          mainAddressController.text = findProv.join(",");
-                          prov=id;provName=name;idxProv=idx;kotaController.text='';kecController.text='';provController.text=name;
-                          setState(() {});
-                          Navigator.pop(context);
-                        },
-                        id: prov,idx: idxProv,
-                      ));
-                    },
-                    isRead: true
-                ),enable: isErrorProv),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().animShakeWidget(context,WidgetHelper().myForm(
-                    context,
-                    "Kota",
-                    kotaController,
-                    focusNode: kotaFocus,
-                    onTap:(){
-                      if(provController.text!=''){
-                        WidgetHelper().myModal(context,ModalCity(
+                    "No.Telepon",
+                    telpController,
+                    focusNode: telpFocus,
+                    textInputType:TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                  ),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().animShakeWidget(context,WidgetHelper().myForm(
+                      context,
+                      "Provinsi",
+                      provController,
+                      focusNode: provFocus,
+                      onTap:(){
+                        FocusScope.of(context).unfocus();
+                        WidgetHelper().myModal(context,ModalProvinsi(
                           callback:(id,name,idx){
-                            print('bus');
-                            findProv[findProv.length-2] = name;
+                            findProv[findProv.length-1] = name;
                             mainAddressController.text = findProv.join(",");
-                            city=id;cityName=name;idxCity=idx;kecController.text='';kotaController.text=name;
+                            prov=id;
+                            provName=name;
+                            idxProv=idx;
+                            kotaController.text='';kecController.text='';provController.text=name;
                             setState(() {});
                             Navigator.pop(context);
                           },
-                          id:city,idProv: prov,idx: idxCity,
+                          id: prov,idx: idxProv,
                         ));
-                      }
-                      else{
-                        setState(() {isErrorProv=true;});
-                        Timer(Duration(seconds:1), (){
-                          setState(() {isErrorProv=false;});
-                        });
-                      }
-                    },
-                    isRead: true
-                ),enable: isErrorCity),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().myForm(
-                    context,
-                    "Kecamatan",
-                    kecController,
-                    focusNode: kecFocus,
-                    onTap:(){
-                      if(provController.text!=''&&kotaController.text!=''){
-                        WidgetHelper().myModal(context,ModalDisctrict(
-                          callback:(id,name,idx){
-                            findProv[findProv.length-3] = name;
-                            mainAddressController.text = findProv.join(",");
-                            district=id;districtName=name;idxDistrict=idx;kecController.text=name;
-                            setState(() {});
-                            Navigator.pop(context);
-                          },
-                          id:district,idCity: city,idx: idxDistrict,
-                        ));
-                      }
-                      else{
-                        if(provController.text==''){
+                      },
+                      isRead: true
+                  ),enable: isErrorProv),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().animShakeWidget(context,WidgetHelper().myForm(
+                      context,
+                      "Kota",
+                      kotaController,
+                      focusNode: kotaFocus,
+                      onTap:(){
+                        print(prov);
+                        if(provController.text!=''){
+                          WidgetHelper().myModal(context,ModalCity(
+                            callback:(id,name,idx){
+                              findProv[findProv.length-2] = name;
+                              mainAddressController.text = findProv.join(",");
+                              city=id;cityName=name;idxCity=idx;kecController.text='';kotaController.text=name;
+                              setState(() {});
+                              Navigator.pop(context);
+                            },
+                            id:city,idProv: prov,idx: idxCity,
+                          ));
+                        }
+                        else{
                           setState(() {isErrorProv=true;});
                           Timer(Duration(seconds:1), (){
                             setState(() {isErrorProv=false;});
                           });
                         }
-                        else{
-                          setState(() {isErrorCity=true;});
-                          Timer(Duration(seconds:1), (){
-                            setState(() {isErrorCity=false;});
-                          });
+                      },
+                      isRead: true
+                  ),enable: isErrorCity),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().myForm(
+                      context,
+                      "Kecamatan",
+                      kecController,
+                      focusNode: kecFocus,
+                      onTap:(){
+                        if(provController.text!=''&&kotaController.text!=''){
+                          WidgetHelper().myModal(context,ModalDisctrict(
+                            callback:(id,name,idx){
+                              findProv[findProv.length-3] = name;
+                              mainAddressController.text = findProv.join(",");
+                              district=id;districtName=name;idxDistrict=idx;kecController.text=name;
+                              setState(() {});
+                              Navigator.pop(context);
+                            },
+                            id:district,idCity: city,idx: idxDistrict,
+                          ));
                         }
-                      }
-                    },
-                    isRead: true
-                ),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().myForm(
-                  context,
-                  "Detail Alamat (format penulisan : nama jalan,rt,rw,kelurahan,kode pos)",
-                  mainAddressController,
-                  focusNode: mainAddressFocus,
-                  onChange: (_){setState(() {});},
-                  maxLine: 5
-                ),
-                SizedBox(height:scaler.getHeight(0.5)),
-                WidgetHelper().textQ("Alamat ini digunakan untuk pengiriman",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
-                SizedBox(height:5.0),
-                Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).focusColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(10.0)
-                      ),
-                    ),
-                    padding:scaler.getPadding(0.5,2),
-                    child:Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        widget.id!=''?WidgetHelper().textQ(""
-                            "${mainAddressController.text!=''?"${mainAddressController.text},":''}",
-                            // "${kecController.text!=''?"${kecController.text}, ":''}"
-                            // "${kotaController.text!=''?"${kotaController.text}, ":''}"
-                            // "${provController.text!=''?"${provController.text}":''}",
-                            scaler.getTextSize(9),Constant().darkMode,FontWeight.bold,maxLines: 5
-                        ):WidgetHelper().textQ(""
-                            "${mainAddressController.text!=''?"${mainAddressController.text},":''}",
-                            // "${kecController.text!=''?"${kecController.text}, ":''}"
-                            // "${kotaController.text!=''?"${kotaController.text}, ":''}"
-                            // "${provController.text!=''?"${provController.text}":''}",
-                            scaler.getTextSize(9),Constant().darkMode,FontWeight.bold,maxLines: 5
+                        else{
+                          if(provController.text==''){
+                            setState(() {isErrorProv=true;});
+                            Timer(Duration(seconds:1), (){
+                              setState(() {isErrorProv=false;});
+                            });
+                          }
+                          else{
+                            setState(() {isErrorCity=true;});
+                            Timer(Duration(seconds:1), (){
+                              setState(() {isErrorCity=false;});
+                            });
+                          }
+                        }
+                      },
+                      isRead: true
+                  ),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().myForm(
+                      context,
+                      "Detail Alamat (format penulisan : nama jalan,rt,rw,kelurahan,kode pos)",
+                      mainAddressController,
+                      focusNode: mainAddressFocus,
+                      onChange: (_){setState(() {});},
+                      maxLine: 5
+                  ),
+                  SizedBox(height:scaler.getHeight(0.5)),
+                  WidgetHelper().textQ("Alamat ini digunakan untuk pengiriman",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+                  SizedBox(height:5.0),
+                  Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).focusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10.0)
                         ),
+                      ),
+                      padding:scaler.getPadding(0.5,2),
+                      child:Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          widget.id!=''?WidgetHelper().textQ(""
+                              "${mainAddressController.text!=''?"${mainAddressController.text},":''}",
+                              // "${kecController.text!=''?"${kecController.text}, ":''}"
+                              // "${kotaController.text!=''?"${kotaController.text}, ":''}"
+                              // "${provController.text!=''?"${provController.text}":''}",
+                              scaler.getTextSize(9),Constant().darkMode,FontWeight.bold,maxLines: 5
+                          ):WidgetHelper().textQ(""
+                              "${mainAddressController.text!=''?"${mainAddressController.text},":''}",
+                              // "${kecController.text!=''?"${kecController.text}, ":''}"
+                              // "${kotaController.text!=''?"${kotaController.text}, ":''}"
+                              // "${provController.text!=''?"${provController.text}":''}",
+                              scaler.getTextSize(9),Constant().darkMode,FontWeight.bold,maxLines: 5
+                          ),
 
-                      ],
-                    )
+                        ],
+                      )
 
-                ),
-              ],
-            )
-        ),
-      ],
-    ),isCallack: true,height: 90,callack: (){
-      storeAddress();
-    });
+                  ),
+                ],
+              )
+          ),
+        ],
+      ),isCallack: true,callack: (){
+        storeAddress();
+      }),
+    );
   }
 
 }
@@ -677,35 +686,38 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().wrapperModal(context,"Daftar Provinsi", Scrollbar(
-        child: isLoadingProv?WidgetHelper().loadingWidget(context):ScrollablePositionedList.separated(
-          padding: EdgeInsets.zero,
-          itemScrollController: _scrollController,
-          itemCount: provinsiModel.result.length,
-          initialScrollIndex: idx,
-          itemBuilder: (context,index){
-            return FlatButton(
-                color: index%2==0?Color(0xFFEEEEEE):Colors.white,
-                padding: scaler.getPadding(0,0),
-                onPressed: (){
-                  setState(() {
-                    idx = index;
-                    id = provinsiModel.result[index].id;
-                  });
-                  widget.callback(provinsiModel.result[index].id,provinsiModel.result[index].name,index);
-                },
-                child: ListTile(
-                  contentPadding: scaler.getPadding(0,2),
-                  title: WidgetHelper().textQ("${provinsiModel.result[index].name}",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
-                  trailing: widget.id==provinsiModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
-                )
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Divider(height: 0,color: id==provinsiModel.result[index].id?Colors.grey:Colors.grey);
-          },
-        )
-    ),isCallack: false,height: 90);
+    return Container(
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context,"Daftar Provinsi", Scrollbar(
+          child: isLoadingProv?WidgetHelper().loadingWidget(context):ScrollablePositionedList.separated(
+            padding: EdgeInsets.zero,
+            itemScrollController: _scrollController,
+            itemCount: provinsiModel.result.length,
+            initialScrollIndex: idx,
+            itemBuilder: (context,index){
+              return FlatButton(
+                  color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                  padding: scaler.getPadding(0,0),
+                  onPressed: (){
+                    setState(() {
+                      idx = index;
+                      id = provinsiModel.result[index].id;
+                    });
+                    widget.callback(provinsiModel.result[index].id,provinsiModel.result[index].name,index);
+                  },
+                  child: ListTile(
+                    contentPadding: scaler.getPadding(0,2),
+                    title: WidgetHelper().textQ("${provinsiModel.result[index].name}",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+                    trailing: widget.id==provinsiModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
+                  )
+              );
+            },
+            separatorBuilder: (context, index) {
+              return Divider(height: 0,color: id==provinsiModel.result[index].id?Colors.grey:Colors.grey);
+            },
+          )
+      ),isCallack: false),
+    );
   }
 }
 
@@ -738,21 +750,20 @@ class _ModalCityState extends State<ModalCity> {
     var res = await BaseProvider().getProvider("transaction/kurir/kota?id=${widget.idProv}",kotaModelFromJson,context: context,callback: (){
       Navigator.pop(context);
     });
+    print(res);
     if(res==Constant().errNoData){
       setState(() {
         isLoading=false;
       });
     }
     else if(res is KotaModel){
-      KotaModel resullt = res;
       setState(() {
+        KotaModel resullt = res;
         kotaModel = KotaModel.fromJson(resullt.toJson());
-        isLoading=false;
-        id = widget.id==""?resullt.result[0].id:widget.id;
+        id = widget.id==""?kotaModel.result[0].id:widget.id;
         idx = widget.idx;
+        isLoading=false;
       });
-    }{
-
     }
   }
 
@@ -767,35 +778,43 @@ class _ModalCityState extends State<ModalCity> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().wrapperModal(context,"Daftar Kota", Scrollbar(
-        child: isLoading?WidgetHelper().loadingWidget(context):ScrollablePositionedList.separated(
-          padding: EdgeInsets.zero,
-          itemScrollController: _scrollController,
-          itemCount: kotaModel.result.length,
-          initialScrollIndex: idx,
-          itemBuilder: (context,index){
-            return FlatButton(
-              onPressed: (){
-                setState(() {
-                  idx = index;
-                  id = kotaModel.result[index].id;
-                });
-                widget.callback(kotaModel.result[index].id,kotaModel.result[index].name,index);
-              },
-              color: index%2==0?Color(0xFFEEEEEE):Colors.white,
-              padding: scaler.getPadding(0,0),
-              child: ListTile(
-                contentPadding: scaler.getPadding(0,2),
-                title: WidgetHelper().textQ("${kotaModel.result[index].name}", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
-                trailing: id==kotaModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
-              ),
-            );
+    return Container(
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context,"Daftar Kota", Scrollbar(
+          child: isLoading?WidgetHelper().loadingWidget(context):buildContent(context)
+      ),isCallack: false),
+    );
+  }
+
+  Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return ScrollablePositionedList.separated(
+      padding: EdgeInsets.zero,
+      itemScrollController: _scrollController,
+      itemCount: kotaModel.result.length,
+      // initialScrollIndex: idx,
+      itemBuilder: (context,index){
+        return FlatButton(
+          onPressed: (){
+            setState(() {
+              idx = index;
+              id = kotaModel.result[index].id;
+            });
+            widget.callback(kotaModel.result[index].id,kotaModel.result[index].name,index);
           },
-          separatorBuilder: (context, index) {
-            return Divider(height: 0,color: id==kotaModel.result[index].id?Colors.grey:Colors.grey);
-          },
-        )
-    ),isCallack: false,height: 90);
+          color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+          padding: scaler.getPadding(0,0),
+          child: ListTile(
+            contentPadding: scaler.getPadding(0,2),
+            title: WidgetHelper().textQ("${kotaModel.result[index].name}", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+            trailing: id==kotaModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
+          ),
+        );
+      },
+      separatorBuilder: (context, index) {
+        return Divider(height: 0,color:Colors.grey);
+      },
+    );
   }
 }
 
@@ -858,35 +877,38 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return WidgetHelper().wrapperModal(context,"Daftar Kecamatan", Scrollbar(
-        child: isLoading?WidgetHelper().loadingWidget(context):ScrollablePositionedList.separated(
-          padding: EdgeInsets.zero,
-          itemScrollController: _scrollController,
-          itemCount: kecamatanModel.result.length,
-          initialScrollIndex: idx,
-          itemBuilder: (context,index){
-            return FlatButton(
-              onPressed: (){
-                setState(() {
-                  idx = index;
-                  id = kecamatanModel.result[index].id;
-                });
-                widget.callback(kecamatanModel.result[index].id,kecamatanModel.result[index].kecamatan,index);
-              },
-              color: index%2==0?Color(0xFFEEEEEE):Colors.white,
-              padding: scaler.getPadding(0,0),
-              child: ListTile(
-                contentPadding: scaler.getPadding(0,2),
-                title: WidgetHelper().textQ("${kecamatanModel.result[index].kecamatan}", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
-                trailing: id==kecamatanModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
-              ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Divider(height: 0,color: id==kecamatanModel.result[index].id?Colors.grey:Colors.grey);
-          },
-        )
-    ),isCallack: false,height: 90);
+    return Container(
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context,"Daftar Kecamatan", Scrollbar(
+          child: isLoading?WidgetHelper().loadingWidget(context):ScrollablePositionedList.separated(
+            padding: EdgeInsets.zero,
+            itemScrollController: _scrollController,
+            itemCount: kecamatanModel.result.length,
+            initialScrollIndex: idx,
+            itemBuilder: (context,index){
+              return FlatButton(
+                onPressed: (){
+                  setState(() {
+                    idx = index;
+                    id = kecamatanModel.result[index].id;
+                  });
+                  widget.callback(kecamatanModel.result[index].id,kecamatanModel.result[index].kecamatan,index);
+                },
+                color: index%2==0?Color(0xFFEEEEEE):Colors.white,
+                padding: scaler.getPadding(0,0),
+                child: ListTile(
+                  contentPadding: scaler.getPadding(0,2),
+                  title: WidgetHelper().textQ("${kecamatanModel.result[index].kecamatan}", scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+                  trailing: id==kecamatanModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:Constant().darkMode):Text(''),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return Divider(height: 0,color: id==kecamatanModel.result[index].id?Colors.grey:Colors.grey);
+            },
+          )
+      ),isCallack: false),
+    );
 
   }
 }

@@ -37,19 +37,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
     if(res is RekapitulasiModel){
       RekapitulasiModel result=res;
       rekapitulasiModel=result;
-      print(rekapitulasiModel.toJson());
-      // _controller.animateToDate(_selectedValue);
-      _controller.scrollToSelectedItem(true);
-
-      // _scaffoldKey.currentState.setState(() {
-      //   isLoading=false;
-      // });
-      // notifyListeners();
-
       if(this.mounted){
         setState(() {
           isLoading=false;
           isLoadingFirst=false;
+          _controller.scrollToSelectedItem(true);
         });
       }
     }
@@ -70,7 +62,6 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
     String anying='';
     var now = DateTime.now();
-    print(DateFormat.E('id').format(now));
     return Scaffold(
       // key: _scaffoldKey,
         appBar: WidgetHelper().appBarWithButton(context,"Rekapitulasi", (){Navigator.pop(context);},<Widget>[
@@ -92,13 +83,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
             Expanded(
                 child: ListView(
                   children: [
-
                     Container(
                       child: WidgetHelper().titleNoButton(context,Ionicons.ios_timer," ${FunctionHelper().formateDate(_selectedValue, "ymd")}",color: Constant().darkMode,iconSize: 12,fontSize: sizeFont),
                       margin: EdgeInsets.only(left: 10,top:10),
                     ),
                     SizedBox(height: scaler.getHeight(1)),
-                    buildItems(context,"Sisa Plafon ", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.sisaPlafon)} .-"),
                     // SizedBox(height: scaler.getHeight(1)),
                     buildItem(context,"Pertumbuhan","Kiri","${isLoading?'':rekapitulasiModel.result.pertumbuhanKiri}",title2:"Kanan",value2:"${isLoading?'':rekapitulasiModel.result.pertumbuhanKanan}"),
                     SizedBox(height: scaler.getHeight(1)),
@@ -106,19 +95,21 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
                     SizedBox(height: scaler.getHeight(1)),
                     buildItem(context,"Balance","Kiri","${isLoading?'':rekapitulasiModel.result.balanceKiri}",title2:"Kanan",value2: "${isLoading?'':rekapitulasiModel.result.balanceKanan}"),
                     SizedBox(height: scaler.getHeight(1)),
-                    buildItems(context,"Terpasang (T)", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.hakBonus)} .-"),
+                    buildItems(context,"Terpasang (T)", "${FunctionHelper().formatter.format(rekapitulasiModel.result.hakBonus)}"),
                     // SizedBox(height: scaler.getHeight(1)),
-                    buildItems(context,"Bonus (T x 20.000) ", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.nominalBonus)} .-")
+                    buildItems(context,"Bonus (T x 20.000) ", "Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.nominalBonus)} .-"),
+                    buildItems(context,"Sisa Plafon ", "Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.sisaPlafon)} .-"),
+
                   ],
                 )
             )
           ],
         ),
       bottomNavigationBar: Container(
-
-        // alignment: Alignment.center,
         child: HorizontalDatePickerWidget(
-          // dateItemComponentList: [DateIt/em.values[DateTime.april]],
+          monthFontSize: scaler.getTextSize(9),
+          dayFontSize: scaler.getTextSize(12),
+          weekDayFontSize: scaler.getTextSize(9),
           normalTextColor: Colors.white,
           selectedTextColor: Constant().mainColor2,
           normalColor: Constant().greenColor,
@@ -129,7 +120,6 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
           widgetWidth: MediaQuery.of(context).size.width,
           datePickerController: _controller,
           onValueSelected: (date) {
-            print('selected = ${date.toIso8601String()}');
             setState(() {
               _selectedValue=date;
               isLoading=true;
@@ -220,25 +210,8 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
   
   Widget _loading(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().baseLoading(context,Container(color: Colors.white,width:scaler.getWidth(10),height:scaler.getHeight(1)));
+    return WidgetHelper().baseLoading(context,Container(color: Colors.white,width:scaler.getWidth(20),height:scaler.getHeight(1)));
   }
 }
 
 
-class Counter with ChangeNotifier, DiagnosticableTreeMixin {
-  int _count = 0;
-
-  int get count => _count;
-
-  void increment() {
-    _count++;
-    notifyListeners();
-  }
-
-  /// Makes `Counter` readable inside the devtools by listing all of its properties
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(IntProperty('count', count));
-  }
-}

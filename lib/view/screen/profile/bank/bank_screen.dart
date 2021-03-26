@@ -265,49 +265,52 @@ class _ModalFormBankState extends State<ModalFormBank> {
   Widget buildContent(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return WidgetHelper().wrapperModal(context, "${widget.val==null?'Tambah':'Ubah'} Bank",Container(
-        padding:scaler.getPadding(0,2),
-        child: ListView(
-          children: [
-            WidgetHelper().myForm(
-              context,
-              "Bank",
-              bankNameController,
-              focusNode: bankNameFocus,
-              onTap: (){
-                WidgetHelper().myModal(context,DataBank(callback: (val,idx){
-                  setState(() {
-                    bankNameController.text = val['name'];
-                    idxBank=idx;
-                  });
-                  // FunctionHelper().fieldFocusChange(context,bankNameFocus,accNameFocus);
-                },name:bankNameController.text,idx: idxBank));
-              },
-              isRead: true
-            ),
-            SizedBox(height:scaler.getHeight(0.5)),
-            WidgetHelper().myForm(
+    return Container(
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context, "${widget.val==null?'Tambah':'Ubah'} Bank",Container(
+          padding:scaler.getPadding(0,2),
+          child: ListView(
+            children: [
+              WidgetHelper().myForm(
+                  context,
+                  "Bank",
+                  bankNameController,
+                  focusNode: bankNameFocus,
+                  onTap: (){
+                    WidgetHelper().myModal(context,DataBank(callback: (val,idx){
+                      setState(() {
+                        bankNameController.text = val['name'];
+                        idxBank=idx;
+                      });
+                      // FunctionHelper().fieldFocusChange(context,bankNameFocus,accNameFocus);
+                    },name:bankNameController.text,idx: idxBank));
+                  },
+                  isRead: true
+              ),
+              SizedBox(height:scaler.getHeight(0.5)),
+              WidgetHelper().myForm(
                 context,
                 "Atas Nama",
                 accNameController,
                 focusNode: accNameFocus,
                 onSubmit: (_){WidgetHelper().fieldFocusChange(context,accNameFocus, accNoFocus);},
-            ),
-            SizedBox(height:scaler.getHeight(0.5)),
-            WidgetHelper().myForm(
-              context,
-              "No.Rekening",
-              accNoController,
-              focusNode: accNoFocus,
-              onSubmit: (_){},
-              textInputType: TextInputType.number
-            ),
+              ),
+              SizedBox(height:scaler.getHeight(0.5)),
+              WidgetHelper().myForm(
+                  context,
+                  "No.Rekening",
+                  accNoController,
+                  focusNode: accNoFocus,
+                  onSubmit: (_){},
+                  textInputType: TextInputType.number
+              ),
 
-          ],
-        )
-    ),isCallack: true,height: 90,callack: (){
-      storeBank();
-    });
+            ],
+          )
+      ),isCallack: true,callack: (){
+        storeBank();
+      }),
+    );
   }
 
 }
@@ -370,86 +373,16 @@ class _DataBankState extends State<DataBank> {
   }
   @override
   Widget build(BuildContext context) {
-    return buildContent(context);
-  }
-
-  Widget buildItem(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      padding: EdgeInsets.only(top:10.0,left:0,right:0),
-      height: MediaQuery.of(context).size.height/1.2,
-      decoration: BoxDecoration(
-        // color: Colors.white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
-      ),
-      // color: Colors.white,
-      child: isLoading?WidgetHelper().loadingWidget(context):Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:0.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          ListTile(
-            dense:true,
-            contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
-            leading: InkWell(
-              onTap: ()=>Navigator.pop(context),
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
-              ),
-            ),
-            title: WidgetHelper().textQ("Daftar Bank",14, Theme.of(context).hintColor, FontWeight.bold),
-          ),
-          Divider(),
-          SizedBox(height:10.0),
-
-          Expanded(
-            child: Scrollbar(
-                child: ScrollablePositionedList.separated(
-                  padding: EdgeInsets.zero,
-                  itemScrollController: _scrollController,
-                  itemCount: data.length,
-                  initialScrollIndex: widget.idx,
-                  itemBuilder: (context,index){
-                    var val=data[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
-                      onTap: (){
-                        widget.callback(val,index);
-                        setState(() {
-                          idx = index;
-                          widget.idx=index;
-                          name=val['name'];
-                        });
-                        Navigator.pop(context);
-                      },
-                      title: WidgetHelper().textQ(val['name'], 12, Constant().darkMode,FontWeight.bold),
-                      trailing: Icon(AntDesign.checkcircleo,color: name==val['name']?Constant().mainColor:Colors.transparent),
-                    );
-                  },
-                  separatorBuilder: (context,index){return Divider();},
-                  // itemCount: data.length
-                )
-            ),
-          )
-        ],
-      ),
+      height: scaler.getHeight(90),
+      child: buildContent(context),
     );
   }
 
+
   Widget buildContent(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return isLoading?WidgetHelper().loadingWidget(context):WidgetHelper().wrapperModal(context,"Daftar Bank",Scrollbar(
         child: ScrollablePositionedList.separated(
           padding: EdgeInsets.zero,
@@ -481,7 +414,7 @@ class _DataBankState extends State<DataBank> {
             return Divider(height: 0,color: name==data[index]['name']?Colors.grey:Colors.grey);
           },
         )
-    ),height: 90,isCallack: false);
+    ),isCallack: false);
   }
 
 }

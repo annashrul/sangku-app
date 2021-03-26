@@ -10,6 +10,7 @@ import 'package:sangkuy/model/mlm/history/history_plafon_model.dart';
 import 'package:sangkuy/model/mlm/history/history_transaction_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
+import 'package:sangkuy/view/widget/ringkasan_history_widget.dart';
 
 class HistoryPlafonScreen extends StatefulWidget {
   @override
@@ -100,6 +101,8 @@ class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
           isLoading=true;
         });
         loadData();
+      },isDetail: true,detail: (){
+        WidgetHelper().myModal(context,RingkasanHistoryPlafon(val: historyPlafonModel.result.summary.toJson()));
       }),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -237,3 +240,37 @@ class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
     );
   }
 }
+
+class RingkasanHistoryPlafon extends StatefulWidget {
+  final dynamic val;
+  RingkasanHistoryPlafon({this.val});
+  @override
+  _RingkasanHistoryPlafonState createState() => _RingkasanHistoryPlafonState();
+}
+
+class _RingkasanHistoryPlafonState extends State<RingkasanHistoryPlafon> {
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(50),
+      child: WidgetHelper().wrapperModal(context,"Ringkasan",ListView(
+        padding: scaler.getPadding(0,2),
+        children: [
+          RingkasanHistoryWidget(title:"Saldo Awal",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['saldo_awal']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Plafon Masuk",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['plafon_in']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Plafon Keluar",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['plafon_out']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Saldo Saat Ini",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['plafon_in'])-int.parse(widget.val['plafon_out']))}"),
+        ],
+      )),
+    );
+  }
+
+}
+
+
+
+

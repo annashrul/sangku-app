@@ -282,33 +282,3 @@ class _HistoryPembelianScreenState extends State<HistoryPembelianScreen> with Si
     );
   }
 }
-
-
-class FilterHistory extends StatefulWidget {
-  @override
-  _FilterHistoryState createState() => _FilterHistoryState();
-}
-
-class _FilterHistoryState extends State<FilterHistory> {
-  @override
-  Widget build(BuildContext context) {
-    ScreenScaler scaler = ScreenScaler()..init(context);
-
-    return WidgetHelper().wrapperModal(context,"Filter Laporan Pembelian",Container(
-      child: Column(
-        children: [
-          Container(
-            height: scaler.getHeight(3),
-            child: WidgetHelper().filterStatus(context, DataHelper.filterHistoryPembelian, (val){
-              setState(() {
-                // filterStatus = val['kode'];
-                // isLoading=true;
-              });
-              // loadData();
-            },1),
-          )
-        ],
-      ),
-    ),height: 90);
-  }
-}

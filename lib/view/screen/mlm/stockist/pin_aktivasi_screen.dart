@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:html/parser.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
+import 'package:sangkuy/helper/money_format_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/member/available_member_model.dart';
@@ -182,6 +184,9 @@ class TransferPinAkivasi extends StatefulWidget {
 class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
   final FocusNode penerimaFocus = FocusNode();
   var penerimaController = TextEditingController();
+  final FocusNode qtyFocus = FocusNode();
+  var qtyController = MoneyMaskedTextControllerQ(decimalSeparator: '', thousandSeparator: ',');
+
   AvailableMemberModel availableMemberModel;
   bool isNext=false;
   Future checkingAccount()async{
@@ -197,22 +202,16 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
         checkingAccount();
       });
       Navigator.pop(context);
+      penerimaFocus.unfocus();
       if(checkingMember is General){
         General result=checkingMember;
         return WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-
       }
       else{
         availableMemberModel = checkingMember;
-        penerimaFocus.unfocus();
+        qtyFocus.requestFocus();
         isNext=true;
         setState(() {});
-        // WidgetHelper().showFloatingFlushbar(context,"success","Akun terdaftar sebagai member kami");
-        // print(checkingMember.toJson());
-        // setState(() {
-        //   msg='';
-        //   availableMemberModel = checkingMember;
-        // });
       }
     }
 
@@ -221,26 +220,39 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
 
   Future handleTransfer()async{
     if(int.parse(widget.val['jumlah'])>0){
-      WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
-        WidgetHelper().loadingDialog(context);
-        final data={
-          "pin_member":pin,
-          "id_membership":widget.val['id'],
-          "uid":availableMemberModel.result.referralCode
-        };
-        var res = await BaseProvider().postProvider("pin/transfer", data,context: context,callback: (){
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-        });
-        print(res);
-        if(res!=null){
-          Navigator.pop(context);
-          WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));});
+      int qty=int.parse(FunctionHelper().rmComma(qtyController.text));
+      if(qty>0){
+        if(int.parse(widget.val['jumlah'])>qty){
+          WidgetHelper().myPush(context,PinScreen(callback: (context,isTrue,pin)async{
+            WidgetHelper().loadingDialog(context);
+            final data={
+              "pin_member":pin,
+              "id_membership":widget.val['id'],
+              "uid":availableMemberModel.result.referralCode,
+              "qty":qty.toString()
+            };
+            var res = await BaseProvider().postProvider("pin/transfer", data,context: context,callback: (){
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            });
+            print(res);
+            if(res!=null){
+              Navigator.pop(context);
+              WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){WidgetHelper().myPushRemove(context, IndexScreen(currentTab: 2));});
+            }
+
+
+          }));
         }
+        else{
+          WidgetHelper().showFloatingFlushbar(context,"failed","qty melebihi pin yang anda punya");
+        }
+      }
+      else{
+        WidgetHelper().showFloatingFlushbar(context,"failed","qty harus lebih dari 0");
+      }
 
-
-      }));
     }
     else{
       WidgetHelper().showFloatingFlushbar(context,"failed","Maaf, anda tidak memiliki pin");
@@ -255,9 +267,14 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    return buildContent(context);
+  }
 
+
+  Widget buildItem(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
@@ -373,10 +390,87 @@ class _TransferPinAkivasiState extends State<TransferPinAkivasi> {
             ),
           ),
           SizedBox(height:scaler.getHeight(1)),
-
         ],
       ),
     );
+  }
+
+
+  Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(50),
+      child: WidgetHelper().wrapperModal(context, "Transfer Pin Paket ${widget.val['title']}", ListView(
+        padding: scaler.getPadding(0,2),
+        children: [
+
+          // SizedBox(height: scaler.getHeight(1)),
+          WidgetHelper().myFormWithAct(
+            context,
+            "Masukan ID penerima yang akan di transfer",
+            penerimaController,
+            ()async{
+              penerimaFocus.unfocus();
+              final qr = await FunctionHelper().scanQR();
+              penerimaController.text = qr;
+              setState(() {});
+            },
+            AntDesign.scan1,
+            focusNode: penerimaFocus,
+            textInputAction: TextInputAction.done,
+            textCapitalization: TextCapitalization.characters,
+          ),
+          if(isNext)SizedBox(height: scaler.getHeight(1)),
+          if(isNext)WidgetHelper().myForm(
+              context,
+              "Qty",
+              qtyController,
+              textInputType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              inputFormatters: <TextInputFormatter>[
+                // WhitelistingTextInputFormatter.digitsOnly
+                WhitelistingTextInputFormatter.digitsOnly,
+                BlacklistingTextInputFormatter.singleLineFormatter,
+              ],
+              focusNode: qtyFocus,
+          ),
+          if(isNext)SizedBox(height: scaler.getHeight(1)),
+          isNext?ListTile(
+            contentPadding: EdgeInsets.all(0),
+            onTap: (){},
+            leading: WidgetHelper().baseImage(availableMemberModel.result.picture),
+            title: WidgetHelper().textQ(availableMemberModel.result.fullName, scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+            subtitle: WidgetHelper().textQ(availableMemberModel.result.referralCode, scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+            trailing: WidgetHelper().baseImage(availableMemberModel.result.badge),
+          ):Text(''),
+          Divider(thickness: 10),
+          SizedBox(height:scaler.getHeight(1)),
+          Container(
+            margin: scaler.getMargin(0,0),
+            alignment: Alignment.bottomCenter,
+            color: Constant().moneyColor,
+            child:  FlatButton(
+                padding: scaler.getPadding(0,2),
+                onPressed: (){
+                  isNext?handleTransfer():checkingAccount();
+                  // checkingAccount();
+                  // handleSubmit();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(AntDesign.checkcircleo,color: Colors.white),
+                    SizedBox(width: 10.0),
+                    WidgetHelper().textQ(isNext?"Transfer PIN":"Periksa Akun", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+                  ],
+                )
+            ),
+          ),
+        ],
+      )),
+    );
+
   }
 }
 

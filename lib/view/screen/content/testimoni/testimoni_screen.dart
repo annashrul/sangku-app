@@ -326,316 +326,91 @@ class _ModalFormTestimoniState extends State<ModalFormTestimoni> {
 
   Widget buildItem(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().wrapperModal(context,"${widget.val==null?'Tambah':'Ubah'} Testimoni",Scrollbar(
-        child: ListView(
-          padding: scaler.getPadding(0,2),
-          children: [
-            WidgetHelper().myForm(
-                context,
-                "Pekerjaan",
-                titleController,
-                focusNode: titleFocus,
-                onSubmit: (_){WidgetHelper().fieldFocusChange(context, titleFocus,captionFocus);}
-            ),
-            SizedBox(height: scaler.getHeight(1)),
-            WidgetHelper().myForm(
-              context,
-              "Testimoni",
-              captionController,
-              focusNode: captionFocus,
-              maxLine: 8,
-            ),
-            SizedBox(height: scaler.getHeight(1)),
-            WidgetHelper().myForm(
-                context,
-                "Gambar",
-                imgController,
-                isRead: true,
-                onTap: (){
-                  WidgetHelper().myModal(context, CameraWidget(
-                    callback: (String imgs,pureImage)async{
-                      await Future.delayed(Duration(seconds: 1));
-                      WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
-                        setState(() {
-                          pureImg=pureImage;
-                          imgController.text = imgs;
-                        });
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      });
-                      // Navigator.pop(context);
-                      // upload(image);
-                    },
-                  ));
-                }
-            ),
-            SizedBox(height: scaler.getHeight(1)),
-            WidgetHelper().myForm(
-              context,
-              "Video",
-              videoController,
-              focusNode: videoFocus,
-              textInputAction: TextInputAction.done,
-            ),
-            SizedBox(height: scaler.getHeight(0.5)),
-            RichText(
-              text: TextSpan(
-                  text: 'Isi dengan URL video, apabila URL tersebut diambil dari YouTube, pastikan URL tersebut merupakan',
-                  style: TextStyle(fontSize: scaler.getTextSize(8),fontFamily:Constant().fontStyle,color: Colors.black),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: ' embed URL . \n',style: TextStyle(color:Colors.green, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
-                        recognizer:  TapGestureRecognizer()..onTap  = () {
-                          WidgetHelper().myPush(context,Scaffold(
-                              appBar: WidgetHelper().appBarWithButton(context,'Cara memasukan link youtube', (){Navigator.pop(context);},<Widget>[]),
-                              body: WebViewWidget(val: {"url":'https://support.google.com/youtube/answer/171780?hl=id'})
-                          ));
-
-                          // WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
-                        }
-                    ),
-                    TextSpan(
-                      text: 'Biarkan kosong atau isi dengan tanda (-) jika tidak akan mengikutsertakan video',style: TextStyle(color:Colors.red, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
-                    ),
-                  ]
-              ),
-            ),
-            SizedBox(height: scaler.getHeight(1)),
-            pureImg!=null?new Image.file(pureImg,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):widget.val!=null?WidgetHelper().baseImage(previewImage):Text('')
-
-          ],
-        )
-    ),height: 90,isCallack: true,callack: (){validate(context);});
-  }
-
-  Widget buildContent(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height/1.2,
-      padding: EdgeInsets.only(top:10.0,left:0,right:0),
-      decoration: BoxDecoration(
-        // color: Colors.white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
-      ),
-      // color: Colors.white,
-      child: Column(
-        children: [
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:0.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
+      height: scaler.getHeight(90),
+      child: WidgetHelper().wrapperModal(context,"${widget.val==null?'Tambah':'Ubah'} Testimoni",Scrollbar(
+          child: ListView(
+            padding: scaler.getPadding(0,2),
+            children: [
+              WidgetHelper().myForm(
+                  context,
+                  "Pekerjaan",
+                  titleController,
+                  focusNode: titleFocus,
+                  onSubmit: (_){WidgetHelper().fieldFocusChange(context, titleFocus,captionFocus);}
               ),
-            ),
-          ),
-          ListTile(
-            dense:true,
-            contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
-            leading: InkWell(
-              onTap: ()=>Navigator.pop(context),
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
+              SizedBox(height: scaler.getHeight(1)),
+              WidgetHelper().myForm(
+                context,
+                "Testimoni",
+                captionController,
+                focusNode: captionFocus,
+                maxLine: 8,
               ),
-            ),
-            title: WidgetHelper().textQ("${widget.val==null?'Tambah':'Ubah'} Testimoni",14, Theme.of(context).hintColor, FontWeight.bold),
-            trailing: InkWell(
-                onTap: ()async{
-                  validate(context);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(7.0),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [Constant().secondColor,Constant().secondColor]),
-                      borderRadius: BorderRadius.circular(6.0),
-                      boxShadow: [BoxShadow(color: Color(0xFF6078ea).withOpacity(.3),offset: Offset(0.0, 8.0),blurRadius: 8.0)]
-                  ),
-                  child: WidgetHelper().textQ("Simpan",14,Colors.white,FontWeight.bold),
-                )
-            ),
-          ),
-          Divider(),
-          SizedBox(height:10.0),
-          Expanded(
-            child: ListView(
-              children: [
-                Container(
-                    padding: EdgeInsets.all(10.0),
-                    child:  Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        WidgetHelper().textQ("Pekerjaan",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height:5.0),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFEEEEEE),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10.0)
-                            ),
-                          ),
-                          padding: EdgeInsets.only(left:10.0,right:10.0),
-                          child: TextFormField(
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(color:Constant().darkMode,fontSize:14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
-                            controller: titleController,
-                            focusNode: titleFocus,
-                            autofocus: false,
-                            decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                hintStyle: TextStyle(color:Constant().darkMode,fontSize: 14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold)
-                            ),
-                            onFieldSubmitted: (_){
-                              WidgetHelper().fieldFocusChange(context, titleFocus,captionFocus);
-                            },
-                          ),
-                        ),
-                        SizedBox(height:10.0),
-                        WidgetHelper().textQ("Testimoni",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height:5.0),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFEEEEEE),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10.0)
-                            ),
-                          ),
-                          padding: EdgeInsets.only(left:10.0,right:10.0),
-                          child: TextFormField(
-                            maxLines: 8,
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(color:Constant().darkMode,fontSize:14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
-                            controller: captionController,
-                            focusNode: captionFocus,
-                            autofocus: false,
-                            decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                hintStyle: TextStyle(color:Constant().darkMode,fontSize: 14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold)
-                            ),
-                            onFieldSubmitted: (_){
-                              WidgetHelper().fieldFocusChange(context, captionFocus,videoFocus);
-                              // WidgetHelper().
-                              // WidgetHelper().fieldFocusChange(context, titleFocus,receiverFocus);
-                            },
-                          ),
-                        ),
-                        SizedBox(height:10.0),
-                        WidgetHelper().textQ("Gambar",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height:5.0),
-                        InkWell(
-                          onTap: (){
-                            WidgetHelper().myModal(context, CameraWidget(
-                              callback: (String imgs,pureImage)async{
-
-                                await Future.delayed(Duration(seconds: 1));
-                                WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
-                                  // upload(image);
-                                  print(pureImage);
-                                  setState(() {
-                                    pureImg=pureImage;
-                                    img = imgs;
-                                  });
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                });
-                                // Navigator.pop(context);
-                                // upload(image);
-                              },
+              SizedBox(height: scaler.getHeight(1)),
+              WidgetHelper().myForm(
+                  context,
+                  "Gambar",
+                  imgController,
+                  isRead: true,
+                  onTap: (){
+                    WidgetHelper().myModal(context, CameraWidget(
+                      callback: (String imgs,pureImage)async{
+                        await Future.delayed(Duration(seconds: 1));
+                        WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                          setState(() {
+                            pureImg=pureImage;
+                            imgController.text = imgs;
+                          });
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                        // Navigator.pop(context);
+                        // upload(image);
+                      },
+                    ));
+                  }
+              ),
+              SizedBox(height: scaler.getHeight(1)),
+              WidgetHelper().myForm(
+                context,
+                "Video",
+                videoController,
+                focusNode: videoFocus,
+                textInputAction: TextInputAction.done,
+              ),
+              SizedBox(height: scaler.getHeight(0.5)),
+              RichText(
+                text: TextSpan(
+                    text: 'Isi dengan URL video, apabila URL tersebut diambil dari YouTube, pastikan URL tersebut merupakan',
+                    style: TextStyle(fontSize: scaler.getTextSize(8),fontFamily:Constant().fontStyle,color: Colors.black),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: ' embed URL . \n',style: TextStyle(color:Colors.green, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
+                          recognizer:  TapGestureRecognizer()..onTap  = () {
+                            WidgetHelper().myPush(context,Scaffold(
+                                appBar: WidgetHelper().appBarWithButton(context,'Cara memasukan link youtube', (){Navigator.pop(context);},<Widget>[]),
+                                body: WebViewWidget(val: {"url":'https://support.google.com/youtube/answer/171780?hl=id'})
                             ));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFEEEEEE),
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(10.0)
-                              ),
-                            ),
-                            width: double.infinity,
-                            padding: EdgeInsets.only(left:10.0,right:10.0,top:20,bottom:20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: WidgetHelper().textQ(img,12,Constant().darkMode,FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height:10.0),
-                        WidgetHelper().textQ("Video",12,Constant().darkMode, FontWeight.bold),
-                        SizedBox(height:5.0),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFEEEEEE),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10.0)
-                            ),
-                          ),
-                          padding: EdgeInsets.only(left:10.0,right:10.0),
-                          child: TextFormField(
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(color:Constant().darkMode,fontSize:14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
-                            controller: videoController,
-                            focusNode: videoFocus,
-                            autofocus: false,
-                            decoration: InputDecoration(
-                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none,),
-                                hintStyle: TextStyle(color:Constant().darkMode,fontSize: 14,fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold)
-                            ),
-                            onFieldSubmitted: (_){
-                              // WidgetHelper().fieldFocusChange(context, titleFocus,receiverFocus);
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left:0.0,right:0.0),
-                          child: RichText(
-                            text: TextSpan(
-                                text: 'Isi dengan URL video, apabila URL tersebut diambil dari YouTube, pastikan URL tersebut merupakan',
-                                style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle,color: Colors.black),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: ' embed URL . \n',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
-                                      recognizer:  TapGestureRecognizer()..onTap  = () {
-                                        WidgetHelper().myPush(context,Scaffold(
-                                            appBar: WidgetHelper().appBarWithButton(context,'Cara memasukan link youtube', (){Navigator.pop(context);},<Widget>[]),
-                                            body: WebViewWidget(val: {"url":'https://support.google.com/youtube/answer/171780?hl=id'})
-                                        ));
 
-                                        // WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
-                                      }
-                                  ),
-                                  TextSpan(
-                                    text: 'Biarkan kosong atau isi dengan tanda (-) jika tidak akan mengikutsertakan video',style: TextStyle(color:Colors.red, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
-                                  ),
-                                  // TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize: 12,fontFamily:Constant().fontStyle)),
-                                  // TextSpan(text: ' ${getPaymentModel.result.accName}',style: TextStyle(color:Colors.green, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle)),
-                                ]
-                            ),
-                          ),
-                        ),
-                        pureImg!=null?new Image.file(pureImg,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):widget.val!=null?WidgetHelper().baseImage(previewImage):Text('')
-                      ],
-                    )
+                            // WidgetHelper().myPush(context,WebViewWidget(val:{"title":"Cara memasukan link youtube","url":"https://support.google.com/youtube/answer/171780?hl=id"}));
+                          }
+                      ),
+                      TextSpan(
+                        text: 'Biarkan kosong atau isi dengan tanda (-) jika tidak akan mengikutsertakan video',style: TextStyle(color:Colors.red, fontSize:  scaler.getTextSize(8),fontWeight: FontWeight.bold,fontFamily:Constant().fontStyle),
+                      ),
+                    ]
                 ),
+              ),
+              SizedBox(height: scaler.getHeight(1)),
+              pureImg!=null?new Image.file(pureImg,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high):widget.val!=null?WidgetHelper().baseImage(previewImage):Text('')
 
-
-              ],
-            ),
+            ],
           )
-        ],
-      ),
+      ),isCallack: true,callack: (){validate(context);}),
     );
   }
+
 
 }
 
@@ -678,7 +453,6 @@ class _ModalDetailTestimoniState extends State<ModalDetailTestimoni> {
       body: ListView(
         children: [
           widget.val['video']!='-'?YoutubePlayer(controller: _controller):WidgetHelper().baseImage(widget.val['picture']),
-          
           SizedBox(height:10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -759,41 +533,44 @@ class _ModalOptionTestimoniState extends State<ModalOptionTestimoni> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().wrapperModal(context,"",ListView(
-      padding: scaler.getPadding(0,2),
-      children: [
-        ListTile(
-          contentPadding: EdgeInsets.all(0),
-          onTap: (){
-            WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan menghapus data ini ?",(){
-              Navigator.pop(context);
-            },(){
-              Navigator.pop(context);
-              delete(context);
-            });
-            // widget.callback('success');
-          },
-          leading: Icon(Ionicons.ios_trash),
-          title: WidgetHelper().textQ("Hapus", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.all(0),
-          onTap: (){
+    return Container(
+      height: scaler.getHeight(30),
+      child: WidgetHelper().wrapperModal(context,"",ListView(
+        padding: scaler.getPadding(0,2),
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.all(0),
+            onTap: (){
+              WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan menghapus data ini ?",(){
+                Navigator.pop(context);
+              },(){
+                Navigator.pop(context);
+                delete(context);
+              });
+              // widget.callback('success');
+            },
+            leading: Icon(Ionicons.ios_trash),
+            title: WidgetHelper().textQ("Hapus", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.all(0),
+            onTap: (){
 
-            WidgetHelper().myModal(context,Container(
-                height: MediaQuery.of(context).size.height/1.2,
-                child: ModalFormTestimoni(val: widget.val,callback: (String param){
-                  if(param=='success'){
-                    widget.callback('success');
-                    Navigator.pop(context);
-                  }
-                })
-            ));
-          },
-          leading: Icon(AntDesign.edit),
-          title: WidgetHelper().textQ("Edit", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-        )
-      ],
-    ),height: 20);
+              WidgetHelper().myModal(context,Container(
+                  height: MediaQuery.of(context).size.height/1.2,
+                  child: ModalFormTestimoni(val: widget.val,callback: (String param){
+                    if(param=='success'){
+                      widget.callback('success');
+                      Navigator.pop(context);
+                    }
+                  })
+              ));
+            },
+            leading: Icon(AntDesign.edit),
+            title: WidgetHelper().textQ("Edit", scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+          )
+        ],
+      )),
+    );
   }
 }

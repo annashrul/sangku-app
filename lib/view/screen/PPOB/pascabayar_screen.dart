@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/user_helper.dart';
@@ -31,7 +32,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
   final FocusNode nohpFocus = FocusNode();
   var nohpController = TextEditingController();
   ProductPpobPraModel productPpobPraModel;
-  int perpage=10,total=0;
+  int perpage=20,total=0;
   bool isLoading=false,isLoadingProduct=false,isLoadmore=false;
   String code='';
   CekTagihanModel cekTagihanModel;
@@ -73,7 +74,7 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().postProvider('transaction/pascabayar/tagihan', data,context: context,callback: (){
       Navigator.pop(context);
-      Navigator.pop(context);
+      // Navigator.pop(context);
     });
 
     if(res!=null){
@@ -81,16 +82,6 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
       WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
 
     }
-    // if(res==Constant().errTimeout||res==Constant().errSocket){
-    //   WidgetHelper().notifDialog(context,Constant().titleErrTimeout,Constant().descErrTimeout, (){}, (){},titleBtn1: 'Kembali',titleBtn2: 'Cobalagi');
-    // }
-    // else if(res is General){
-    //   General result=res;
-    //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-    // }
-    // else{
-    //   WidgetHelper().myModal(context,ModalDetailPascabayar(val: res));
-    // }
   }
   ScrollController controller;
 
@@ -132,150 +123,156 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
     print(widget.val);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,widget.val['title'],(){Navigator.pop(context);},<Widget>[]),
-      body: isLoadingProduct?WidgetHelper().loadingWidget(context):ListView(
-        // padding: EdgeInsets.all(10.0),
-        controller: controller,
+      appBar: WidgetHelper().appBarWithButton(context,"${widget.val['title']}".toLowerCase(),(){Navigator.pop(context);},<Widget>[]),
+      // body: isLoadingProduct?WidgetHelper().loadingWidget(context):buildItem(context),
+      body: isLoadingProduct?WidgetHelper().loadingWidget(context):Stack(
         children: [
-          Container(
-            margin: scaler.getMargin(1,0),
-            padding:scaler.getPadding(0,2),
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                WidgetHelper().textQ("No. Telepon", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
-                SizedBox(height:scaler.getHeight(1)),
-                Container(
-                  width: double.infinity,
-                  padding: scaler.getPadding(0,2),
-                  // width: double.infinity,
-                  // padding: EdgeInsets.only(left:10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color:Constant().greyColor,
-                  ),
-                  child: TextFormField(
-                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-                    controller: nohpController,
-                    decoration: InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      suffixIcon:Icon(AntDesign.phone,color:Constant().mainColor1,size: scaler.getTextSize(12),),
-                      contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
-                    ),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    focusNode: nohpFocus ,
-                    inputFormatters: <TextInputFormatter>[
-                      LengthLimitingTextInputFormatter(14),
-
-                      WhitelistingTextInputFormatter.digitsOnly
-                    ],
-
-                    onFieldSubmitted: (e){
-                      WidgetHelper().fieldFocusChange(context,nohpFocus,idPelangganFocus);
-                      // handleChange(e);
-                    },
-                  ),
-                ),
-                SizedBox(height:scaler.getHeight(1)),
-                WidgetHelper().textQ("ID Pelanggan", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
-                SizedBox(height:scaler.getHeight(1)),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.only(left:10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color:Constant().greyColor
-                  ),
-                  child: TextFormField(
-                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(10),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-                    controller: idPelangganController,
-                    decoration: InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      suffixIcon:Icon(AntDesign.link,color:Constant().mainColor1,size: scaler.getTextSize(12),),
-                      contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
-                    ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    focusNode: idPelangganFocus ,
-                  ),
-                ),
-                SizedBox(height:scaler.getHeight(1)),
-                WidgetHelper().textQ("Jenis Tagihan", scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
-                SizedBox(height:scaler.getHeight(1)),
-                Container(
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        scrollDirection: Axis.vertical,
-                        itemCount: productPpobPraModel.result.data.length,
-                        itemBuilder: (context,index){
-                          var val=productPpobPraModel.result.data[index];
-
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: CardWidget(
-                                onTap:(){
-                                  setState(() {
-                                    code = val.code;
-                                  });
-                                  print(code);
-                                },
-                                titleColor:  Constant().darkMode,
-                                prefixBadge: Constant().darkMode,
-                                title: val.note.toLowerCase(),
-                                suffixIcon:AntDesign.checkcircleo,
-                                suffixIconColor: code==val.code?Constant().mainColor1:Colors.transparent,
-                                backgroundColor:Constant().greyColor
-                            ),
-                          );
-                        }
-                    )
-                ),
-                if(isLoadmore)Container(
-                  alignment: Alignment.center,
-                  child: CupertinoActivityIndicator(),
-                )
-              ],
-            ),
-          )
+          ClipRRect(
+            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight:  Radius.circular(10)),
+            child:  WidgetHelper().baseImage('https://dailypost.files.wordpress.com/2015/04/turnpike-blur.jpg',height: scaler.getHeight(6),width: scaler.getWidth(100),fit: BoxFit.cover),
+          ),
+          buildItem(context)
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: FlatButton(
-            // shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-            onPressed: () {
-              handleProses();
-            },
-            padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().moneyColor,
-            child:Container(
-              padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-              child: Row(
+      bottomNavigationBar: BottomAppBar(
+        child:Container(
+          height: scaler.getHeight(5),
+          child: FlatButton(
+              padding: scaler.getPadding(1,2),
+              onPressed: () {
+                handleProses();
+              },
+              color: Constant().moneyColor,
+              child:Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor),
-                  SizedBox(width:10.0),
-                  WidgetHelper().textQ("PROSES", 14, Constant().secondDarkColor, FontWeight.bold),
+                  Icon(AntDesign.checkcircleo,color: Constant().secondDarkColor,size: scaler.getTextSize(12),),
+                  SizedBox(width:scaler.getWidth(2)),
+                  WidgetHelper().textQ("Lanjut", scaler.getTextSize(10), Constant().secondDarkColor, FontWeight.bold),
                 ],
-              ),
-            )
-          // child:Text("abus")
-        ),
+              )
+          ),
+        ) ,
       ),
+    );
+  }
+  
+
+  
+  Widget buildItem(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return ListView(
+      controller: controller,
+      children: [
+        Container(
+          margin: scaler.getMargin(1,0),
+          padding:scaler.getPadding(0,2),
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                elevation: 2,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: scaler.getMarginLTRB(0,1,0,1),
+                      width: double.infinity,
+                      padding: scaler.getPadding(0,2),
+                      child: WidgetHelper().myForm(
+                          context,
+                          "No.Telepon",
+                          nohpController,
+                          focusNode: nohpFocus,
+                          onSubmit: (_){WidgetHelper().fieldFocusChange(context,nohpFocus,idPelangganFocus);},
+                          inputFormatters: <TextInputFormatter>[
+                            LengthLimitingTextInputFormatter(14),
+                            WhitelistingTextInputFormatter.digitsOnly
+                          ],
+                          textInputType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          titleColor: Constant().mainColor2,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    Container(
+                      margin: scaler.getMarginLTRB(0,0,0,1),
+                      width: double.infinity,
+                      padding: scaler.getPadding(0,2),
+                      child:  WidgetHelper().myForm(
+                          context,
+                          "Id Pelanggan",
+                          idPelangganController,
+                          focusNode: idPelangganFocus,
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          titleColor: Constant().mainColor2,
+                          fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              // SizedBox(height:scaler.getHeight(0.5)),
+              // WidgetHelper().textQ("Jenis Tagihan", scaler.getTextSize(9), Constant().mainColor2,FontWeight.bold),
+              SizedBox(height:scaler.getHeight(0.5)),
+              Container(
+                  child: StaggeredGridView.countBuilder(
+                    shrinkWrap: true,
+                    primary: false,
+                    scrollDirection: Axis.vertical,
+                    padding: scaler.getPadding(0, 0),
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount:2,
+                    itemCount:  productPpobPraModel.result.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var val=productPpobPraModel.result.data[index];
+                      return FlatButton(
+                        padding:scaler.getPadding(1,1),
+                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
+                        color: code==val.code?Constant().mainColor:Color(0xFFEEEEEE),
+                        onPressed: (){
+                          setState(() {
+                            code = val.code;
+                          });
+                        },
+                        child: WidgetHelper().textQ(val.note.toLowerCase(),scaler.getTextSize(9),code==val.code?Constant().mainColor2:Constant().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                      );
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: CardWidget(
+                            onTap:(){
+                              setState(() {
+                                code = val.code;
+                              });
+                              print(code);
+                            },
+                            titleColor:  Constant().darkMode,
+                            prefixBadge:Constant().mainColor,
+                            title: val.note.toLowerCase(),
+                            suffixIcon:AntDesign.checkcircleo,
+                            suffixIconColor: code==val.code?Constant().mainColor1:Colors.transparent,
+                            backgroundColor:Color(0xFFEEEEEE)
+                        ),
+                      );
+                    },
+                    staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+                    mainAxisSpacing: 5.0,
+                    crossAxisSpacing: 5.0,
+                  )
+              ),
+              if(isLoadmore)Container(
+                alignment: Alignment.center,
+                child: CupertinoActivityIndicator(),
+              )
+
+
+
+            ],
+          ),
+        )
+      ],
     );
   }
 }

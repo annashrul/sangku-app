@@ -14,6 +14,7 @@ import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/model/mlm/history/history_transaction_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/view/widget/loading/history_transaction_loading.dart';
+import 'package:sangkuy/view/widget/ringkasan_history_widget.dart';
 
 class HistoryTransactionScreen extends StatefulWidget {
   @override
@@ -91,7 +92,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithFilter(context,"Laporan transaksi",  (){Navigator.pop(context);}, (param){
+      appBar: WidgetHelper().appBarWithFilter(context,"Laporan transaksi",  (){Navigator.pop(context);},(param){
         setState(() {
           q=param;
           isLoading=true;
@@ -104,6 +105,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
           isLoading=true;
         });
         loadData();
+      },isDetail: true,detail: (){
+        WidgetHelper().myModal(context,RingkasanHistoryTransaction(val: historyTransactionModel.result.summary.toJson()));
       }),
       body:Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -192,6 +195,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
         ],
       ),
       bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
+
     );
   }
   
@@ -311,6 +315,37 @@ class _FilterSearchState extends State<FilterSearch> {
 
         ],
       ),
+    );
+  }
+}
+
+
+class RingkasanHistoryTransaction extends StatefulWidget {
+  final dynamic val;
+  RingkasanHistoryTransaction({this.val});
+  @override
+  _RingkasanHistoryTransactionState createState() => _RingkasanHistoryTransactionState();
+}
+
+class _RingkasanHistoryTransactionState extends State<RingkasanHistoryTransaction> {
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    print(widget.val);
+    return Container(
+      height: scaler.getHeight(50),
+      child: WidgetHelper().wrapperModal(context,"Ringkasan",ListView(
+        padding: scaler.getPadding(0,2),
+        children: [
+          RingkasanHistoryWidget(title:"Saldo Awal",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['saldo_awal']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Saldo Masuk",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['trx_in']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Saldo Keluar",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['trx_out']))}"),
+          Divider(thickness: 2,height: scaler.getHeight(2),),
+          RingkasanHistoryWidget(title:"Saldo Saat Ini",desc:"Rp ${FunctionHelper().formatter.format(int.parse(widget.val['trx_in'])-int.parse(widget.val['trx_out']))}"),
+        ],
+      )),
     );
   }
 }

@@ -31,6 +31,9 @@ class FunctionHelper{
   rmTitik(val,idx){
     return val.split(".")[idx];
   }
+  rmComma(String val){
+    return val.replaceAll(",","");
+  }
 
   // static var arrStatus=[
   //   "Menunggu Pembayaran",

@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         children: <Widget>[
           Container(
             child: StaggeredGridView.countBuilder(
-              padding: EdgeInsets.all(0.0),
+              padding:scaler.getPadding(0,0),
               shrinkWrap: true,
               primary: false,
               crossAxisCount: 3,
@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 );
               },
               staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-              mainAxisSpacing: 10.0,
+              mainAxisSpacing: 20.0,
               crossAxisSpacing: 0.0,
             ),
           )

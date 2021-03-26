@@ -136,7 +136,7 @@ class WidgetHelper{
         children: <Widget>[
           Icon(AntDesign.unknowfile1,size: 70),
           SizedBox(height:10),
-          WidgetHelper().textQ(Constant().errNoData, 14, Constant().mainColor, FontWeight.bold)
+          WidgetHelper().textQ(Constant().errNoData, 14, Constant().darkMode, FontWeight.bold)
           // Image.network('https://lh3.googleusercontent.com/proxy/27oZlO859yameGqB3FjTaLHzJ2yYh-bATvQuVhVlmYWYiMiQzcNSKBLNAuDP6EL-v7KE7r5tUUteyqNTw_lqB_EqFEwitIqWTzIfW_E')
         ],
       ),
@@ -293,7 +293,14 @@ class WidgetHelper{
 
 
   }
-  appBarWithFilter(BuildContext context, title,Function callback,Function(String param) filterQ,Function(String dateFrom, String dateTo) filterDate,{double sizeTitle=14.0}){
+  appBarWithFilter(
+      BuildContext context,
+      title,
+      Function callback,
+      Function(String param) filterQ,
+      Function(String dateFrom, String dateTo)
+      filterDate,{double sizeTitle=14.0,Function detail, bool isDetail=false}
+    ){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return  AppBar(
       automaticallyImplyLeading: false,
@@ -317,24 +324,21 @@ class WidgetHelper{
         ),
       ),
       actions:<Widget>[
-        Container(
+        if(isDetail)Container(
             width: 30,
             height: 30,
-            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 0),
             child: InkWell(
               borderRadius: BorderRadius.circular(300),
-              onTap: () {
-                WidgetHelper().myModal(context,FilterSearch(callback: (param){
-                  filterQ(param);
-                }));
-              },
-              child: Icon(FontAwesome.filter,size: scaler.getTextSize(12),),
+              onTap:detail,
+              child: Icon(Ionicons.ios_arrow_down,size: scaler.getTextSize(12),),
             )
         ),
+
         Container(
             width: 30,
             height: 30,
-            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 0),
             child: InkWell(
               borderRadius: BorderRadius.circular(300),
               onTap: () {
@@ -354,7 +358,21 @@ class WidgetHelper{
                       filterDate(dateFrom,dateTo);
                     }).showPicker(context);
               },
-              child: Icon(FontAwesome.calendar,size: scaler.getTextSize(12),),
+              child: Icon(Ionicons.ios_calendar,size: scaler.getTextSize(12),),
+            )
+        ),
+        Container(
+            width: 30,
+            height: 30,
+            margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(300),
+              onTap: () {
+                WidgetHelper().myModal(context,FilterSearch(callback: (param){
+                  filterQ(param);
+                }));
+              },
+              child: Icon(Ionicons.ios_search,size: scaler.getTextSize(12),),
             )
         ),
       ],// status bar brightness
@@ -655,6 +673,8 @@ class WidgetHelper{
     FontWeight fontWeight = FontWeight.normal
   }){
     ScreenScaler scaler = ScreenScaler()..init(context);
+
+
     return InkWell(
       onTap:callback,
       child: Row(
@@ -736,11 +756,10 @@ class WidgetHelper{
     );
   }
 
-  wrapperModal(BuildContext context,String title,Widget children,{double height=0,bool isCallack=false,Function callack}){
+  wrapperModal(BuildContext context,String title,Widget children,{bool isCallack=false,Function callack,String txtBtn="Simpan"}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      height: scaler.getHeight(height),
-      padding: scaler.getPadding(1,0),
+      padding: scaler.getMarginLTRB(0,1, 0,0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
@@ -762,12 +781,12 @@ class WidgetHelper{
           ),
           ListTile(
             dense:true,
-            contentPadding:scaler.getPadding(0,1),
+            contentPadding:scaler.getPadding(0,2),
             leading: InkWell(
               onTap: ()=>Navigator.pop(context),
-              child:Icon(Ionicons.ios_arrow_back, color:Constant().darkMode),
+              child:Icon(AntDesign.close, color:Constant().darkMode),
             ),
-            title: WidgetHelper().textQ(title,scaler.getTextSize(10), Constant().darkMode, FontWeight.bold),
+            title: WidgetHelper().textQ(title,scaler.getTextSize(9), Constant().darkMode, FontWeight.bold),
             trailing: isCallack?InkWell(
                 onTap:callack,
                 child: Container(
@@ -776,11 +795,12 @@ class WidgetHelper{
                     color: Constant().moneyColor,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: WidgetHelper().textQ("Simpan",scaler.getTextSize(10),Colors.white,FontWeight.bold),
+                  child: WidgetHelper().textQ(txtBtn,scaler.getTextSize(10),Colors.white,FontWeight.bold),
                 )
             ):Text(''),
           ),
           Divider(),
+          // children,
           Expanded(
             child: children,
           )
@@ -799,18 +819,20 @@ class WidgetHelper{
     TextInputAction textInputAction= TextInputAction.next,
     List<TextInputFormatter> inputFormatters,
     bool isRead=false,
-    int maxLine=1
+    int maxLine=1,
+    Color titleColor=Colors.black,
+    FontWeight fontWeight=FontWeight.normal
   }){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        WidgetHelper().textQ(label,scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+        WidgetHelper().textQ(label,scaler.getTextSize(9),titleColor,fontWeight),
         SizedBox(height:scaler.getHeight(0.5)),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).focusColor.withOpacity(0.1),
+            color: Color(0xFFEEEEEE),
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           padding:scaler.getPadding(0,2),
@@ -831,6 +853,71 @@ class WidgetHelper{
             onTap: onTap,
             onChanged: onChange,
             inputFormatters:inputFormatters
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
+  myFormWithAct(BuildContext context,String label,TextEditingController controller,Function callbackAct,IconData icon,{
+    FocusNode focusNode,
+    Function(String e) onSubmit,
+    Function onTap,
+    Function(String e) onChange,
+    TextInputType textInputType= TextInputType.text,
+    TextInputAction textInputAction= TextInputAction.next,
+    List<TextInputFormatter> inputFormatters,
+    bool isRead=false,
+    int maxLine=1,
+    TextCapitalization textCapitalization=TextCapitalization.none
+  }){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        WidgetHelper().textQ(label,scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
+        SizedBox(height:scaler.getHeight(0.5)),
+        Container(
+
+          width: double.infinity,
+          padding: EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).focusColor.withOpacity(0.1),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          // padding:scaler.getPadding(0,2),
+          child: TextFormField(
+              maxLines: maxLine,
+              readOnly: isRead,
+              textInputAction:textInputAction,
+              keyboardType:textInputType,
+              style: TextStyle(color:Constant().darkMode,fontSize:scaler.getTextSize(10),fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(color:Constant().darkMode,fontSize: scaler.getTextSize(10),fontFamily: Constant().fontStyle,fontWeight: FontWeight.bold),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                suffixIcon:InkWell(
+                  onTap:callbackAct,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Constant().mainColor,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),bottomRight: Radius.circular(10)),
+                    ),
+                    child: Icon(icon,color:Colors.white),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.only(top: 19.0, right: 0.0, bottom: 0.0, left: 0.0),
+              ),
+              textCapitalization: textCapitalization,
+              onFieldSubmitted: (_)=>onSubmit(_),
+              onTap: onTap,
+              onChanged: onChange,
+              inputFormatters:inputFormatters
           ),
         ),
       ],

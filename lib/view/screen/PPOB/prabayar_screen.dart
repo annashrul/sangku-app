@@ -47,14 +47,11 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
   Future loadUser()async{
     final no = await UserHelper().getDataUser("mobile_no");
     await loadProduct("$no");
-    // await handleChange(no);
     setState(() {
       nohpController.text=no;
     });
   }
   Future loadProduct(String where)async{
-    // nohp=$nohp&kategori=${widget.val['code']}
-    print(where);
     var res=await BaseProvider().getProvider("transaction/produk/list?$where",productPpobPraModelFromJson);
     if(res is ProductPpobPraModel){
       ProductPpobPraModel result=res;
@@ -172,15 +169,12 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
         isWidget=true;
         // child=buildContent2(context);
       });
-      // print('true');
-      // return true;
     }
     else{
       setState(() {
         isWidget=false;
         // child=buildContent1(context);
       });
-      print('false');
       return isWidget;
     }
   }
@@ -203,58 +197,80 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
         key: _scaffoldKey,
-        appBar: WidgetHelper().appBarWithButton(context,title,(){Navigator.pop(context);},<Widget>[]),
-        body: title=='VOUCHER GAME' || title=='E-MONEY'||title=='VOUCHER WIFI.ID'||title=='E-TOLL'?buildContent2(context):buildContent1(context),
+        appBar: WidgetHelper().appBarWithButton(context,title.toLowerCase(),(){Navigator.pop(context);},<Widget>[]),
+        body:isLoading?WidgetHelper().loadingWidget(context):Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight:  Radius.circular(10)),
+              child:  WidgetHelper().baseImage('https://dailypost.files.wordpress.com/2015/04/turnpike-blur.jpg',height: scaler.getHeight(6),width: scaler.getWidth(100),fit: BoxFit.cover),
+            ),
+            title=='VOUCHER GAME' || title=='E-MONEY'||title=='VOUCHER WIFI.ID'||title=='E-TOLL'?buildContent2(context):buildContent1(context),
+          ],
+        ),
     );
   }
 
 
   Widget buildContent1(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return isLoading?WidgetHelper().loadingWidget(context):ListView(
+    return ListView(
       shrinkWrap: true,
       primary: true,
       children: [
-        Padding(
-          padding: scaler.getPadding(1,2),
-          child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-        ),
-        Container(
-          margin: scaler.getMargin(0,2),
-          width: double.infinity,
-          padding: scaler.getPadding(0,2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Color(0xFFEEEEEE),
-          ),
-          child: TextFormField(
-            style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-            controller: nohpController,
-            maxLines: 1,
-            autofocus: false,
-            decoration: InputDecoration(
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
-              contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
-            ),
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            focusNode: nohpFocus,
-            inputFormatters: <TextInputFormatter>[
-              LengthLimitingTextInputFormatter(14),
-              WhitelistingTextInputFormatter.digitsOnly
-            ],
-            onChanged: (e){
-              handleChange(e);
-            },
 
+        Card(
+          margin: scaler.getMargin(1,2),
+          elevation: 2,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: scaler.getPadding(1,2),
+                child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
+              ),
+              Container(
+                margin: scaler.getMargin(0,2),
+                width: double.infinity,
+                padding: scaler.getPadding(0,2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Color(0xFFEEEEEE),
+                ),
+                child: TextFormField(
+                  style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                  controller: nohpController,
+                  maxLines: 1,
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
+                    contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
+                  ),
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  focusNode: nohpFocus,
+                  inputFormatters: <TextInputFormatter>[
+                    LengthLimitingTextInputFormatter(14),
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
+                  onChanged: (e){
+                    handleChange(e);
+                  },
+
+                ),
+              ),
+              SizedBox(height: scaler.getHeight(1))
+            ],
           ),
         ),
         isLoadingProduct?StaggeredGridView.countBuilder(
@@ -276,7 +292,8 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
         ):isNodata?Container(
           padding: scaler.getPadding(1, 2),
           child: WidgetHelper().textQ("No data.",scaler.getTextSize(9), Constant().darkMode,FontWeight.bold),
-        ):StaggeredGridView.countBuilder(
+        ):
+        StaggeredGridView.countBuilder(
           padding: scaler.getPadding(1, 2),
           shrinkWrap: true,
           primary: false,
@@ -303,56 +320,69 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 5.0,
           crossAxisSpacing: 5.0,
-        )
+        ),
       ],
     );
   }
   Widget buildContent2(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return isLoading?WidgetHelper().loadingWidget(context):ListView(
+    return ListView(
       shrinkWrap: true,
       primary: true,
       children: [
-        Padding(
-          padding: scaler.getPadding(1,2),
-          child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-        ),
-        Container(
-          margin: scaler.getMargin(0,2),
-          width: double.infinity,
-          padding: scaler.getPadding(0,2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Color(0xFFEEEEEE),
-          ),
-          child: TextFormField(
-            style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
-            controller: nohpController,
-            maxLines: 1,
-            autofocus: false,
-            decoration: InputDecoration(
+        Card(
+          margin: scaler.getMargin(1,2),
+          elevation: 2,
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: scaler.getPadding(1,2),
+                  child: WidgetHelper().textQ("No. Telepon",scaler.getTextSize(9),Constant().mainColor2,FontWeight.bold),
+                ),
+                Container(
+                  margin: scaler.getMargin(0,2),
+                  width: double.infinity,
+                  padding: scaler.getPadding(0,2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xFFEEEEEE),
+                  ),
+                  child: TextFormField(
+                    style: TextStyle(letterSpacing:2.0,fontSize:scaler.getTextSize(9),fontWeight: FontWeight.bold,fontFamily: Constant().fontStyle,color:Constant().darkMode),
+                    controller: nohpController,
+                    maxLines: 1,
+                    autofocus: false,
+                    decoration: InputDecoration(
 
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
-              contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon:provider!=null?Image.network(provider['icon'],width: 20,fit: BoxFit.contain):Image.asset(Constant().localAssets+"logo.png",width: 20,fit: BoxFit.contain,),
+                      contentPadding: const EdgeInsets.only(top: 19.0, right: 10.0, bottom: 0.0, left: 0.0),
+                    ),
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    focusNode: nohpFocus,
+                    inputFormatters: <TextInputFormatter>[
+                      LengthLimitingTextInputFormatter(14),
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    onChanged: (e){
+                      handleChange(e);
+                    },
+
+                  ),
+                ),
+                SizedBox(height: scaler.getHeight(1))
+              ],
             ),
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            focusNode: nohpFocus,
-            inputFormatters: <TextInputFormatter>[
-              LengthLimitingTextInputFormatter(14),
-              WhitelistingTextInputFormatter.digitsOnly
-            ],
-            onChanged: (e){
-              handleChange(e);
-            },
-
           ),
         ),
         StaggeredGridView.countBuilder(
@@ -413,91 +443,46 @@ class _ModalProductState extends State<ModalProduct> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Container(
       height: scaler.getHeight(80),
-      // padding: EdgeInsets.only(bottom:50.0,top:0.0,left:0.0,right:0.0),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10))
-      ),
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height:scaler.getHeight(1)),
-          Center(
-            child: Container(
-              padding:scaler.getPadding(1,0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SizedBox(height:scaler.getHeight(1)),
-          Padding(
-            padding:scaler.getPadding(0,2),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, '',fontSize:scaler.getTextSize(9),color: Constant().mainColor,img: widget.val['logo']),
-          ),
-          Expanded(
-              flex: 18,
-              child: ListView.builder(
-
-                padding:scaler.getPadding(0,2),
-                addRepaintBoundaries: true,
-                primary: false,
-                shrinkWrap: true,
-                itemCount: widget.productPpobPraModel.result.data.length,
-                itemBuilder: (context,index){
-                  var val=widget.productPpobPraModel.result.data[index];
-                  return FlatButton(
-                    color: index%2==0?Color(0xFFEEEEEE):Colors.transparent,
+      child: WidgetHelper().wrapperModal(context,"", Scrollbar(
+          child: ListView(
+            children: [
+              Expanded(
+                  child: ListView.builder(
                     padding:scaler.getPadding(0,2),
-                    onPressed: (){
-                      setState(() {
-                        idx=index;
-                      });
+                    addRepaintBoundaries: true,
+                    primary: false,
+                    shrinkWrap: true,
+                    itemCount: widget.productPpobPraModel.result.data.length,
+                    itemBuilder: (context,index){
+                      var val=widget.productPpobPraModel.result.data[index];
+                      return FlatButton(
+                        color: index%2==0?Color(0xFFEEEEEE):Colors.transparent,
+                        padding:scaler.getPadding(1,2),
+                        onPressed: (){
+                          setState(() {
+                            idx=index;
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            WidgetHelper().textQ(val.note,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
+                            Icon(AntDesign.checkcircleo,color: idx==index?Constant().darkMode:Colors.transparent,size: scaler.getTextSize(12),)
+                          ],
+                        ),
+                      );
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        WidgetHelper().textQ(val.note,scaler.getTextSize(9),Constant().darkMode,FontWeight.bold),
-                        Icon(AntDesign.checkcircleo,color: idx==index?Constant().darkMode:Colors.transparent,size: scaler.getTextSize(12),)
-                      ],
-                    ),
-                  );
-                },
-              )
-          ),
-          Expanded(
-            flex:2,
-            child:FlatButton(
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-                padding:scaler.getPadding(0,2),
-                color: Constant().moneyColor,
-                onPressed: (){
-                  var val = widget.productPpobPraModel.result.data[idx].toJson();
-                  WidgetHelper().myModal(context,ModalDetailPrabayar(val:val..addAll({"nohp":widget.val['nohp'],"page":widget.val['title']})));
+                  )
+              ),
 
-                  // handleSubmit();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(AntDesign.checkcircleo,color: Colors.white),
-                    SizedBox(width:scaler.getWidth(2)),
-                    WidgetHelper().textQ("Lanjut", scaler.getTextSize(10),Colors.white,FontWeight.bold)
-                  ],
-                )
-            )
+            ],
           )
-
-        ],
-      ),
+      ),isCallack: true,callack: (){
+        var val = widget.productPpobPraModel.result.data[idx].toJson();
+        WidgetHelper().myModal(context,ModalDetailPrabayar(val:val..addAll({"nohp":widget.val['nohp'],"page":widget.val['title']})));
+      },txtBtn: "Lanjut"),
     );
   }
 }
@@ -533,53 +518,16 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
           WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
         });
       }
-      // if(res is General){
-      //
-      //   General result=res;
-      //   if(result.msg=='PIN anda tidak sesuai.'){
-      //
-      //   }else{
-      //     Navigator.pop(context);
-      //   }
-      //   WidgetHelper().showFloatingFlushbar(context,"failed",result.msg);
-      // }
-      // else{
-      //   WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
-      //     WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-      //   });
-      // }
     }));
   }
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-      ),
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height:scaler.getHeight(1)),
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:10.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SizedBox(height:scaler.getHeight(1)),
-          Padding(
-            padding:scaler.getPadding(1,2),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Konfirmasi Pembayaran',color: Constant().mainColor,iconSize: scaler.getTextSize(9)),
-          ),
+      height: scaler.getHeight(70),
+      child: WidgetHelper().wrapperModal(context,"Konfirmasi Pembayaran",ListView(
+        // padding: scaler.getPadding(0,2),
+        children: [
           desc(context,"Jenis Layanan",widget.val['provider']),
           Divider(),
           if(widget.val['page']=='PULSA ALL OPERATOR')desc(context,"Nominal","Rp ${widget.val['note'].split(" ")[1]} .-",color: Constant().moneyColor),
@@ -588,53 +536,31 @@ class _ModalDetailPrabayarState extends State<ModalDetailPrabayar> {
           Divider(),
           desc(context,"Harga","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
           Divider(),
-          // if(widget.val['page']!='PULSA ALL OPERATOR')desc(context,"Keterangan",''),
-          // if(widget.val['page']!='PULSA ALL OPERATOR')desc(context,widget.val['note'],'',colorttl: Colors.black),
-          // if(widget.val['page']!='PULSA ALL OPERATOR')Divider(),
           Padding(
             padding:scaler.getPadding(1,2),
             child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Ringkasan Pembayaran',color: Constant().mainColor,iconSize: scaler.getTextSize(9)),
           ),
 
           desc(context,"Metode Pembayaran",'Saldo',color: Colors.black),
-          // Divider(),
-          // desc(context,"Subtotal","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
           Divider(color: Colors.grey),
           desc(context,"Total Tagihan","Rp ${FunctionHelper().formatter.format(int.parse(widget.val['price']))} .-",color: Constant().moneyColor),
-          SizedBox(height:30.0),
-          FlatButton(
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(4.0)),
-              padding:scaler.getPadding(1,0),
-              color: Constant().moneyColor,
-              onPressed: (){
-                handleSubmit();
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(AntDesign.checkcircleo,color: Colors.white),
-                  SizedBox(width: 10.0),
-                  WidgetHelper().textQ("Bayar", scaler.getTextSize(10),Colors.white,FontWeight.bold)
-                ],
-              )
-          )
 
         ],
-      ),
+      ),isCallack: true,callack: (){
+        handleSubmit();
+      },txtBtn: "Bayar"),
     );
   }
   Widget desc(BuildContext context,title,desc,{Color color=Colors.black,Color colorttl=Colors.black}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Padding(
       padding:scaler.getPadding(0.5,2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WidgetHelper().textQ(title,12,colorttl,FontWeight.normal),
-          WidgetHelper().textQ(desc,12,color,FontWeight.bold)
+          WidgetHelper().textQ(title,scaler.getTextSize(9),colorttl,FontWeight.normal),
+          WidgetHelper().textQ(desc,scaler.getTextSize(9),color,FontWeight.bold)
         ],
       ),
     );
