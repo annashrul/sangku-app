@@ -239,23 +239,6 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                         },
                         child: WidgetHelper().textQ(val.note.toLowerCase(),scaler.getTextSize(9),code==val.code?Constant().mainColor2:Constant().darkMode,FontWeight.normal,textAlign: TextAlign.center),
                       );
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: CardWidget(
-                            onTap:(){
-                              setState(() {
-                                code = val.code;
-                              });
-                              print(code);
-                            },
-                            titleColor:  Constant().darkMode,
-                            prefixBadge:Constant().mainColor,
-                            title: val.note.toLowerCase(),
-                            suffixIcon:AntDesign.checkcircleo,
-                            suffixIconColor: code==val.code?Constant().mainColor1:Colors.transparent,
-                            backgroundColor:Color(0xFFEEEEEE)
-                        ),
-                      );
                     },
                     staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
                     mainAxisSpacing: 5.0,
@@ -266,9 +249,6 @@ class _PascabayarScreenState extends State<PascabayarScreen> with SingleTickerPr
                 alignment: Alignment.center,
                 child: CupertinoActivityIndicator(),
               )
-
-
-
             ],
           ),
         )

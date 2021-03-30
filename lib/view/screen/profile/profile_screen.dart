@@ -273,14 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(width: 10),
               btnSocmed(context,"Facebook",AntDesign.facebook_square,siteModel.result.socialMedia.fb,color: Color(0xFF3b5998)),
               SizedBox(width: 10),
-              btnSocmed(context,"Instagram",AntDesign.instagram,siteModel.result.socialMedia.ig,gradient: LinearGradient(
-                colors: [
-                  Color(0xff8a3ab9),
-                  Color(0xfffbad50),
-                  Color(0xffcd486b ),
-                  Color(0xff4c68d7),
-                ],
-              )),
+              btnSocmed(context,"Instagram",AntDesign.instagram,siteModel.result.socialMedia.ig,color: Color(0xffcd486b )),
               SizedBox(width: 10),
               btnSocmed(context,"Youtube",AntDesign.youtube,siteModel.result.socialMedia.yt,color: Color(0xFFFF0000)),
             ],
@@ -319,7 +312,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ));
         },
         // color: Color(0xFFFF0000),
-        child: Icon(iconData,color: Colors.black),
+        child: Icon(iconData,color:color),
       ),
     );
   }

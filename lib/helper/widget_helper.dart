@@ -219,7 +219,9 @@ class WidgetHelper{
               child: Icon(Ionicons.ios_arrow_back, color: Constant().darkMode),
             ),
             SizedBox(width: scaler.getWidth(2)),
-            textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
+            Expanded(
+              child: textQ(title,scaler.getTextSize(10),Constant().darkMode,FontWeight.bold),
+            ),
             // Your widgets here
           ],
         ),
@@ -293,6 +295,7 @@ class WidgetHelper{
 
 
   }
+
   appBarWithFilter(
       BuildContext context,
       title,

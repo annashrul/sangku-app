@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
@@ -22,11 +23,11 @@ class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
   ScrollController controller;
   HistoryPlafonModel historyPlafonModel;
   bool isLoading=false,isLoadmore=false;
-  int perpage=20,total=0;
+  int perpage=10,total=0;
   String dateFrom='',dateTo='',q='';
   bool isSelected=false;
   Future loadData()async{
-    String url='transaction/history/plafon?perpage=1&perpage=$perpage';
+    String url='transaction/history/plafon?page=1&perpage=$perpage';
     if(dateFrom!=''&&dateTo!=''){
       url+='&datefrom=$dateFrom&dateto=$dateTo';
     }
@@ -41,6 +42,7 @@ class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
       isLoading=false;
       isLoadmore=false;
       total=historyPlafonModel.result.total;
+      print(historyPlafonModel.result.data.length);
       if(this.mounted)setState(() {});
     }
     else if(res==Constant().errNoData){
@@ -232,10 +234,11 @@ class _HistoryPlafonScreenState extends State<HistoryPlafonScreen> {
                 },
               )
           ),
+          if(isLoadmore)Center(child: CupertinoActivityIndicator())
 
         ],
       ),
-      bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
+      // bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
 
     );
   }

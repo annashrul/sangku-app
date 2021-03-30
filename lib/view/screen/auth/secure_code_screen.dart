@@ -153,14 +153,14 @@ class _PinScreenState extends State<PinScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         key: _scaffoldKey,
-        bottomNavigationBar:FlatButton(
-            padding: scaler.getPadding(1.5,0),
-            color: Constant().moneyColor,
-            onPressed: ()async{
-              
-            },
-            child: WidgetHelper().textQ("Lupa Pin", scaler.getTextSize(10),Colors.white,FontWeight.bold)
-        ),
+        // bottomNavigationBar:FlatButton(
+        //     padding: scaler.getPadding(1.5,0),
+        //     color: Constant().moneyColor,
+        //     onPressed: ()async{
+        //
+        //     },
+        //     child: WidgetHelper().textQ("Lupa Pin", scaler.getTextSize(10),Colors.white,FontWeight.bold)
+        // ),
         body: SecureCodeHelper(
             showFingerPass: false,
             title: "Keamanan",

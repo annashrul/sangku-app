@@ -32,18 +32,14 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
   GetPaymentModel getPaymentModel;
   bool isLoading=false;
   Future uploadAgain()async{
-    print('upload deui');
     await upload(image);
     setState(() {
       retry+=1;
     });
-    print("RETRY $retry");
   }
   Future upload(img)async{
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().putProvider("transaction/deposit/${widget.kdTrx}", {"bukti":img},context: context);
-    print("REPSONSE $img");
-    print("REPSONSE ${widget.kdTrx}");
     if(res!=null){
       Navigator.pop(context);
       WidgetHelper().notifOneBtnDialog(context,Constant().titleMsgSuccessTrx,Constant().descMsgSuccessTrx,(){
@@ -53,7 +49,11 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
 
   }
   Future loadPayment()async{
-    var res=await BaseProvider().getProvider("transaction/get_payment/${widget.kdTrx}", getPaymentModelFromJson);
+    print("bus");
+    var res=await BaseProvider().getProvider("transaction/get_payment/${widget.kdTrx}", getPaymentModelFromJson,context: context,callback: (){
+      Navigator.pop(context);
+    });
+    print(res);
     if(res is GetPaymentModel){
       GetPaymentModel result=res;
       if(this.mounted){
@@ -62,6 +62,11 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
           isLoading=false;
         });
       }
+    }
+    else{
+      print("else ${getPaymentModel}");
+      isLoading=false;
+      setState(() {});
     }
   }
   Future cancelTransaksi()async{
@@ -96,8 +101,6 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
-    print(widget.kdTrx);
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
@@ -113,7 +116,7 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           }
         },<Widget>[
-          if(!isLoading)
+          if(!isLoading&&getPaymentModel!=null)
             if(getPaymentModel.result.paymentSlip=='-')
               WidgetHelper().myFilter((){
                 WidgetHelper().myModal(context, CameraWidget(
@@ -130,7 +133,7 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
                 ));
               },icon: AntDesign.upload, iconColor:Constant().mainColor)
         ]),
-        body: isLoading?WidgetHelper().loadingWidget(context):Scrollbar(child: SingleChildScrollView(
+        body: isLoading||getPaymentModel==null?WidgetHelper().loadingWidget(context):Scrollbar(child: SingleChildScrollView(
           padding:scaler.getPadding(1, 2),
           child: Container(
             alignment: AlignmentDirectional.center,

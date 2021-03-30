@@ -39,6 +39,7 @@ class BaseProvider{
         }
       }
       else if(response.statusCode == 400){
+        print(jsonResponse['msg']);
         if(jsonResponse['msg']=='Invalid Token.'){
           if(context==null){
             return Constant().errExpToken;
@@ -49,6 +50,9 @@ class BaseProvider{
             });
           }
         }
+        return WidgetHelper().notifOneBtnDialog(context,"Informasi",jsonResponse['msg'],()async{
+          Navigator.pop(context);
+        });
         return General.fromJson(jsonResponse);
       }
     }on TimeoutException catch (_) {

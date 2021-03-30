@@ -92,7 +92,7 @@ class _BinaryScreenState extends State<BinaryScreen> with SingleTickerProviderSt
 
 
   // String urlWeb='http://192.168.100.10:3000';
-  String urlWeb='http://sangqu.id';
+  String urlWeb='https://sangqu.id';
 
 
   @override

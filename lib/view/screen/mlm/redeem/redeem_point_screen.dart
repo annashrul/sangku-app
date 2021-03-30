@@ -119,7 +119,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
                         height: 10,
                         width: 100,
                         color: Colors.white,
-                      )): WidgetHelper().textQ("Poin anda : ${FunctionHelper().formatter.format(int.parse(dataMemberModel.result.pointRo))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold)
+                      )): WidgetHelper().textQ("Poin anda : ${FunctionHelper().formatter.format(int.parse(FunctionHelper().rmTitik(dataMemberModel.result.pointRo, 0)))}",scaler.getTextSize(9),Constant().moneyColor,FontWeight.bold)
                     ),
 
                   ],

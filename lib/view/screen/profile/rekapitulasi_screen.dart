@@ -36,9 +36,9 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
     var res=await BaseProvider().getProvider("member/rekapitulasi_daily?tgl=$dateFrom",rekapitulasiModelFromJson);
     if(res is RekapitulasiModel){
       RekapitulasiModel result=res;
-      rekapitulasiModel=result;
       if(this.mounted){
         setState(() {
+          rekapitulasiModel=result;
           isLoading=false;
           isLoadingFirst=false;
           _controller.scrollToSelectedItem(true);
@@ -95,10 +95,10 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
                     SizedBox(height: scaler.getHeight(1)),
                     buildItem(context,"Balance","Kiri","${isLoading?'':rekapitulasiModel.result.balanceKiri}",title2:"Kanan",value2: "${isLoading?'':rekapitulasiModel.result.balanceKanan}"),
                     SizedBox(height: scaler.getHeight(1)),
-                    buildItems(context,"Terpasang (T)", "${FunctionHelper().formatter.format(rekapitulasiModel.result.hakBonus)}"),
+                    buildItems(context,"Terpasang (T)", isLoading?'':"${FunctionHelper().formatter.format(rekapitulasiModel.result.hakBonus)}"),
                     // SizedBox(height: scaler.getHeight(1)),
-                    buildItems(context,"Bonus (T x 20.000) ", "Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.nominalBonus)} .-"),
-                    buildItems(context,"Sisa Plafon ", "Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.sisaPlafon)} .-"),
+                    buildItems(context,"Bonus (T x 20.000) ", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.nominalBonus)} .-"),
+                    buildItems(context,"Sisa Plafon ", isLoading?'':"Rp ${FunctionHelper().formatter.format(rekapitulasiModel.result.sisaPlafon)} .-"),
 
                   ],
                 )
@@ -155,6 +155,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
           padding:scaler.getPadding(0,2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
+
             children: [
               Container(
                 width: scaler.getWidth(40),
@@ -162,7 +163,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> {
               ),
               WidgetHelper().textQ(":",scaler.getTextSize(sizeFont),Constant().darkMode,FontWeight.bold),
               SizedBox(width: scaler.getWidth(2)),
-              isLoading?_loading(context):WidgetHelper().textQ(value1,scaler.getTextSize(sizeFont),Constant().moneyColor,FontWeight.bold),
+              isLoading?_loading(context):WidgetHelper().textQ(value1,scaler.getTextSize(sizeFont),Constant().moneyColor,FontWeight.bold,textAlign: TextAlign.right),
             ],
           ),
         ),

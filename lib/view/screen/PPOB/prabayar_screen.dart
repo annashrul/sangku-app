@@ -281,9 +281,12 @@ class _PrabayarScreenState extends State<PrabayarScreen> with SingleTickerProvid
           itemCount: 25,
           itemBuilder: (BuildContext context, int index) {
             return WidgetHelper().baseLoading(context,Container(
-                width: double.infinity,
-                height: 50,
-                color:Colors.white
+              width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                color:Colors.white,
+                borderRadius: BorderRadius.circular(10)
+              ),
             ));
           },
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),

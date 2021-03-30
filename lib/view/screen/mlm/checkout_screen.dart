@@ -403,9 +403,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+                  WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
                   SizedBox(height:5.0),
-                  WidgetHelper().textQ("$mainAddress",scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+                  WidgetHelper().textQ("$mainAddress",scaler.getTextSize(9),Constant().darkMode, FontWeight.normal),
                 ],
               ),
             ),
@@ -418,7 +418,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Container(
-      padding:scaler.getPadding(0,2),
+      padding:scaler.getPadding(1,2),
       child:Column(
         children: [
           Row(
@@ -607,7 +607,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Container(
-      padding: scaler.getPadding(0, 2),
+      padding: scaler.getPadding(1, 2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

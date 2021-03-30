@@ -404,11 +404,12 @@ class _ModalFormState extends State<ModalForm> {
         prov=result.result.kdProv;
         city=result.result.kdKota;
         district=result.result.kdKec;
-        if(mainAdd.length>3){
-          provController.text = mainAdd[mainAdd.length-1];
-          kotaController.text = mainAdd[mainAdd.length-2];
-          kecController.text=mainAdd[mainAdd.length-3];
-        }
+        // if(mainAdd.length>3){
+        //
+        // }
+        provController.text = mainAdd[mainAdd.length-1];
+        kotaController.text = mainAdd[mainAdd.length-2];
+        kecController.text=mainAdd[mainAdd.length-3];
         expAddress = mainAddressController.text.split(",");
         mainAddressController.text =result.result.mainAddress;
 

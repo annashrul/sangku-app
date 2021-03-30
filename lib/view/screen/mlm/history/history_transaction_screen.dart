@@ -26,7 +26,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   ScrollController controller;
   HistoryTransactionModel historyTransactionModel;
   bool isLoading=false,isLoadmore=false;
-  int perpage=20,total=0;
+  int perpage=10,total=0;
   String dateFrom='',dateTo='',q='';
   bool isSelected=false;
   Future loadData()async{
@@ -192,9 +192,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                 },
               )
           ),
+          if(isLoadmore)Center(child: CupertinoActivityIndicator())
         ],
       ),
-      bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
+      // bottomNavigationBar: isLoadmore?HistoryTransactionLoading(tot: 1):Text(''),
 
     );
   }
@@ -204,6 +205,9 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     return ListView.builder(
       padding: scaler.getPadding(0,0),
       controller: controller,
+      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      // primary: true,
+      shrinkWrap: true,
       itemBuilder: (context,index){
         var val=historyTransactionModel.result.data[index];
         return FlatButton(

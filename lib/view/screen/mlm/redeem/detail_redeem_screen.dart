@@ -29,7 +29,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
     if(res==Constant().errNoData){
       isLoading=false;
       isNodata=true;
-      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat asdasdasd",(){Navigator.pop(context);},(){
+      WidgetHelper().notifDialog(context,"Informasi","anda belum mempunyai alamat ",(){Navigator.pop(context);},(){
         Navigator.pop(context);
         WidgetHelper().myModal(context, ModalForm(total:0,id:"",callback:(String par){
           if(par=='berhasil'){
@@ -40,7 +40,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
             WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
           }
         },));
-      },titleBtn2: "buat alamat asd");
+      },titleBtn2: "buat alamat");
       setState(() {});
     }
     else{
@@ -115,7 +115,7 @@ class _DetailRedeemState extends State<DetailRedeem> {
           SizedBox(height:scaler.getHeight(1)),
           Padding(
             padding:scaler.getPadding(0,2),
-            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Redeem Poin sd',color: Constant().mainColor1,iconSize: 12),
+            child: WidgetHelper().titleNoButton(context, AntDesign.infocirlceo, 'Redeem Poin',color: Constant().mainColor1,iconSize: 12),
           ),
           Container(
             padding: scaler.getPadding(0.5,1.7),
