@@ -759,7 +759,7 @@ class WidgetHelper{
     );
   }
 
-  wrapperModal(BuildContext context,String title,Widget children,{bool isCallack=false,Function callack,String txtBtn="Simpan"}){
+  wrapperModal(BuildContext context,String title,Widget children,{bool isBack=false,Function callbacklIsBack, bool isCallack=false,Function callack,String txtBtn="Simpan"}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       padding: scaler.getMarginLTRB(0,1, 0,0),
@@ -786,7 +786,7 @@ class WidgetHelper{
             dense:true,
             contentPadding:scaler.getPadding(0,2),
             leading: InkWell(
-              onTap: ()=>Navigator.pop(context),
+              onTap: ()=>isBack?callbacklIsBack():Navigator.pop(context),
               child:Icon(AntDesign.close, color:Constant().darkMode),
             ),
             title: WidgetHelper().textQ(title,scaler.getTextSize(9), Constant().darkMode, FontWeight.bold),

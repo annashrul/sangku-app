@@ -35,15 +35,19 @@ class ConfigModel {
 class Result {
   Result({
     this.type,
+    this.typeOtp,
   });
 
   String type;
+  String typeOtp;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     type: json["type"],
+    typeOtp: json["type_otp"],
   );
 
   Map<String, dynamic> toJson() => {
     "type": type,
+    "type_otp": typeOtp,
   };
 }

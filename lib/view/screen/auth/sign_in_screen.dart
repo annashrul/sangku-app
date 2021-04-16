@@ -6,21 +6,18 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/config/database_config.dart';
-import 'package:sangkuy/helper/generated_route.dart';
 import 'package:sangkuy/helper/table_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/auth/login_model.dart';
 import 'package:sangkuy/model/auth/otp_model.dart';
 import 'package:sangkuy/model/config_model.dart';
-import 'package:sangkuy/model/general_model.dart';
 import 'package:sangkuy/provider/base_provider.dart';
 import 'package:sangkuy/provider/member_provider.dart';
+import 'package:sangkuy/view/screen/auth/rule_screen.dart';
 import 'package:sangkuy/view/screen/auth/secure_code_screen.dart';
-import 'package:sangkuy/view/screen/home_view.dart';
 import 'package:sangkuy/view/screen/pages.dart';
 import 'package:sangkuy/view/screen/profile/form_profile_screen.dart';
 import 'package:sangkuy/view/widget/error_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -85,13 +82,12 @@ class _SignInScreenState extends State<SignInScreen> {
         "nomor":nohpController.text,
         "type":otpVal?"whatsapp":"sms",
       };
-      var res = await BaseProvider().postProvider("auth/otp", data,context: context);
-      Navigator.pop(context);
-
-      if(res!=null){
-        var result = OtpModel.fromJson(res);
-        if(result.status=='success'){
-          if(configModel.result.type=='otp'){
+      if(configModel.result.type=='otp'){
+        var res = await BaseProvider().postProvider("auth/otp", data,context: context);
+        Navigator.pop(context);
+        if(res!=null){
+          var result = OtpModel.fromJson(res);
+          if(result.status=='success'){
             WidgetHelper().myPush(context, SecureCodeScreen(
               callback:(context,isTrue)async{
                 login();
@@ -102,19 +98,23 @@ class _SignInScreenState extends State<SignInScreen> {
             ));
           }
           else{
-            WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,myPin){
-              print(pin);
-              setState(() {
-                pin=myPin;
-              });
-              login();
-            }));
+            WidgetHelper().notifBar(context,"failed",result.msg);
           }
         }
-        else{
-          WidgetHelper().notifBar(context,"failed",result.msg);
-        }
       }
+      else{
+        WidgetHelper().myPush(context, PinScreen(callback: (context,isTrue,myPin){
+          print(pin);
+          setState(() {
+            pin=myPin;
+          });
+          WidgetHelper().myModal(context,RuleScreen(callback: (){
+            login();
+          }));
+
+        }));
+      }
+
 
     }
   }
@@ -134,9 +134,11 @@ class _SignInScreenState extends State<SignInScreen> {
       print("bus");
       Navigator.pop(context);
       Navigator.pop(context);
-    });
-    if(baseAuth!=null){
       Navigator.pop(context);
+    });
+    Navigator.pop(context);
+
+    if(baseAuth!=null){
       var loginModel = LoginModel.fromJson(baseAuth);
       if(loginModel.result.isRegister==0){
         WidgetHelper().myPush(context, CreatePinScreen(callback: (myPin)async{
