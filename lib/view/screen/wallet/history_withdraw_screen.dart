@@ -26,11 +26,20 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
   HistoryWithdrawModel historyWithdrawModel;
   ScrollController controller;
   int perpage=15,total=0;
+  String dateFrom='',dateTo='',q='';
+
   Future loadData()async{
     String url='transaction/withdrawal?page=1&perpage=$perpage';
+    if(dateFrom!=''&&dateTo!=''){
+      url+='&datefrom=$dateFrom&dateto=$dateTo';
+    }
+    if(q!=''){
+      url+='&q=${FunctionHelper().decode(q)}';
+    }
     if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
+
     var res = await BaseProvider().getProvider(url,historyWithdrawModelFromJson,context: context,callback: (){Navigator.pop(context);});
     if(res is HistoryWithdrawModel){
       HistoryWithdrawModel result=res;
@@ -73,6 +82,8 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
   void initState() {
     // TODO: implement initState
     super.initState();
+    dateFrom=FunctionHelper().formatReportDate()['dateFrom'];
+    dateTo=FunctionHelper().formatReportDate()['dateTo'];
     controller = new ScrollController()..addListener(_scrollListener);
     isLoading=true;
     loadData();
@@ -83,7 +94,21 @@ class _HistoryWithdrawScreenState extends State<HistoryWithdrawScreen> with Sing
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Laporan Penarikan", (){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithFilter(context,"Riwayat Penarikan",  (){Navigator.pop(context);},(param){
+        setState(() {
+          q=param;
+          isLoading=true;
+        });
+        loadData();
+      }, (start, end){
+        setState(() {
+          dateFrom=start;
+          dateTo=end;
+          isLoading=true;
+        });
+        loadData();
+      }),
+      // appBar: WidgetHelper().appBarWithButton(context,"Laporan Penarikan", (){Navigator.pop(context);},<Widget>[]),
       body: Scrollbar(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

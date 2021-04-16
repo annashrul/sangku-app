@@ -28,8 +28,15 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
   HistoryDepositModel historyDepositModel;
   ScrollController controller;
   int perpage=15,total=0;
+  String dateFrom='',dateTo='',q='';
   Future loadData()async{
     String url='transaction/deposit?page=1&perpage=$perpage';
+    if(dateFrom!=''&&dateTo!=''){
+      url+='&datefrom=$dateFrom&dateto=$dateTo';
+    }
+    if(q!=''){
+      url+='&q=${FunctionHelper().decode(q)}';
+    }
     if(filterStatus!=''){
       url+='&status=$filterStatus';
     }
@@ -73,6 +80,8 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
   void initState() {
     // TODO: implement initState
     super.initState();
+    dateFrom=FunctionHelper().formatReportDate()['dateFrom'];
+    dateTo=FunctionHelper().formatReportDate()['dateTo'];
     controller = new ScrollController()..addListener(_scrollListener);
     isLoading=true;
     loadData();
@@ -85,7 +94,21 @@ class _HistoryDepositScreenState extends State<HistoryDepositScreen> with Single
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Laporan Deposit", (){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithFilter(context,"Riwayat Deposit / Top Up",  (){Navigator.pop(context);},(param){
+        setState(() {
+          q=param;
+          isLoading=true;
+        });
+        loadData();
+      }, (start, end){
+        setState(() {
+          dateFrom=start;
+          dateTo=end;
+          isLoading=true;
+        });
+        loadData();
+      }),
+      // appBar: WidgetHelper().appBarWithButton(context,"Laporan Deposit", (){Navigator.pop(context);},<Widget>[]),
       body: Scrollbar(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

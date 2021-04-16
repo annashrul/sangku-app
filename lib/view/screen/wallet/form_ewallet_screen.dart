@@ -109,23 +109,23 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
             saldo=int.parse(result.result.wdMin);
             print("###################### PENARIKAN ${result.result.toJson()} ##########################");
             setState(() {});
-            if(!isHaveKtp&&idCard=='-'){
-              setState(() {
-                isPending=true;
-                title='Informasi';
-                desc = 'Untuk melakukan penarikan, kami harus memastikan bahwa anda bukan robot. Maka dari itu silahkan unggah foto identitas anda seperti KTP/SIM/KITAS dsb.';
-              });
-              print("###################### BELUM PUNYA KTP = ${result.result.isHaveKtp} ##########################");
-              return showNotif(context);
-            }
-            if(!isHaveKtp&&idCard!='-'){
-              setState(() {
-                isPending=true;
-                title='Informasi';
-                desc = 'Silahkan tunggu konfirmasi dari admin';
-              });
-              return showNotif(context);
-            }
+            // if(!isHaveKtp&&idCard=='-'){
+            //   setState(() {
+            //     isPending=true;
+            //     title='Informasi';
+            //     desc = 'Untuk melakukan penarikan, kami harus memastikan bahwa anda bukan robot. Maka dari itu silahkan unggah foto identitas anda seperti KTP/SIM/KITAS dsb.';
+            //   });
+            //   print("###################### BELUM PUNYA KTP = ${result.result.isHaveKtp} ##########################");
+            //   return showNotif(context);
+            // }
+            // if(!isHaveKtp&&idCard!='-'){
+            //   setState(() {
+            //     isPending=true;
+            //     title='Informasi';
+            //     desc = 'Silahkan tunggu konfirmasi dari admin';
+            //   });
+            //   return showNotif(context);
+            // }
             if(result.result.trxWd!='0'){
               setState(() {
                 isPending=true;
@@ -375,7 +375,7 @@ class _FormEwalletScreenState extends State<FormEwalletScreen> {
                         ),
                         SizedBox(height: 10.0),
                         if(widget.title=='TRANSFER')transfer(),
-                        if(widget.title=='PENARIKAN'||widget.title=='TOP UP')WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color:Constant().darkMode),
+                        if(widget.title=='PENARIKAN'||widget.title=='TOP UP')WidgetHelper().titleNoButton(context,AntDesign.bank,"Pilih Bank Tujuan",color:Constant().darkMode,iconSize:12),
                         SizedBox(height: 10.0),
                         if(widget.title=='PENARIKAN')penarikan(),
                         if(widget.title=='TOP UP')topup(),

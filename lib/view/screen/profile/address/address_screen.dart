@@ -499,7 +499,13 @@ class _ModalFormState extends State<ModalForm> {
                         FocusScope.of(context).unfocus();
                         WidgetHelper().myModal(context,ModalProvinsi(
                           callback:(id,name,idx){
-                            findProv[findProv.length-1] = name;
+                            if(findProv.length>0){
+                              findProv[findProv.length-1] = name;
+                            }else{
+                              findProv.add(name);
+
+                            }
+                            // findProv[findProv.length-1] = name;
                             mainAddressController.text = findProv.join(",");
                             prov=id;
                             provName=name;
@@ -524,7 +530,14 @@ class _ModalFormState extends State<ModalForm> {
                         if(provController.text!=''){
                           WidgetHelper().myModal(context,ModalCity(
                             callback:(id,name,idx){
-                              findProv[findProv.length-2] = name;
+                              // print(findProv);
+
+                              if(findProv.length>1){
+                                findProv[findProv.length-1] = name;
+                              }else{
+                                findProv.add(name);
+                              }
+                              // findProv[findProv.length-1] = name;
                               mainAddressController.text = findProv.join(",");
                               city=id;cityName=name;idxCity=idx;kecController.text='';kotaController.text=name;
                               setState(() {});
@@ -552,7 +565,13 @@ class _ModalFormState extends State<ModalForm> {
                         if(provController.text!=''&&kotaController.text!=''){
                           WidgetHelper().myModal(context,ModalDisctrict(
                             callback:(id,name,idx){
-                              findProv[findProv.length-3] = name;
+                              // findProv.add(name);
+                              // print(findProv);
+                              if(findProv.length>2){
+                                findProv[findProv.length-3] = name;
+                              }else{
+                                findProv.add(name);
+                              }
                               mainAddressController.text = findProv.join(",");
                               district=id;districtName=name;idxDistrict=idx;kecController.text=name;
                               setState(() {});
@@ -581,7 +600,7 @@ class _ModalFormState extends State<ModalForm> {
                   SizedBox(height:scaler.getHeight(0.5)),
                   WidgetHelper().myForm(
                       context,
-                      "Detail Alamat (format penulisan : nama jalan,rt,rw,kelurahan,kode pos)",
+                      "Detail Alamat (masukan alamat selengkap mungkin untuk mempercepat proses pengiriman)",
                       mainAddressController,
                       focusNode: mainAddressFocus,
                       onChange: (_){setState(() {});},

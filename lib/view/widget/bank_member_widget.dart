@@ -4,6 +4,7 @@ import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
 import 'package:sangkuy/model/member/bank_member_model.dart';
 import 'package:sangkuy/provider/member_provider.dart';
+import 'package:sangkuy/view/screen/profile/bank/bank_screen.dart';
 import 'package:sangkuy/view/widget/card_widget.dart';
 
 class BankMemberWidget extends StatefulWidget {
@@ -55,7 +56,25 @@ class _BankMemberWidgetState extends State<BankMemberWidget> {
       height: 50,
       width: double.infinity,
       color: Colors.white,
-    )): total<1?Text('tidak ada data bank'):ListView.separated(
+    )): total<1?Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        WidgetHelper().textQ("Anda belum mempunyai akun bank",12, Constant().darkMode,FontWeight.bold),
+        SizedBox(height: 10),
+        InkWell(
+          onTap: (){
+            WidgetHelper().myModal(context,ModalFormBank(val: null,callback: (param){
+              setState(() {
+                isLoadingBank=true;
+              });
+              loadBank();
+            }));
+          },
+          child: WidgetHelper().textQ("Buat Akun Bank",12, Constant().mainColor,FontWeight.bold,textDecoration: TextDecoration.underline),
+        )
+      ],
+    ):ListView.separated(
       addRepaintBoundaries: true,
       primary: false,
       shrinkWrap: true,

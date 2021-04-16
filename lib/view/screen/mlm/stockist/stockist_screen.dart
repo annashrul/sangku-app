@@ -112,7 +112,25 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Pin ${widget.type}",(){Navigator.pop(context);},<Widget>[]),
+      appBar: WidgetHelper().appBarWithButton(context,"Pin ${widget.type}",(){Navigator.pop(context);},<Widget>[
+        FlatButton(
+            color: Constant().mainColor,
+            padding: EdgeInsets.all(10.0),
+            onPressed:(){
+              WidgetHelper().myModal(context, StatusStockistModal(index: filterStatus,callback:(code,idx){
+                setState(() {
+                  isLoading=true;
+                  filterStatus=idx;
+                  kode=code;
+                });
+                loadData();
+                // StockistWidget(tipe: '1',status:kode).createState().loadData().then((value) => print(value));
+              }));
+            },
+            child: Icon(AntDesign.filter,color:Constant().mainColor2)
+        )
+
+      ]),
       body:RefreshWidget(
         widget: Scrollbar(
             child: Container(
@@ -212,6 +230,74 @@ class _StockistScreenState extends State<StockistScreen> with SingleTickerProvid
     );
   }
 }
+
+
+class StatusStockistModal extends StatefulWidget {
+  int index;
+  Function(String kode,int idx) callback;
+  StatusStockistModal({this.index,this.callback});
+  @override
+  _StatusStockistModalState createState() => _StatusStockistModalState();
+}
+
+class _StatusStockistModalState extends State<StatusStockistModal> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height/3,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
+      ),
+      child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height:10.0),
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top:10.0),
+              width: 50,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius:  BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+          SizedBox(height: 20.0),
+
+          Expanded(
+            child: Scrollbar(
+                child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  itemCount: DataHelper.filterStockist.length,
+                  itemBuilder: (context,index){
+                    return ListTile(
+                      onTap: (){
+                        widget.callback(DataHelper.filterStockist[index]['kode'],index);
+                        setState(() {
+                          widget.index=index;
+                        });
+                        Navigator.pop(context);
+                      },
+                      contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
+                      title: WidgetHelper().textQ(DataHelper.filterStockist[index]['value'], 12,Constant().darkMode, FontWeight.bold),
+                      trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: Constant().darkMode):Text(''),
+                    );
+                  },
+                  separatorBuilder: (context, index) {return Divider(height: 1);},
+                )
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+}
+
+
 //
 //
 // class AktivasiRO extends StatefulWidget {

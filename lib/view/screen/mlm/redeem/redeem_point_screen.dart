@@ -98,7 +98,7 @@ class _RedeemPointScreenState extends State<RedeemPointScreen> with SingleTicker
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Scaffold(
-        appBar: WidgetHelper().appBarNoButton(context,"Redeem Point",<Widget>[
+        appBar: WidgetHelper().appBarNoButton(context,"Redeem Poin",<Widget>[
           FlatButton(
               padding: EdgeInsets.all(0.0),
               highlightColor:Colors.black38,

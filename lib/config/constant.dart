@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 class Constant{
-  final String baseUrl        = 'http://192.168.100.10:3010/';
+  // final String baseUrl        = 'http://192.168.100.10:3010/';
   // final String baseUrl        = 'http://ptnetindo.com:6694/';
-  // final String baseUrl        = 'https://api.sangqu.id/';
+  final String baseUrl        = 'https://api.sangqu.id/';
   final String token          = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZWEyNDQ0ZC0zZDZiLTQyNGItYTQ3YS00OTBiY2I3NTYwYjgiLCJpYXQiOjE1NzEwNDI0OTEsImV4cCI6MTU3MzYzNDQ5MX0.lvRR9rU3cdLbJ9Gi0Ryucwl_7IMK6NF7BTblIQUDA9Q";
   final String siteName       = 'SangQu';
   final bool showCode         = true;
@@ -41,9 +41,5 @@ class Constant{
   final Color mainColor1      = Color(0xFF732044);
   final Color mainColor2      = Color(0xFFffc107);
   final Color greenColor      = Color(0xFF42b549);
-
-
-
-
 
 }

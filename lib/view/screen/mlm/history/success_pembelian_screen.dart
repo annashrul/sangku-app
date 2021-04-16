@@ -70,6 +70,7 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
     }
   }
   Future cancelTransaksi()async{
+
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().postProvider("transaction/deposit/${widget.kdTrx}", {"status":"2"},context: context,callback: (){
       Navigator.pop(context);
@@ -108,30 +109,25 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
         appBar: WidgetHelper().appBarWithButton(context,"Transaksi Berhasil", ()async{
           // WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
           SharedPreferences pres=await SharedPreferences.getInstance();
-          if(pres.getString("isDetailPembelian")=='true'){
-            Navigator.pop(context);
-          }
-          else{
-            pres.remove('isDetailPembelian');
+          print(pres.getString("isDetailPembelian"));
+          // if(pres.getString("isDetailPembelian")=='true'){
+          //   Navigator.pop(context);
+          // }
+          // else{
+          //   pres.remove('isDetailPembelian');
             WidgetHelper().myPushRemove(context,IndexScreen(currentTab: 2));
-          }
+          // }
         },<Widget>[
           if(!isLoading&&getPaymentModel!=null)
             if(getPaymentModel.result.paymentSlip=='-')
               WidgetHelper().myFilter((){
-                WidgetHelper().myModal(context, CameraWidget(
-                  callback: (String img,pureImage)async{
-                    setState(() {
-                      image = img;
-                    });
-                    await Future.delayed(Duration(seconds: 1));
-                    WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
-                      upload(image);
-                    });
-                    // upload(image);
-                  },
-                ));
-              },icon: AntDesign.upload, iconColor:Constant().mainColor)
+                WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan membatalkan transaksi ?",(){
+                  Navigator.pop(context);
+                },(){
+                  cancelTransaksi();
+                });
+
+              },icon: AntDesign.closecircleo, iconColor:Constant().mainColor)
         ]),
         body: isLoading||getPaymentModel==null?WidgetHelper().loadingWidget(context):Scrollbar(child: SingleChildScrollView(
           padding:scaler.getPadding(1, 2),
@@ -296,58 +292,24 @@ class _SuccessPembelianScreenState extends State<SuccessPembelianScreen> {
         )),
         bottomNavigationBar: FlatButton(
           onPressed: () {
-            WidgetHelper().notifDialog(context,"Informasi !","Anda yakin akan membatalkan transaksi ?",(){
-              Navigator.pop(context);
-            },(){
-              cancelTransaksi();
-            });
+            WidgetHelper().myModal(context, CameraWidget(
+              callback: (String img,pureImage)async{
+                setState(() {
+                  image = img;
+                });
+                await Future.delayed(Duration(seconds: 1));
+                WidgetHelper().notifDialog(context, "Informasi","Gambar berhasil diambil",(){Navigator.pop(context);},(){
+                  upload(image);
+                });
+                // upload(image);
+              },
+            ));
           },
           padding:scaler.getPadding(1.5,0),
           color: Constant().moneyColor,
-          child:WidgetHelper().textQ("Batalkan", scaler.getTextSize(10),Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
+          child:WidgetHelper().textQ("Upload Bukti Transfer", scaler.getTextSize(10),Constant().secondDarkColor,FontWeight.bold,letterSpacing: 3.0),
         ),
-        // bottomNavigationBar: Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Container(
-        //       width: MediaQuery.of(context).size.width/3,
-        //       child: FlatButton(
-        //         onPressed: () {
-        //           WidgetHelper().myModal(context, CameraWidget(
-        //             callback: (String img)async{
-        //               setState(() {
-        //                 image = img;
-        //               });
-        //               upload(image);
-        //             },
-        //           ));
-        //         },
-        //         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 0),
-        //         color: Constant().moneyColor,
-        //         child:WidgetHelper().textQ("upload bukti transfer", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 1.0),
-        //       ),
-        //     ),
-        //     SizedBox(width: 2.0),
-        //     Container(
-        //       width: MediaQuery.of(context).size.width/3,
-        //       child: FlatButton(
-        //         onPressed: () {
-        //           WidgetHelper().myModal(context, CameraWidget(
-        //             callback: (String img)async{
-        //               setState(() {
-        //                 image = img;
-        //               });
-        //               upload(image);
-        //             },
-        //           ));
-        //         },
-        //         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 0),
-        //         color: Constant().moneyColor,
-        //         child:WidgetHelper().textQ("Batalkan", 12,Constant().secondDarkColor,FontWeight.bold,letterSpacing: 1.0),
-        //       ),
-        //     ),
-        //   ],
-        // ),
+
       ),
       onWillPop:() async{
         WidgetHelper().showFloatingFlushbar(context,"failed","gunakan tombol kembali yang ada pada aplikasi ini.");

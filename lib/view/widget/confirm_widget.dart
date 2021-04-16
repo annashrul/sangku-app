@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:sangkuy/config/constant.dart';
 import 'package:sangkuy/helper/function_helper.dart';
 import 'package:sangkuy/helper/widget_helper.dart';
@@ -49,7 +50,7 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Constant().secondColor,
+                    color: Constant().mainColor,
                   ),
                   child: Row(
                     children: [
@@ -78,7 +79,7 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
         child: FlatButton(
             onPressed:widget.callback,
             padding: EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-            color: Constant().mainColor,
+            color: Constant().moneyColor,
             child:Container(
               padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10),
               child: Row(
@@ -133,12 +134,14 @@ class _ConfirmWidgetState extends State<ConfirmWidget> {
   }
 
   Widget content(BuildContext context, title,desc,Color color){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ListTile(
       contentPadding: EdgeInsets.all(0.0),
       onTap: (){},
-      leading: Icon(AntDesign.checkcircleo,color: Colors.grey[200],),
-      title:WidgetHelper().textQ(title,10,Constant().darkMode, FontWeight.bold),
-      trailing: WidgetHelper().textQ(desc,10,color, FontWeight.normal)
+      // leading: Icon(AntDesign.checkcircleo,color:Constant().mainColor,),
+      title:WidgetHelper().textQ(title,scaler.getTextSize(9),Constant().darkMode, FontWeight.bold),
+      trailing: WidgetHelper().textQ(desc,scaler.getTextSize(9),color, FontWeight.normal)
     );
   }
 }

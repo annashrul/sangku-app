@@ -43,7 +43,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   String kurirDeskripsi='',service='',kdKec='';
   int grandTotal=0,subTotal=0,cost=0;
   int idxAddress=0;
-  int isMainAddress=0;
+  int isMainAddress=0,totalAddress=1;
   String title='',penerima='',noHp='',mainAddress='',idAddress='';
   String idBank='-';
   KurirModel kurirModel;
@@ -93,29 +93,15 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
   }
   Future loadAddress()async{
     var res = await AddressProvider().getAddress(1);
-    if(res=='error'){
+    if(res==Constant().errNoData){
       setState(() {
+        totalAddress=0;
         isError=true;
         isLoadingAddress=false;
       });
-    }
-    else if(res=='failed'){
-      setState(() {
-        isError=true;
-        isLoadingAddress=false;
-
-      });
-      WidgetHelper().showFloatingFlushbar(context,"failed",'gagal mengambil data');
-    }
-    else if(res==Constant().errExpToken){
-      setState(() {
-        isLoadingAddress=false;
-      });
-      WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","Sesi anda sudah habis, silahkan login ulang.",()async{
-        await FunctionHelper().logout(context);
-      },titleBtn1: "Login");
     }
     else{
+      totalAddress=1;
       addressModel = res;
       isError=false;
       isLoadingAddress=false;
@@ -248,6 +234,9 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
       setState(() {});
     }
   }
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -265,8 +254,29 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar:WidgetHelper().appBarWithButton(context,"Checkout",(){Navigator.pop(context);},<Widget>[]),
-      body:  isLoadingBank||isLoadingKurir||isLoadingCart||isLoadingAddress?WidgetHelper().loadingWidget(context):RefreshWidget(
+      appBar:WidgetHelper().appBarWithButton(context,"Pembayaran",(){Navigator.pop(context);},<Widget>[]),
+      body:  totalAddress==0?Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          WidgetHelper().noDataWidget(context),
+          FlatButton(
+            color: Constant().mainColor,
+            onPressed: (){
+              WidgetHelper().myModal(context, ModalForm(total:0,id:"",callback:(String par){
+                if(par=='berhasil'){
+                  loadAddress();
+                  WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+                }
+                else{
+                  WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+                }
+              },));
+            },
+            child: WidgetHelper().textQ("Buat Alamat",scaler.getTextSize(10),Colors.white,FontWeight.bold),
+          )
+        ],
+      ):isLoadingBank||isLoadingKurir||isLoadingCart||isLoadingAddress?WidgetHelper().loadingWidget(context):RefreshWidget(
         widget: ListView(
           padding: EdgeInsets.only(bottom: 10.0),
           children: [
@@ -284,7 +294,7 @@ class _ChaeckoutScreenState extends State<ChaeckoutScreen> {
           loadCart();
         },
       ),
-      bottomNavigationBar:Container(
+      bottomNavigationBar:totalAddress==0?Text(''):Container(
           padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           color: Constant().moneyColor,
           child: FlatButton(
